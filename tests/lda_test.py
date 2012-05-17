@@ -1,3 +1,5 @@
+# -*- coding: utf-8 -*-
+
 import unittest
 
 from pynes.compiler import lexical, syntax, semantic

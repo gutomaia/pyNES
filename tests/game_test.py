@@ -1,3 +1,5 @@
+# -*- coding: utf-8 -*-
+
 import unittest
 from binascii import a2b_hex, hexlify
 
