@@ -8,6 +8,7 @@ opcodes['STA'] = dict(zp=0x85, zpx=0x95, abs=0x8d, absx=0x9d,
 opcodes['LDA'] = dict(imm=0xa9, zp=0xa5, zpx=0xb5, abs=0xad, 
     absx=0xbd, absy=0xb9, indx=0xa1, indy=0xb1)
 opcodes['STX'] = dict(zp=0x86, zpy=0x96, abs=0x8e)
+opcodes['STY'] = dict(zp=0x84, zpx=0x94, abs=0x8c)
 
 def Array(name, imm, zp, zpx, zpy, abs, absx, absy, indx, indy, sngl, bra):
     #code = dict(imm=imm, zp=zp, zpx=zpx, zpy=zpy, abs=abs, absx=absx, absy=absy, indx = indx,sngl=sngl, bra=bra)
