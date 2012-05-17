@@ -115,6 +115,10 @@ def syntax(t):
         return [
             dict(type='S_ZEROPAGE_X', short='zpx', instruction=t[0], arg=t[1])
         ]
+    elif t_instruction(t,0) and t_zeropage(t,1) and t_separator(t,2) and t_register_y(t,3):
+        return [
+            dict(type='S_ZEROPAGE_Y', short='zpy', instruction=t[0], arg=t[1])
+        ]
     elif t_instruction(t,0) and t_zeropage(t,1):
         return [
             dict(type='S_ZEROPAGE', short='zp', instruction=t[0], arg=t[1])
