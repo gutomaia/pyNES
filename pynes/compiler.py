@@ -146,6 +146,11 @@ def syntax(t):
         return [
             dict(type='S_INDIRECT_Y', short='indy', instruction=t[0], arg=t[2])
         ]
+    elif t_instruction(t,0):
+        return [
+            dict(type='S_IMPLIED', short='sngl', instruction=t[0], arg=None)
+        ]
+
 
 def semantic(ast):
     code = [];
@@ -153,10 +158,13 @@ def semantic(ast):
         instruction = leaf['instruction']['value']
         address_mode = leaf['short']
         opcode = opcodes[instruction][address_mode]
-        arg1 = int(leaf['arg']['value'][1:3], 16)
-        if len(leaf['arg']['value']) == 5:
-            arg2 = int(leaf['arg']['value'][3:5], 16)
-            code = [opcode, arg2, arg1]
+        if address_mode != 'sngl':
+            arg1 = int(leaf['arg']['value'][1:3], 16)
+            if len(leaf['arg']['value']) == 5:
+                arg2 = int(leaf['arg']['value'][3:5], 16)
+                code = [opcode, arg2, arg1]
+            else:
+                code = [opcode, arg1]
         else:
-            code = [opcode, arg1]
+            code = [opcode]
     return code

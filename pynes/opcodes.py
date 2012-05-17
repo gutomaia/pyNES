@@ -17,12 +17,21 @@ opcodes['LDY'] = dict(imm=0xa0, zp=0xa4, zpx=0xb4, abs=0xac, absx=0xbc)
 opcodes['LSR'] = dict(imm=0x4a, zp=0x46, zpx=0x56, abs=0x4e, absx=0x5e)
 opcodes['SBC'] = dict(imm=0xe9, zp=0xe5, zpx=0xf5, abs=0xed, absx=0xfd,
     absy=0xf9, indx=0xe1, indy=0xf1)
+opcodes['SEC'] = dict(sngl=0x38)
 opcodes['STA'] = dict(zp=0x85, zpx=0x95, abs=0x8d, absx=0x9d, absy=0x99,
     indx=0x81, indy=0x91)
 opcodes['STX'] = dict(zp=0x86, zpy=0x96, abs=0x8e)
 opcodes['STY'] = dict(zp=0x84, zpx=0x94, abs=0x8c)
 opcodes['ROL'] = dict(imm=0x2a, zp=0x26, zpx=0x36, abs=0x2e, absx=0x3e)
 opcodes['ROR'] = dict(imm=0x6a,zp=0x66, zpx=0x76, abs=0x6e, absx=0x7e)
+opcodes['TAX'] = dict(sngl=0xaa)
+opcodes['TAY'] = dict(sngl=0xa8)
+opcodes['TSX'] = dict(sngl=0xba)
+opcodes['TXA'] = dict(sngl=0x8a)
+opcodes['TXS'] = dict(sngl=0x9a)
+opcodes['TYA'] = dict(sngl=0x98)
+
+
 def Array(name, imm, zp, zpx, zpy, abs, absx, absy, indx, indy, sngl, bra):
     #code = dict(imm=imm, zp=zp, zpx=zpx, zpy=zpy, abs=abs, absx=absx, absy=absy, indx = indx,sngl=sngl, bra=bra)
     #opcodes[name] = code
