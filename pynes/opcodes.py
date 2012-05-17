@@ -3,14 +3,14 @@
 opcodes = {}
 opcodes['ADC'] = dict(imm=0x69, zp=0x65, zpx=0x75, zpy=0x00, abs=0x6d,
     absx=0x7d, absy=0x79, indx=0x61, indy=0x71, sngl=0x00, bra=0x00 )
-opcodes['STA'] = dict(zp=0x85, zpx=0x95, abs=0x8d, absx=0x9d, 
-    absy=0x99, indx=0x81, indy=0x91)
+opcodes['JMP'] = dict(abs=0x4c)
+opcodes['JSR'] = dict(abs=0x20)
 opcodes['LDA'] = dict(imm=0xa9, zp=0xa5, zpx=0xb5, abs=0xad, 
     absx=0xbd, absy=0xb9, indx=0xa1, indy=0xb1)
+opcodes['STA'] = dict(zp=0x85, zpx=0x95, abs=0x8d, absx=0x9d, 
+    absy=0x99, indx=0x81, indy=0x91)
 opcodes['STX'] = dict(zp=0x86, zpy=0x96, abs=0x8e)
 opcodes['STY'] = dict(zp=0x84, zpx=0x94, abs=0x8c)
-opcodes['JMP'] = dict(abs=0x4c)
-
 def Array(name, imm, zp, zpx, zpy, abs, absx, absy, indx, indy, sngl, bra):
     #code = dict(imm=imm, zp=zp, zpx=zpx, zpy=zpy, abs=abs, absx=absx, absy=absy, indx = indx,sngl=sngl, bra=bra)
     #opcodes[name] = code
