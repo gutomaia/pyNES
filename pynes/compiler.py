@@ -105,12 +105,15 @@ def t_close(tokens, index):
 
 asm65_bnf = [
     dict(type='S_IMMEDIATE', short='imm', bnf=[t_instruction, t_number]),
-    #dict(type='S_ZEROPAGE_X', short='zpx', bnf=[t_instruction, t_zeropage, t_separator, t_register_x]),
-    #dict(type='S_ZEROPAGE_Y', short='zpx', bnf=[t_instruction, t_zeropage, t_separator, t_register_y]),
-    #dict(type='S_ZEROPAGE', short='zp', bnf=[t_instruction, t_zeropage]),
-    #dict(type='S_ABSOLUTE_X', short='absx', bnf=[t_instruction, t_address, t_separator, t_register_x]),
-    #dict(type='S_ABSOLUTE_Y', short='absx', bnf=[t_instruction, t_address, t_separator, t_register_y]),
-    #dict(type='S_ABSOLUTE', short='absx', bnf=[t_instruction, t_address]),
+    dict(type='S_ZEROPAGE_X', short='zpx', bnf=[t_instruction, t_zeropage, t_separator, t_register_x]),
+    dict(type='S_ZEROPAGE_Y', short='zpy', bnf=[t_instruction, t_zeropage, t_separator, t_register_y]),
+    dict(type='S_ZEROPAGE', short='zp', bnf=[t_instruction, t_zeropage]),
+    dict(type='S_ABSOLUTE_X', short='absx', bnf=[t_instruction, t_address, t_separator, t_register_x]),
+    dict(type='S_ABSOLUTE_Y', short='absy', bnf=[t_instruction, t_address, t_separator, t_register_y]),
+    dict(type='S_ABSOLUTE', short='abs', bnf=[t_instruction, t_address]),
+    dict(type='S_INDIRECT_X', short='indx', bnf=[t_instruction, t_open, t_address, t_separator, t_register_x, t_close]),
+    dict(type='S_INDIRECT_Y', short='indy', bnf=[t_instruction, t_open, t_address, t_close, t_separator, t_register_y]),
+    dict(type='S_IMPLIED', short='sngl', bnf=[t_instruction]),
 ]
 
 def lexical(code):
@@ -128,60 +131,17 @@ def syntax(t):
                 if not move:
                     break;
                 look_ahead += 1
-            if not move:
-                break;
-            else:
+            if move:
                 leaf['instruction'] = t[x]
-                leaf['arg'] = t[x+1]
+                if leaf['short'] == 'sngl':
+                    pass
+                elif leaf['short'] == 'indx' or leaf['short'] == 'indy':
+                    leaf['arg'] = t[x+2]
+                else:
+                    leaf['arg'] = t[x+1]
                 ast.append(leaf)
                 x += look_ahead
-
         if t_endline(t,x):
-            x += 1
-        elif t_instruction(t,x) and t_zeropage(t,x+1) and t_separator(t,x+2) and t_register_x(t,x+3):
-            ast.append(
-                dict(type='S_ZEROPAGE_X', short='zpx', instruction=t[x], arg=t[x+1])
-            )
-            x += 4
-        elif t_instruction(t,x) and t_zeropage(t,x+1) and t_separator(t,x+2) and t_register_y(t,x+3):
-            ast.append(
-                dict(type='S_ZEROPAGE_Y', short='zpy', instruction=t[x], arg=t[x+1])
-            )
-            x += 4
-        elif t_instruction(t,x) and t_zeropage(t,x+1):
-            ast.append(
-                dict(type='S_ZEROPAGE', short='zp', instruction=t[x], arg=t[x+1])
-            )
-            x += 2
-        elif t_instruction(t,x) and t_address(t,x+1) and t_separator(t,x+2) and t_register_x(t,x+3):
-            ast.append(
-                dict(type='S_ABSOLUTE_X', short='absx', instruction=t[x], arg=t[x+1])
-            )
-            x += 4
-        elif t_instruction(t,x) and t_address(t,x+1) and t_separator(t,x+2) and t_register_y(t,x+3):
-            ast.append(
-                dict(type='S_ABSOLUTE_Y', short='absy', instruction=t[x], arg=t[x+1])
-            )
-            x += 4
-        elif t_instruction(t,x) and t_address(t,x+1):
-            ast.append(
-                dict(type='S_ABSOLUTE', short='abs', instruction=t[x], arg=t[x+1])
-            )
-            x += 2
-        elif t_instruction(t,x) and t_open(t,x+1) and t_address(t,x+2) and t_separator(t,x+3) and t_register_x(t,x+4) and t_close(t,x+5):
-            ast.append(
-                dict(type='S_INDIRECT_X', short='indx', instruction=t[x], arg=t[x+2])
-            )
-            x += 6
-        elif t_instruction(t,x) and t_open(t,x+1) and t_address(t,x+2) and t_close(t,x+3) and t_separator(t,x+4) and t_register_y(t,x+5):
-            ast.append(
-                dict(type='S_INDIRECT_Y', short='indy', instruction=t[x], arg=t[x+2])
-            )
-            x += 6
-        elif t_instruction(t,x):
-            ast.append(
-                dict(type='S_IMPLIED', short='sngl', instruction=t[x], arg=None)
-            )
             x += 1
     return ast
 
