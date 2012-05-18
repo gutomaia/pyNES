@@ -104,13 +104,13 @@ def t_close(tokens, index):
     return False
 
 asm65_bnf = [
-    dict(type='T_IMMEDIATE', short='imm', bnf=[t_instruction, t_number]),
-    dict(type='S_ZEROPAGE_X', short='zpx', bnf=[t_instruction, t_zeropage, t_separator, t_register_x]),
-    dict(type='S_ZEROPAGE_Y', short='zpx', bnf=[t_instruction, t_zeropage, t_separator, t_register_y]),
-    dict(type='S_ZEROPAGE', short='zp', bnf=[t_instruction, t_zeropage]),
-    dict(type='S_ABSOLUTE_X', short='absx', bnf=[t_instruction, t_address, t_separator, t_register_x]),
-    dict(type='S_ABSOLUTE_Y', short='absx', bnf=[t_instruction, t_address, t_separator, t_register_y]),
-    dict(type='S_ABSOLUTE', short='absx', bnf=[t_instruction, t_address]),
+    dict(type='S_IMMEDIATE', short='imm', bnf=[t_instruction, t_number]),
+    #dict(type='S_ZEROPAGE_X', short='zpx', bnf=[t_instruction, t_zeropage, t_separator, t_register_x]),
+    #dict(type='S_ZEROPAGE_Y', short='zpx', bnf=[t_instruction, t_zeropage, t_separator, t_register_y]),
+    #dict(type='S_ZEROPAGE', short='zp', bnf=[t_instruction, t_zeropage]),
+    #dict(type='S_ABSOLUTE_X', short='absx', bnf=[t_instruction, t_address, t_separator, t_register_x]),
+    #dict(type='S_ABSOLUTE_Y', short='absx', bnf=[t_instruction, t_address, t_separator, t_register_y]),
+    #dict(type='S_ABSOLUTE', short='absx', bnf=[t_instruction, t_address]),
 ]
 
 def lexical(code):
@@ -119,16 +119,25 @@ def lexical(code):
 def syntax(t):
     ast = []
     x = 0
-    p = 0
-    print len(t)
     while (x < len(t)):
+        for leaf in asm65_bnf:
+            look_ahead = 0
+            move = True
+            for i in leaf['bnf']:
+                move = i(t,x + look_ahead)
+                if not move:
+                    break;
+                look_ahead += 1
+            if not move:
+                break;
+            else:
+                leaf['instruction'] = t[x]
+                leaf['arg'] = t[x+1]
+                ast.append(leaf)
+                x += look_ahead
+
         if t_endline(t,x):
             x += 1
-        elif t_instruction(t,x) and t_number(t,x+1):
-            ast.append(
-                dict(type='S_IMMEDIATE', short='imm', instruction=t[x], arg=t[x+1])
-            )
-            x += 2
         elif t_instruction(t,x) and t_zeropage(t,x+1) and t_separator(t,x+2) and t_register_x(t,x+3):
             ast.append(
                 dict(type='S_ZEROPAGE_X', short='zpx', instruction=t[x], arg=t[x+1])
