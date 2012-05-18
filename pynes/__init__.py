@@ -4,15 +4,15 @@ def nes_id():
     #NES 
     return [0x4e, 0x45, 0x53, 0xa1]
 
-def nes_get_header(prg, chr, mapper1, mapper2):
+def nes_get_header(prg, chr, map, mir):
     id = nes_id();
     unused = [0,0,0,0,0,0,0,0]
     header = []
     header.extend(id)
     header.extend([prg])
     header.extend([chr])
-    header.extend([mapper1])
-    header.extend([mapper2])
+    header.extend([mir])
+    header.extend([map])
     header.extend(unused)
     return header
 

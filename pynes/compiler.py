@@ -15,7 +15,7 @@ asm65_tokens = [
     dict(type='T_REGISTER', regex=r'^(X|Y)', store=True),
     dict(type='T_OPEN', regex=r'^\(', store=True),
     dict(type='T_CLOSE', regex=r'^\)', store=True),
-    dict(type='T_LABEL', regex=r'^[a-z][a-z\d]*', store=True),
+    dict(type='T_LABEL', regex=r'^[a-zA-Z][a-zA-Z\d]*\:?', store=True),
     dict(type='T_FUNCTION', regex=r'^\.[a-z]+', store=True),
     dict(type='T_NUM', regex=r'^[\d]+', store=True), #TODO
     dict(type='T_ENDLINE', regex=r'^\n', store=True),
@@ -81,9 +81,19 @@ asm65_bnf = [
 def lexical(code):
     return analyse(code, asm65_tokens)
 
+def get_value(number_token):
+    m = match(asm65_tokens[1]['regex'], number_token)
+    if m:
+        return m.group(1)
+    else:
+        m = match(asm65_tokens[2]['regex'], number_token)
+        return m.group(1)
+
+
 def syntax(t):
     ast = []
     x = 0
+    debug = 0
     while (x < len(t)):
         for leaf in asm65_bnf:
             look_ahead = 0
@@ -105,6 +115,12 @@ def syntax(t):
                 x += look_ahead
         if t_endline(t,x):
             x += 1
+        debug += 1
+        if debug > 1000:
+            print x
+            print t[x]
+            raise Exception('Infinity Loop')
+            break #just to avoid infinity loops for now
     return ast
 
 def semantic(ast):
@@ -114,9 +130,10 @@ def semantic(ast):
         address_mode = leaf['short']
         opcode = opcodes[instruction][address_mode]
         if address_mode != 'sngl':
-            arg1 = int(leaf['arg']['value'][1:3], 16)
-            if len(leaf['arg']['value']) == 5:
-                arg2 = int(leaf['arg']['value'][3:5], 16)
+            address = get_value(leaf['arg']['value'])
+            arg1 = int(address[0:2], 16)
+            if len(address) == 4:
+                arg2 = int(address[2:4], 16)
                 code = [opcode, arg2, arg1]
             else:
                 code = [opcode, arg1]

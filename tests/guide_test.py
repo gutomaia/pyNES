@@ -37,11 +37,11 @@ class GuideTest(unittest.TestCase):
         ; is its length.
         ;
 
-        deluel  LDY #$00     ; fetch element count
+        deluel: LDY #$00     ; fetch element count
                 LDA ($30),Y
                 TAX          ; transfer length to X
                 LDA $2F      ; item to delete
-        nextel  INY          ; index to next element
+        nextel: INY          ; index to next element
                 CMP ($30),Y  ; do entry and element match?
                 BEQ delete   ; yes. delete element
                 DEX          ; no. decrement element count
@@ -50,7 +50,7 @@ class GuideTest(unittest.TestCase):
 
         ; delete an element by moving the ones below it up one location
 
-        delete  DEX          ; decrement element count
+        delete: DEX          ; decrement element count
                 BEQ deccnt   ; end of list?
                 INY          ; no. move next element up
                 LDA ($30),Y
@@ -58,7 +58,7 @@ class GuideTest(unittest.TestCase):
                 STA ($30),Y
                 INY
                 JMP delete
-        deccnt  LDA ($30,X)  ; update element count of list
+        deccnt: LDA ($30,X)  ; update element count of list
                 SBC #$01
                 STA ($30,X)
                 RTS
@@ -74,11 +74,11 @@ class GuideTest(unittest.TestCase):
         ; $21 (high) producing a 32-bit result in $24 (low) to $27 (high)
         ;
 
-        mlt16   LDA #$00     ; clear p2 and p3 of product
+        mlt16:  LDA #$00     ; clear p2 and p3 of product
                 STA $26
                 STA $27
                 LDX #$16     ; multiplier bit count = 16
-        nxtbt   LSR $21      ; shift two-byte multiplier right
+        nxtbt:  LSR $21      ; shift two-byte multiplier right
                 ROR $20
                 BCC align    ; multiplier = 1?
                 LDA $26      ; yes. fetch p2
@@ -87,7 +87,7 @@ class GuideTest(unittest.TestCase):
                 STA $26      ; store new p2
                 LDA $27      ; fetch p3
                 ADC $23      ; and add m1 to it
-        align   ROR A        ; rotate four-byte product right
+        align:  ROR A        ; rotate four-byte product right
                 STA $27      ; store new p3
                 ROR $26
                 ROR $25
@@ -107,11 +107,11 @@ class GuideTest(unittest.TestCase):
         ; 16-bit number in $20 (low) and $21 (high). The
         ; remainder is in location $21.
 
-        sqrt16  LDY #$01     ; lsby of first odd number = 1
+        sqrt16: LDY #$01     ; lsby of first odd number = 1
                 STY $22
                 DEY
                 STY $23      ; msby of first odd number (sqrt = 0)
-        again   SEC
+        again:  SEC
                 LDA $20      ; save remainder in X register
                 TAX          ; subtract odd lo from integer lo
                 SBC $22
@@ -127,7 +127,7 @@ class GuideTest(unittest.TestCase):
                 BCC again
                 INC $23
                 JMP again
-        nomore  STY $20      ; all done, store square root
+        nomore: STY $20      ; all done, store square root
                 STX $21      ; and remainder
                 RTS
         '''

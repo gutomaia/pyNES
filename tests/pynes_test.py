@@ -18,7 +18,7 @@ class PyNESTest(unittest.TestCase):
             )
 
     def test_nes_get_header(self):
-        header = pynes.nes_get_header(1,1,1,0)
+        header = pynes.nes_get_header(1,1,0,1)
         #first 4 bytes are the file id
         self.assertEquals(ord('N'), header[0])
         self.assertEquals(ord('E'), header[1])
@@ -27,8 +27,8 @@ class PyNESTest(unittest.TestCase):
         #second 4 bites are the prg,chr and mapper definitions
         self.assertEquals(1, header[4]) #pgr
         self.assertEquals(1, header[5]) #chr
-        self.assertEquals(1, header[6]) #mapper1
-        self.assertEquals(0, header[7]) #mapper2
+        self.assertEquals(1, header[6]) #mir
+        self.assertEquals(0, header[7]) #map
         #now there is 8 bytes with 0
         for i in range(8):
             self.assertEquals(0, header[8+i])

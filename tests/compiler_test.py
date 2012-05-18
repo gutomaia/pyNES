@@ -44,3 +44,6 @@ class CompilerTest(unittest.TestCase):
         self.assertEquals('T_ENDLINE', tokens[5]['type'])
         ast = syntax(tokens)
         self.assertEquals(2, len(ast))
+
+    def test_get_address(self):
+        pass
