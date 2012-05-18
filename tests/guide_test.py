@@ -26,8 +26,7 @@ class GuideTest(unittest.TestCase):
         tokens = lexical(ex_2)
         self.assertEquals(21, len(tokens))
         ast = syntax(tokens)
-        #TODO: each line will became a statement on the AST 
-        #self.assertEquals(7, len(ast))
+        self.assertEquals(7, len(ast))
 
     def test_example_4_2(self):
         example_4_2 = '''

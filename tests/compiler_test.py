@@ -1,6 +1,8 @@
 import unittest
 
-from pynes.compiler import t_zeropage, t_address, t_separator
+from pynes.compiler import lexical, syntax, semantic, \
+    t_zeropage, t_address, t_separator
+
 
 class CompilerTest(unittest.TestCase):
 
@@ -26,3 +28,19 @@ class CompilerTest(unittest.TestCase):
 
     def test_t_separator(self):
         self.assertTrue(t_separator([self.separator],0))
+
+    def test_compile_more_than_on_instruction(self):
+        code = '''
+            SEC         ;clear the carry
+            LDA $20     ;get the low byte of the first number
+            '''
+        tokens = lexical(code)
+        self.assertEquals(6, len(tokens))
+        self.assertEquals('T_ENDLINE', tokens[0]['type'])
+        self.assertEquals('T_INSTRUCTION', tokens[1]['type'])
+        self.assertEquals('T_ENDLINE', tokens[2]['type'])
+        self.assertEquals('T_INSTRUCTION', tokens[3]['type'])
+        self.assertEquals('T_ADDRESS', tokens[4]['type'])
+        self.assertEquals('T_ENDLINE', tokens[5]['type'])
+        ast = syntax(tokens)
+        self.assertEquals(2, len(ast))

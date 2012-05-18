@@ -16,10 +16,20 @@ asm65_tokens = [
     dict(type='T_OPEN', regex=r'^\(', store=True),
     dict(type='T_CLOSE', regex=r'^\)', store=True),
     dict(type='T_LABEL', regex=r'^[a-z][a-z\d]*', store=True),
+    dict(type='T_FUNCTION', regex=r'^\.[a-z]+', store=True),
+    dict(type='T_NUM', regex=r'^[\d]+', store=True), #TODO
     dict(type='T_ENDLINE', regex=r'^\n', store=True),
     dict(type='T_WHITESPACE', regex=r'^[ \t]+', store=False),
     dict(type='T_COMMENT', regex=r'^;[^\n]*', store=False)
 ]
+
+def t_endline (tokens, index):
+    if index > len(tokens) - 1:
+        return False
+    token = tokens[index]
+    if token['type'] == 'T_ENDLINE':
+        return True
+    return False
 
 def t_instruction (tokens, index):
     if index > len(tokens) - 1:
@@ -107,50 +117,64 @@ def lexical(code):
     return analyse(code, asm65_tokens)
 
 def syntax(t):
-    p = 0;
-    x = 0;
     ast = []
-    if t_instruction(t,0) and t_number(t,1):
-        return [
-            dict(type='S_IMMEDIATE', short='imm', instruction=t[0], arg=t[1])
-        ]
-    elif t_instruction(t,0) and t_zeropage(t,1) and t_separator(t,2) and t_register_x(t,3):
-        return [
-            dict(type='S_ZEROPAGE_X', short='zpx', instruction=t[0], arg=t[1])
-        ]
-    elif t_instruction(t,0) and t_zeropage(t,1) and t_separator(t,2) and t_register_y(t,3):
-        return [
-            dict(type='S_ZEROPAGE_Y', short='zpy', instruction=t[0], arg=t[1])
-        ]
-    elif t_instruction(t,0) and t_zeropage(t,1):
-        return [
-            dict(type='S_ZEROPAGE', short='zp', instruction=t[0], arg=t[1])
-        ] 
-    elif t_instruction(t,0) and t_address(t,1) and t_separator(t,2) and t_register_x(t,3):
-        return [
-            dict(type='S_ABSOLUTE_X', short='absx', instruction=t[0], arg=t[1])
-        ]
-    elif t_instruction(t,0) and t_address(t,1) and t_separator(t,2) and t_register_y(t,3):
-        return [
-            dict(type='S_ABSOLUTE_Y', short='absy', instruction=t[0], arg=t[1])
-        ]
-    elif t_instruction(t,0) and t_address(t,1):
-        return [
-            dict(type='S_ABSOLUTE', short='abs', instruction=t[0], arg=t[1])
-        ]
-    elif t_instruction(t,0) and t_open(t,1) and t_address(t,2) and t_separator(t,3) and t_register_x(t,4) and t_close(t,5):
-        return [
-            dict(type='S_INDIRECT_X', short='indx', instruction=t[0], arg=t[2])
-        ]
-    elif t_instruction(t,0) and t_open(t,1) and t_address(t,2) and t_close(t,3) and t_separator(t,4) and t_register_y(t,5):
-        return [
-            dict(type='S_INDIRECT_Y', short='indy', instruction=t[0], arg=t[2])
-        ]
-    elif t_instruction(t,0):
-        return [
-            dict(type='S_IMPLIED', short='sngl', instruction=t[0], arg=None)
-        ]
-
+    x = 0
+    p = 0
+    print len(t)
+    while (x < len(t)):
+        if t_endline(t,x):
+            x += 1
+        elif t_instruction(t,x) and t_number(t,x+1):
+            ast.append(
+                dict(type='S_IMMEDIATE', short='imm', instruction=t[x], arg=t[x+1])
+            )
+            x += 2
+        elif t_instruction(t,x) and t_zeropage(t,x+1) and t_separator(t,x+2) and t_register_x(t,x+3):
+            ast.append(
+                dict(type='S_ZEROPAGE_X', short='zpx', instruction=t[x], arg=t[x+1])
+            )
+            x += 4
+        elif t_instruction(t,x) and t_zeropage(t,x+1) and t_separator(t,x+2) and t_register_y(t,x+3):
+            ast.append(
+                dict(type='S_ZEROPAGE_Y', short='zpy', instruction=t[x], arg=t[x+1])
+            )
+            x += 4
+        elif t_instruction(t,x) and t_zeropage(t,x+1):
+            ast.append(
+                dict(type='S_ZEROPAGE', short='zp', instruction=t[x], arg=t[x+1])
+            )
+            x += 2
+        elif t_instruction(t,x) and t_address(t,x+1) and t_separator(t,x+2) and t_register_x(t,x+3):
+            ast.append(
+                dict(type='S_ABSOLUTE_X', short='absx', instruction=t[x], arg=t[x+1])
+            )
+            x += 4
+        elif t_instruction(t,x) and t_address(t,x+1) and t_separator(t,x+2) and t_register_y(t,x+3):
+            ast.append(
+                dict(type='S_ABSOLUTE_Y', short='absy', instruction=t[x], arg=t[x+1])
+            )
+            x += 4
+        elif t_instruction(t,x) and t_address(t,x+1):
+            ast.append(
+                dict(type='S_ABSOLUTE', short='abs', instruction=t[x], arg=t[x+1])
+            )
+            x += 2
+        elif t_instruction(t,x) and t_open(t,x+1) and t_address(t,x+2) and t_separator(t,x+3) and t_register_x(t,x+4) and t_close(t,x+5):
+            ast.append(
+                dict(type='S_INDIRECT_X', short='indx', instruction=t[x], arg=t[x+2])
+            )
+            x += 6
+        elif t_instruction(t,x) and t_open(t,x+1) and t_address(t,x+2) and t_close(t,x+3) and t_separator(t,x+4) and t_register_y(t,x+5):
+            ast.append(
+                dict(type='S_INDIRECT_Y', short='indy', instruction=t[x], arg=t[x+2])
+            )
+            x += 6
+        elif t_instruction(t,x):
+            ast.append(
+                dict(type='S_IMPLIED', short='sngl', instruction=t[x], arg=None)
+            )
+            x += 1
+    return ast
 
 def semantic(ast):
     code = [];
