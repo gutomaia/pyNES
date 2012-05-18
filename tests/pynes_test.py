@@ -9,7 +9,7 @@ import pynes.opcodes
 from os import remove
 from os.path import exists
 
-class GameTest(unittest.TestCase):
+class PyNESTest(unittest.TestCase):
 
     def nes_header_test(self):
         self.assertEquals(
