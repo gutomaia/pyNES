@@ -23,85 +23,47 @@ asm65_tokens = [
     dict(type='T_COMMENT', regex=r'^;[^\n]*', store=False)
 ]
 
-def t_endline (tokens, index):
+def look_ahead(tokens, index, type, value = None):
     if index > len(tokens) - 1:
         return False
     token = tokens[index]
-    if token['type'] == 'T_ENDLINE':
-        return True
+    if token['type'] == type:
+        if value == None or token['value'] == value:
+            return True
     return False
+
+def t_endline (tokens, index):
+    return look_ahead(tokens, index, 'T_ENDLINE')
 
 def t_instruction (tokens, index):
-    if index > len(tokens) - 1:
-        return False
-    token = tokens[index]
-    if token['type'] == 'T_INSTRUCTION':
-        return True
-    return False
+    return look_ahead(tokens, index, 'T_INSTRUCTION')
 
 def t_zeropage (tokens,index):
-    if index > len(tokens) - 1:
-        return False
-    token = tokens[index]
-    if token['type'] == 'T_ADDRESS' and len(token['value']) == 3:
+    lh = look_ahead(tokens, index, 'T_ADDRESS')
+    if lh and len(tokens[index]['value']) == 3:
         return True
     return False
 
 def t_address(tokens, index):
-    if index > len(tokens) - 1:
-        return False
-    token = tokens[index]
-    if token['type'] == 'T_ADDRESS': #and len(token['value']) == 5:
-        return True
-    return False
+    return look_ahead(tokens, index, 'T_ADDRESS')
 
 def t_number(tokens, index):
-    if index > len(tokens) - 1:
-        return False
-    token = tokens[index]
-    if token['type'] == 'T_NUMBER': #and len(token['value']) == 5:
-        return True
-    return False
+    return look_ahead(tokens, index, 'T_NUMBER')
 
 def t_separator(tokens , index):
-    if index > len(tokens) - 1:
-        return False
-    token = tokens[index]
-    if token['type'] == 'T_SEPARATOR' and token['value'] == ',':
-        return True
-    return False
+    return look_ahead(tokens, index, 'T_SEPARATOR')
 
 def t_register_x(tokens, index):
-    if index > len(tokens) - 1:
-        return False
-    token = tokens[index]
-    if token['type'] == 'T_REGISTER' and token['value'] == 'X':
-        return True
-    return False
+    return look_ahead(tokens, index, 'T_REGISTER', 'X')
 
 def t_register_y(tokens, index):
-    if index > len(tokens) - 1:
-        return False
-    token = tokens[index]
-    if token['type'] == 'T_REGISTER' and token['value'] == 'Y':
-        return True
-    return False
+    return look_ahead(tokens, index, 'T_REGISTER', 'Y')
 
 def t_open(tokens, index):
-    if index > len(tokens) - 1:
-        return False
-    token = tokens[index]
-    if token['type'] == 'T_OPEN' and token['value'] == '(':
-        return True
-    return False
+    return look_ahead(tokens, index, 'T_OPEN', '(')
 
 def t_close(tokens, index):
-    if index > len(tokens) - 1:
-        return False
-    token = tokens[index]
-    if token['type'] == 'T_CLOSE' and token['value'] == ')':
-        return True
-    return False
+    return look_ahead(tokens, index, 'T_CLOSE', ')')
 
 asm65_bnf = [
     dict(type='S_IMMEDIATE', short='imm', bnf=[t_instruction, t_number]),
