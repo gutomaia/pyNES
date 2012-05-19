@@ -6,6 +6,7 @@ opcodes['ADC'] = dict(imm=0x69, zp=0x65, zpx=0x75, abs=0x6d, absx=0x7d,
 opcodes['AND'] = dict(imm=0x29, zp=0x25, zpx=0x35, abs=0x2d, absx=0x3d,
     absy=0x39, indx=0x21, indy=0x31)
 opcodes['ASL'] = dict(imm=0x0a, zp=0x06, zpx=0x16, abs=0x0e, absx=0x1e)
+opcodes['BIT'] = dict(zp=0x24, abs=0x2c)
 opcodes['CLC'] = dict(sngl=0x18)
 opcodes['CLD'] = dict(sngl=0xd8)
 opcodes['CLI'] = dict(sngl=0x58)
@@ -56,10 +57,7 @@ opcodes['TXA'] = dict(sngl=0x8a)
 opcodes['TXS'] = dict(sngl=0x9a)
 opcodes['TYA'] = dict(sngl=0x98)
 
-
 def Array(name, imm, zp, zpx, zpy, abs, absx, absy, indx, indy, sngl, bra):
-    #code = dict(imm=imm, zp=zp, zpx=zpx, zpy=zpy, abs=abs, absx=absx, absy=absy, indx = indx,sngl=sngl, bra=bra)
-    #opcodes[name] = code
     pass
 # Name, Imm,  ZP,   ZPX,  ZPY,  ABS,  ABSX, ABSY, INDX, INDY, SNGL, BRA */
 
