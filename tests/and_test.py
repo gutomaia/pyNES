@@ -5,6 +5,8 @@ import unittest
 from pynes.compiler import lexical, syntax, semantic
 class AndTest(unittest.TestCase):
 
+    '''Test the logical AND operation between $10(Decimal 16)
+    and the content of the Accumulator'''
     def test_and_imm(self):
         tokens = lexical('AND #00')
         self.assertEquals(2 , len(tokens))
@@ -16,6 +18,8 @@ class AndTest(unittest.TestCase):
         code = semantic(ast)
         self.assertEquals(code, [0x29, 0x00])
 
+    '''Test the logical AND operation between the content of
+    Accumulator and the content of zero page address $00'''
     def test_and_zp(self):
         tokens = lexical('AND $00')
         self.assertEquals(2 , len(tokens))
@@ -27,6 +31,9 @@ class AndTest(unittest.TestCase):
         code = semantic(ast)
         self.assertEquals(code, [0x25, 0x00])
 
+    '''Test the logical AND operation between the content of
+    Accumulator and the content located at zero page with
+    address calculated from $10 adding content of X'''
     def test_and_zpx(self):
         tokens = lexical('AND $10,X')
         self.assertEquals(4 , len(tokens))
