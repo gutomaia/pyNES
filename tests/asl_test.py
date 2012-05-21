@@ -1,9 +1,15 @@
 # -*- coding: utf-8 -*-
+'''
+ASL, Arithmetic Shift Left
 
+This is a test for the bit manipulation instruction ASL.
+'''
 import unittest
-
 from pynes.compiler import lexical, syntax, semantic
+
+
 class AslTest(unittest.TestCase):
+
 
     def test_asl_imm(self):
         tokens = lexical('ASL #10')

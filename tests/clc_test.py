@@ -1,10 +1,15 @@
 # -*- coding: utf-8 -*-
+'''
+CLC, Clear Carry
 
+This is a test for the clear carry instruction
+'''
 import unittest
-
 from pynes.compiler import lexical, syntax, semantic
 
+
 class ClcTest(unittest.TestCase):
+
 
     def test_clc_sngl(self):
         tokens = lexical('CLC')
