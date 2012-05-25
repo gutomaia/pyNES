@@ -1,7 +1,5 @@
 # -*- coding: utf-8 -*-
 
-#from __init__ import nes_get_header
-
 var_ines_header = {}
 var_table = {}
 
