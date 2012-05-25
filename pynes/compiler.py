@@ -40,7 +40,7 @@ def look_ahead(tokens, index, type, value = None):
     return False
 
 def t_endline (tokens, index):
-    return look_ahead(tokens, index, 'T_ENDLINE')
+    return look_ahead(tokens, index, 'T_ENDLINE', '\n')
 
 def t_directive (tokens, index):
     return look_ahead(tokens, index, 'T_DIRECTIVE')
