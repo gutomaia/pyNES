@@ -48,6 +48,12 @@ def t_directive (tokens, index):
 def t_num(tokens, index):
     return look_ahead(tokens, index, 'T_NUM')
 
+def t_relative (tokens, index):
+    if (look_ahead(tokens, index, 'T_INSTRUCTION') and 
+        tokens[index]['value'] in ['BPL']):
+        return True
+    return False
+
 def t_instruction (tokens, index):
     return look_ahead(tokens, index, 'T_INSTRUCTION')
 
@@ -82,6 +88,7 @@ def t_close(tokens, index):
     return look_ahead(tokens, index, 'T_CLOSE', ')')
 
 asm65_bnf = [
+    dict(type='S_RELATIVE', short='rel', bnf=[t_relative, t_address]),
     dict(type='S_IMMEDIATE', short='imm', bnf=[t_instruction, t_number]),
     dict(type='S_ZEROPAGE_X', short='zpx', bnf=[t_instruction, t_zeropage, t_separator, t_register_x]),
     dict(type='S_ZEROPAGE_Y', short='zpy', bnf=[t_instruction, t_zeropage, t_separator, t_register_y]),
@@ -92,7 +99,6 @@ asm65_bnf = [
     dict(type='S_INDIRECT_X', short='indx', bnf=[t_instruction, t_open, t_address, t_separator, t_register_x, t_close]),
     dict(type='S_INDIRECT_Y', short='indy', bnf=[t_instruction, t_open, t_address, t_close, t_separator, t_register_y]),
     dict(type='S_IMPLIED', short='sngl', bnf=[t_instruction]),
-    #dict(type='S_DIRECTIVE', short='sngl', bnf=[t_directive, t_num]),
 ]
 
 def lexical(code):
