@@ -154,6 +154,7 @@ def syntax(t):
                         leaf['arg'] = t[x+1]
                     ast.append(leaf)
                     x += look_ahead
+                    break;
         debug += 1
         if debug > 10000:
             print x
