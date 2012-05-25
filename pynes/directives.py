@@ -17,8 +17,19 @@ def d_inesmir(arg):
 def d_bank(arg):
     pass
 
+pc_counter = 0
+
 def d_org(arg):
-    pass
+    global pc_counter
+    pc_counter = arg
+
+def get_pc():
+    global pc_counter
+    return pc_counter
+
+def increment_counter(arg):
+    global pc_counter
+    pc_counter += arg
 
 directive_list = {}
 directive_list['.inesprg'] = d_inesprg
@@ -27,4 +38,3 @@ directive_list['.inesmap'] = d_inesmap
 directive_list['.inesmir'] = d_inesmir
 directive_list['.bank'] = d_bank
 directive_list['.org'] = d_org
-

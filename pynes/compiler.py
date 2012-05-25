@@ -174,6 +174,9 @@ def semantic(ast, iNES=False):
                 args = leaf['args']['value']
                 num = int(args)
                 directive_list[directive](num)
+            elif 'T_ADDRESS' == leaf['args']['type']:
+                address = int(leaf['args']['value'][1:], 16)
+                directive_list[directive](address)
         else:
             instruction = leaf['instruction']['value']
             address_mode = leaf['short']
