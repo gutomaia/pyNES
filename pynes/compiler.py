@@ -50,7 +50,9 @@ def t_num(tokens, index):
 
 def t_relative (tokens, index):
     if (look_ahead(tokens, index, 'T_INSTRUCTION') and 
-        tokens[index]['value'] in ['BMI','BPL', 'BVC', 'BVS']):
+        tokens[index]['value'] in [
+        'BCC','BCS','BEQ','BNE','BMI','BPL', 'BVC', 'BVS'
+        ]):
         return True
     return False
 
