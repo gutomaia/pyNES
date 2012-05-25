@@ -3,7 +3,9 @@
 import unittest
 from binascii import a2b_hex, hexlify
 
-import pynes
+from pynes.asm import nes_id
+from pynes.asm import nes_get_header
+
 import pynes.opcodes
 
 from os import remove
@@ -13,17 +15,17 @@ class PyNESTest(unittest.TestCase):
 
     def nes_header_test(self):
         self.assertEquals(
-                pynes.nes_id(), 
-                [0x4e, 0x45, 0x53, 0xa1]
+                nes_id(), 
+                [0x4e, 0x45, 0x53, 0x1a]
             )
 
     def test_nes_get_header(self):
-        header = pynes.nes_get_header(1,1,0,1)
+        header = nes_get_header(1,1,0,1)
         #first 4 bytes are the file id
         self.assertEquals(ord('N'), header[0])
         self.assertEquals(ord('E'), header[1])
         self.assertEquals(ord('S'), header[2])
-        self.assertEquals(0xa1, header[3])
+        self.assertEquals(0x1a, header[3])
         #second 4 bites are the prg,chr and mapper definitions
         self.assertEquals(1, header[4]) #pgr
         self.assertEquals(1, header[5]) #chr
@@ -36,7 +38,7 @@ class PyNESTest(unittest.TestCase):
     def test_write_bin_code(self):
         if exists('/tmp/target.nes'):
             remove('/tmp/target.nes')
-        opcodes = pynes.nes_id()
+        opcodes = nes_id()
         pynes.write_bin_code(opcodes, '/tmp/target.nes')
         f = open('/tmp/target.nes', 'rw')
         bin = f.read()

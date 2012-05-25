@@ -1,10 +1,11 @@
 # -*- coding: utf-8 -*-
 
 import unittest
-
 from pynes.compiler import lexical, syntax, semantic
 
+
 class BitTest(unittest.TestCase):
+
 
     def test_bit_zp(self):
         tokens = lexical('BIT $00')

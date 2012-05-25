@@ -1,11 +1,13 @@
 import compiler
 import ast
 from inspect import getmembers
+from pynes.asm import register_var
 
 class PyNesVisitor(ast.NodeVisitor):
 
     def generic_visit(self, node, index = 0):
         for field, value in reversed(list(ast.iter_fields(node))):
+            print value
             if isinstance(value, list):
                 for item in value:
                     if isinstance(item, ast.AST):
@@ -13,12 +15,19 @@ class PyNesVisitor(ast.NodeVisitor):
             elif isinstance(value, ast.AST):
                 self.visit(value)
 
+    def visit_Assign(self, node):
+        if (len(node.targets) == 1):
+            register_var(node.targets[0].id, node.value.n)
+        else:
+            raise Exception('dammit')
+
     def visit_Add(self, node):
         self.generic_visit(node)
         print node
 
     def visit_BinOp(self, node):
         self.generic_visit(node)
+        print 'BinOp'
         print type(node.left).__name__
         print node.left._fields
         print node.left
@@ -31,7 +40,11 @@ class PyNesVisitor(ast.NodeVisitor):
         self.generic_visit(node)
         print node.id
 
-def pynes_compiler(code):
+
+_inesprog = 1
+_ineschr = 1
+
+def pynes_compiler(code, filename=None):
     python_land = ast.parse(code)
     turist = PyNesVisitor()
     turist.visit(python_land)
