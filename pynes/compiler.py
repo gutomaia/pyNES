@@ -50,7 +50,7 @@ def t_num(tokens, index):
 
 def t_relative (tokens, index):
     if (look_ahead(tokens, index, 'T_INSTRUCTION') and 
-        tokens[index]['value'] in ['BPL']):
+        tokens[index]['value'] in ['BMI','BPL', 'BVC', 'BVS']):
         return True
     return False
 
@@ -87,6 +87,12 @@ def t_open(tokens, index):
 def t_close(tokens, index):
     return look_ahead(tokens, index, 'T_CLOSE', ')')
 
+def OR(args, tokens, index):
+    for t in args:
+        if t(tokens, index):
+            return True
+    return False
+
 asm65_bnf = [
     dict(type='S_RELATIVE', short='rel', bnf=[t_relative, t_address]),
     dict(type='S_IMMEDIATE', short='imm', bnf=[t_instruction, t_number]),
@@ -99,6 +105,7 @@ asm65_bnf = [
     dict(type='S_INDIRECT_X', short='indx', bnf=[t_instruction, t_open, t_address, t_separator, t_register_x, t_close]),
     dict(type='S_INDIRECT_Y', short='indy', bnf=[t_instruction, t_open, t_address, t_close, t_separator, t_register_y]),
     dict(type='S_IMPLIED', short='sngl', bnf=[t_instruction]),
+    #dict(type='S_DIRECTIVE', short='sngl', bnf=[t_directive, [OR, t_num, t_address]]),
 ]
 
 def lexical(code):
@@ -114,17 +121,10 @@ def get_value(number_token):
 
 def syntax(t):
     ast = []
-    x = 0
+    x = 0 # consumed
     debug = 0
     while (x < len(t)):
-        if t_directive(t,x) and t_num(t, x+1):
-            leaf = {}
-            leaf['type'] = 'S_DIRECTIVE'
-            leaf['directive'] = t[x]
-            leaf['args'] = t[x+1]
-            ast.append(leaf)
-            x += 2
-        elif t_directive(t,x) and t_address(t, x+1):
+        if t_directive(t,x) and OR([t_num, t_address], t, x+1):
             leaf = {}
             leaf['type'] = 'S_DIRECTIVE'
             leaf['directive'] = t[x]
@@ -160,10 +160,9 @@ def syntax(t):
             print x
             print t[x]
             raise Exception('Infinity Loop')
-            break #just to avoid infinity loops for now
     return ast
 
-def semantic(ast, ines=False):
+def semantic(ast, iNES=False):
     bank = []
     code = []
     for leaf in ast:
@@ -188,7 +187,7 @@ def semantic(ast, ines=False):
             else:
                 code = [opcode]
     nes_code = []
-    if ines:
+    if iNES:
         nes_header = generate_ines_header()
         nes_code.extend(nes_header)
         nes_code.extend(code)
