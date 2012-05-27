@@ -22,7 +22,8 @@ asm65_tokens = [
     dict(type='T_REGISTER', regex=r'^(X|Y)', store=True),
     dict(type='T_OPEN', regex=r'^\(', store=True),
     dict(type='T_CLOSE', regex=r'^\)', store=True),
-    dict(type='T_LABEL', regex=r'^[a-zA-Z][a-zA-Z\d]*\:?', store=True),
+    dict(type='T_LABEL', regex=r'^[a-zA-Z][a-zA-Z\d]*\:', store=True),
+    dict(type='T_MARKER', regex=r'^[a-zA-Z][a-zA-Z\d]*', store=True),
     dict(type='T_DIRECTIVE', regex=r'^\.[a-z]+', store=True),
     dict(type='T_NUM', regex=r'^[\d]+', store=True), #TODO
     dict(type='T_ENDLINE', regex=r'^\n', store=True),
@@ -51,7 +52,8 @@ def t_num(tokens, index):
 def t_relative (tokens, index):
     if (look_ahead(tokens, index, 'T_INSTRUCTION') and 
         tokens[index]['value'] in [
-        'BCC','BCS','BEQ','BNE','BMI','BPL', 'BVC', 'BVS'
+            'BCC', 'BCS', 'BEQ', 'BNE',
+            'BMI', 'BPL', 'BVC', 'BVS'
         ]):
         return True
     return False
@@ -134,6 +136,7 @@ def syntax(t):
             ast.append(leaf)
             x += 2
         elif t_label(t,x):
+
             x += 1
         elif t_endline(t,x):
             x += 1
