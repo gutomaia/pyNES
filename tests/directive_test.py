@@ -105,3 +105,33 @@ class DirectiveTest(unittest.TestCase):
         self.assertEquals('S_DIRECTIVE', ast[0]['type'])
         code = semantic(ast)
         self.assertEquals(0xfffa, get_pc())
+
+    def test_db_1(self):
+        tokens = lexical('.db $0F,$01,$02,$03,$04,$05,$06,$07,$08,$09,$0A,$0B,$0C,$0D,$0E,$0F')
+        self.assertEquals(32 , len(tokens))
+        self.assertEquals('T_DIRECTIVE', tokens[0]['type'])
+        #self.assertEquals('T_HEX_NUMBER', tokens[1]['type'])
+        ast = syntax(tokens)
+        self.assertEquals(1 , len(ast))
+        self.assertEquals('S_DIRECTIVE', ast[0]['type'])
+        code = semantic(ast)
+        self.assertIsNotNone(code)
+        expected = [
+                0x0f, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07,
+                0x08, 0x09, 0x0A, 0x0B, 0x0C, 0x0D, 0x0E, 0x0F
+                ]
+        self.assertEquals(expected, code)
+
+    def test_db_2(self):
+        tokens = lexical('.db $0F,$30,$31,$32,$33,$35,$36,$37,$38,$39,$3A,$3B,$3C,$3D,$3E,$0F')
+        self.assertEquals(32 , len(tokens))
+        self.assertEquals('T_DIRECTIVE', tokens[0]['type'])
+        #self.assertEquals('T_HEX_NUMBER', tokens[1]['type'])
+        ast = syntax(tokens)
+        self.assertEquals(1 , len(ast))
+        self.assertEquals('S_DIRECTIVE', ast[0]['type'])
+        code = semantic(ast)
+        self.assertIsNotNone(code)
+        expected = [ 0x0f,0x30, 0x31, 0x32, 0x33, 0x35, 0x36,0x37, 0x38,
+                 0x39,0x3A,0x3B,0x3C,0x3D,0x3E,0x0F]
+        self.assertEquals(expected, code)

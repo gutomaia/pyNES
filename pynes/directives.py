@@ -23,6 +23,13 @@ def d_org(arg):
     global pc_counter
     pc_counter = arg
 
+def d_db(arg):
+    l = []
+    for token in arg:
+        if token['type'] == 'T_ADDRESS':
+            l.append(int(token['value'][1:], 16))
+    return l
+
 def reset_pc():
     global pc_counter
     pc_counter = 0
@@ -42,3 +49,4 @@ directive_list['.inesmap'] = d_inesmap
 directive_list['.inesmir'] = d_inesmir
 directive_list['.bank'] = d_bank
 directive_list['.org'] = d_org
+directive_list['.db'] = d_db

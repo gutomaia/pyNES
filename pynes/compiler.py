@@ -102,6 +102,34 @@ def t_open(tokens, index):
 def t_close(tokens, index):
     return look_ahead(tokens, index, 'T_CLOSE', ')')
 
+def t_list(tokens, index):
+    if t_address(tokens, index) and t_separator(tokens, index+1):
+        arg = 0
+        islist = True
+        return True
+        #TODO
+        while not t_endline(tokens, (index + (arg * 2) + 1)):
+            islist = islist & t_address(tokens, index + (arg * 2))
+            islist = islist & t_separator(tokens, index + (arg * 2) + 1)
+            arg += 1
+    return False
+
+def get_list_jump(tokens, index):
+    return 32
+    keep = True
+    a = 0
+    print index
+    while keep:
+        keep = keep & (
+                t_address(tokens, index + a) |
+                t_separator(tokens, index + a)
+            )
+        print t_address(tokens, index + a)
+        print t_separator(tokens, index + a)
+        print keep
+        a += 1
+    return a
+
 def OR(args, tokens, index):
     for t in args:
         if t(tokens, index):
@@ -151,7 +179,18 @@ def syntax(t):
     debug = 0
     labels = []
     while (x < len(t)):
-        if t_directive(t,x) and OR([t_num, t_address], t, x+1):
+        if t_directive(t,x) and t_list(t, x+1):
+            leaf = {}
+            leaf['type'] = 'S_DIRECTIVE'
+            leaf['directive'] = t[x]
+            end = get_list_jump(t,x)
+            leaf['args'] = dict(
+                type = 'S_LIST',
+                elements = t[ x: x+end]
+            ) 
+            ast.append(leaf)
+            x += end
+        elif t_directive(t,x) and OR([t_num, t_address], t, x+1):
             leaf = {}
             leaf['type'] = 'S_DIRECTIVE'
             leaf['directive'] = t[x]
@@ -193,6 +232,9 @@ def syntax(t):
         if debug > 10000:
             print x
             print t[x]
+            print t[x+1]
+            print t[x+2]
+            print t[x+3]
             raise Exception('Infinity Loop')
     return ast
 
@@ -232,6 +274,10 @@ def semantic(ast, iNES=False):
             elif 'T_ADDRESS' == leaf['args']['type']:
                 address = int(leaf['args']['value'][1:], 16)
                 directive_list[directive](address)
+            elif 'S_LIST' == leaf['args']['type']:
+                elements = leaf['args']['elements']
+                c = directive_list[directive](elements)
+                code.extend(c)
         else:
             instruction = leaf['instruction']['value']
             address_mode = leaf['short']
@@ -241,7 +287,7 @@ def semantic(ast, iNES=False):
 
                 if 'rel' == address_mode:
                     address = 126 + (address - get_pc())
-                    if address == 128: #UGLY
+                    if address == 128:
                         address = 0
                     elif address < 128:
                         address = address | 0b10000000
