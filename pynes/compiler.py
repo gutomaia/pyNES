@@ -15,7 +15,7 @@ asm65_tokens = [
     dict(type='T_INSTRUCTION', regex=r'^(ADC|AND|ASL|BCC|BCS|BEQ|BIT|BMI|BNE|BPL|BRK|BVC|BVS|CLC|CLD|CLI|CLV|CMP|CPX|CPY|DEC|DEX|DEY|EOR|INC|INX|INY|JMP|JSR|LDA|LDX|LDY|LSR|NOP|ORA|PHA|PHP|PLA|PLP|ROL|ROR|RTI|RTS|SBC|SEC|SED|SEI|STA|STX|STY|TAX|TAY|TSX|TXA|TXS|TYA)', store=True),
     dict(type='T_ADDRESS', regex=r'\$([\dA-F]{2,4})', store=True),
     dict(type='T_HEX_NUMBER', regex=r'\#\$?([\dA-F]{2})', store=True), #TODO: change to HEX_NUMBER
-    dict(type='T_BINARY', regex=r'\#%([01]{8})', store=True), #TODO: change to BINARY_NUMBER
+    dict(type='T_BINARY_NUMBER', regex=r'\#%([01]{8})', store=True), #TODO: change to BINARY_NUMBER
     dict(type='T_STRING', regex=r'^"[^"]*"', store=True),
     dict(type='T_SEPARATOR', regex=r'^,', store=True),
     dict(type='T_REGISTER', regex=r'^(X|x|Y|y)', store=True),
