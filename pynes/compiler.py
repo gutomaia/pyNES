@@ -126,17 +126,18 @@ asm65_bnf = [
 def lexical(code):
     return analyse(code, asm65_tokens)
 
-def get_value(number_token):
-    m = match(asm65_tokens[1]['regex'], number_token)
-    if m:
-        return m.group(1)
-    elif match(asm65_tokens[2]['regex'], number_token):
-        m = match(asm65_tokens[2]['regex'], number_token)
-        return m.group(1)
-    elif match(asm65_tokens[3]['regex'], number_token):
-        m = match(asm65_tokens[3]['regex'], number_token)
-        print m.group(1)
-        return m.group(1)
+def get_int_value(token, labels = []):
+    if token['type'] == 'T_ADDRESS':
+        m = match(asm65_tokens[1]['regex'], token['value'])
+        return int(m.group(1), 16)
+    if token['type'] == 'T_HEX_NUMBER':
+        m = match(asm65_tokens[2]['regex'], token['value'])
+        return int(m.group(1), 16)
+    elif token['type'] == 'T_BINARY_NUMBER':
+        m = match(asm65_tokens[3]['regex'], token['value'])
+        return int(m.group(1), 2)
+    elif token['type'] == 'T_MARKER':
+        return labels[token['value']]
 
 def get_label(number_token):
     m = match(asm65_tokens[9]['regex'], number_token)
@@ -236,25 +237,20 @@ def semantic(ast, iNES=False):
             address_mode = leaf['short']
             opcode = opcodes[instruction][address_mode]
             if address_mode != 'sngl':
-                if 'T_MARKER' == leaf['arg']['type']:
-                    address = hex(labels[leaf['arg']['value']])[2:]
-                else:
-                    address = get_value(leaf['arg']['value'])
+                address = get_int_value(leaf['arg'], labels)
+
                 if 'rel' == address_mode:
-                    address = int(address, 16)
                     address = 126 + (address - get_pc())
                     address = address | 0b10000000
-                    address = hex(address)[2:]
 
-                if len(address) == 4:
-                    arg1 = int(address[0:2], 16)
-                    arg2 = int(address[2:4], 16)
-                    code.extend([opcode, arg2, arg1])
-                    increment_pc(3)
-                else:
-                    arg1 = int(address[0:2], 16)
-                    code.extend([opcode, arg1])
+                if address_mode_def[address_mode]['size'] == 2:
+                    code.extend([opcode, address])
                     increment_pc(2)
+                else:
+                    arg1 = (address & 0x00ff)
+                    arg2 = (address & 0xff00) >> 8
+                    code.extend([opcode, arg1, arg2])
+                    increment_pc(3)
             else:
                 code.append(opcode)
                 increment_pc(1)
@@ -263,6 +259,8 @@ def semantic(ast, iNES=False):
         nes_header = generate_ines_header()
         nes_code.extend(nes_header)
         nes_code.extend(code)
+        for n in nes_code:
+            print hex(n)
         return nes_code
     else:
         return code

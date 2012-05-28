@@ -9,15 +9,16 @@ from pynes.asm import get_var
 
 class MovingSpriteTest(unittest.TestCase):
 
+
     def test_asm_compiler(self):
         f = open ('fixtures/movingsprite/movingsprite.asm')
-        line = 73
+        line = 91
         lines = f.read().split('\n')[0:line]
         code = '\n'.join(lines)
         f.close()
         tokens = lexical(code)
         ast = syntax(tokens)
-        #self.assertEquals(39, len(ast))
+        self.assertEquals(61, len(ast))
 
         #.inesprg 1
         self.assertEquals('S_DIRECTIVE', ast[0]['type'])

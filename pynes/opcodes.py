@@ -9,8 +9,8 @@ address_mode_def['zpy'] = dict(size=2)
 address_mode_def['abs'] = dict(size=3)
 address_mode_def['absx'] = dict(size=3)
 address_mode_def['absy'] = dict(size=3)
-address_mode_def['indx'] = dict(size=3)
-address_mode_def['indy'] = dict(size=3)
+address_mode_def['indx'] = dict(size=2)
+address_mode_def['indy'] = dict(size=2)
 address_mode_def['rel'] = dict(size=2)
 
 opcodes = {}
