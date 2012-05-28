@@ -8,6 +8,12 @@ from pynes.directives import get_pc
 
 class DirectiveTest(unittest.TestCase):
 
+    def test_label(self):
+        tokens = lexical('label:')
+        self.assertEquals(1 , len(tokens))
+        self.assertEquals('T_LABEL', tokens[0]['type'])
+        ast = syntax(tokens)
+        #self.assertEquals(1 , len(ast))
 
     def test_inesprg(self):
         tokens = lexical('.inesprg 1')

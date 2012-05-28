@@ -6,7 +6,6 @@ BMI, Branch on Result Minus Test
 This is a test for the branch instruction BMI of
 the 6502. This instruction performs the branch 
 if N == 1.
-
 '''
 
 import unittest
@@ -28,4 +27,4 @@ class BmiTest(unittest.TestCase):
         self.assertEquals(1 , len(ast))
         self.assertEquals('S_RELATIVE', ast[0]['type'])
         code = semantic(ast)
-        self.assertEquals(code, [0x30, 0x10])
+        self.assertEquals(code, [0x30, 0x8e])

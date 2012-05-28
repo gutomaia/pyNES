@@ -23,11 +23,15 @@ def d_org(arg):
     global pc_counter
     pc_counter = arg
 
+def reset_pc():
+    global pc_counter
+    pc_counter = 0
+
 def get_pc():
     global pc_counter
     return pc_counter
 
-def increment_counter(arg):
+def increment_pc(arg):
     global pc_counter
     pc_counter += arg
 
