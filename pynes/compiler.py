@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 from analyzer import analyse
-from opcodes import opcodes
+from opcodes import opcodes, address_mode_def
 from re import match
 
 import inspect
@@ -137,52 +137,6 @@ def get_label(number_token):
         return m.group(1)
     raise Exception('Invalid Label')
 
-def syntax2(t):
-    ast = []
-    x = 0 #consumed
-    debug = 0
-    labels = []
-    while (x < len(t)):
-        if t_directive(t,x) and OR([t_num, t_address], t, x+1):
-            leaf = {}
-            leaf['type'] = 'S_DIRECTIVE'
-            leaf['directive'] = t[x]
-            leaf['args'] = t[x+1]
-            ast.append(leaf)
-            x += 2
-        elif t_label(t,x):
-            labels.append(get_label(t[x]['value']))
-            x += 2
-        elif t_instruction(t,x) and t_operands(t,x+1):
-            leaf = {}
-            leaf['type'] = 'S_INSTRUCTION'
-            leaf['instruction'] = t[x]
-            leaf['operand'] = t[x+1]
-            if len(labels) > 0:
-                leaf['labels'] = labels
-            ast.append(leaf)
-            labels = []
-            x += 2
-        elif t_instruction(t,x):
-            leaf = {}
-            leaf['type'] = 'S_INSTRUCTION'
-            leaf['instruction'] = t[x]
-            leaf['operand'] = t[x+1]
-            if len(labels) > 0:
-                leaf['labels'] = labels
-            ast.append(leaf)
-            labels = []
-            x += 2
-        elif t_endline(t,x):
-            x += 1
-        else:
-            debug += 2
-            if debug > 100:
-                print x
-                print t[x]
-                raise Exception('Infinity Loop')
-    return ast
-
 def syntax(t):
     ast = []
     x = 0 # consumed
@@ -237,10 +191,30 @@ def syntax(t):
 def semantic(ast, iNES=False):
     bank = []
     code = []
-    reset_pc()
     labels = {}
+    #find all labels o the symbol table
+    reset_pc()
+    labels['palette'] = 0xE000
+    labels['sprites'] = 0xE000 + 32
     for leaf in ast:
-        PC = get_pc()
+        if leaf['type'] == 'S_DIRECTIVE':
+            directive = leaf['directive']['value']
+            if '.org' == directive:
+                address = int(leaf['args']['value'][1:], 16)
+                directive_list[directive](address)
+
+        if 'labels' in leaf:
+            pc = get_pc()
+            for label in leaf['labels']:
+                labels[label] = pc
+
+        if leaf['type'] != 'S_DIRECTIVE':
+            size =  address_mode_def[leaf['short']]['size']
+            increment_pc(size)
+
+    #translate statments to opcode
+    reset_pc()
+    for leaf in ast:
         if leaf['type'] == 'S_DIRECTIVE':
             directive = leaf['directive']['value']
             if 'T_NUM' == leaf['args']['type']:
@@ -251,10 +225,6 @@ def semantic(ast, iNES=False):
                 address = int(leaf['args']['value'][1:], 16)
                 directive_list[directive](address)
         else:
-            if 'labels' in leaf:
-                pc = get_pc()
-                for label in leaf['labels']:
-                    labels[label] = pc
             instruction = leaf['instruction']['value']
             address_mode = leaf['short']
             opcode = opcodes[instruction][address_mode]
@@ -279,7 +249,6 @@ def semantic(ast, iNES=False):
                     code.extend([opcode, arg1])
                     increment_pc(2)
             else:
-                print leaf
                 code.append(opcode)
                 increment_pc(1)
     nes_code = []
@@ -287,10 +256,6 @@ def semantic(ast, iNES=False):
         nes_header = generate_ines_header()
         nes_code.extend(nes_header)
         nes_code.extend(code)
-        for h in nes_code:
-            print hex(h)
         return nes_code
     else:
-        for h in code:
-            print hex(h)
         return code

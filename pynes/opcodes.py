@@ -1,16 +1,17 @@
 # -*- coding: utf-8 -*-
 
-address_mode = {}
-address_mode['imm'] = dict(size=1)
-address_mode['zp'] = dict(size=1)
-address_mode['zpx'] = dict(size=1)
-address_mode['zpy'] = dict(size=1)
-address_mode['abs'] = dict(size=1)
-address_mode['absx'] = dict(size=1)
-address_mode['absy'] = dict(size=1)
-address_mode['indx'] = dict(size=1)
-address_mode['indy'] = dict(size=1)
-address_mode['rel'] = dict(size=1)
+address_mode_def = {}
+address_mode_def['sngl'] = dict(size=1)
+address_mode_def['imm'] = dict(size=2)
+address_mode_def['zp'] = dict(size=2)
+address_mode_def['zpx'] = dict(size=2)
+address_mode_def['zpy'] = dict(size=2)
+address_mode_def['abs'] = dict(size=3)
+address_mode_def['absx'] = dict(size=3)
+address_mode_def['absy'] = dict(size=3)
+address_mode_def['indx'] = dict(size=3)
+address_mode_def['indy'] = dict(size=3)
+address_mode_def['rel'] = dict(size=2)
 
 opcodes = {}
 opcodes['ADC'] = dict(imm=0x69, zp=0x65, zpx=0x75, abs=0x6d, absx=0x7d,
