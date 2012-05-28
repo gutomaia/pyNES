@@ -26,4 +26,4 @@ class BvcTest(unittest.TestCase):
         self.assertEquals(1 , len(ast))
         self.assertEquals('S_RELATIVE', ast[0]['type'])
         code = semantic(ast)
-        self.assertEquals(code, [0x50, 0x8e])
+        self.assertEquals(code, [0x50, 0x0e])

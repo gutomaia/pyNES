@@ -245,6 +245,8 @@ def semantic(ast, iNES=False):
                         address = 0
                     elif address < 128:
                         address = address | 0b10000000
+                    elif address > 128:
+                        address = address & 0b01111111
 
                 if address_mode_def[address_mode]['size'] == 2:
                     code.extend([opcode, address])

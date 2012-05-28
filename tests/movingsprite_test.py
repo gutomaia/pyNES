@@ -47,13 +47,14 @@ class MovingSpriteTest(unittest.TestCase):
                     if ((a+1) % 2) == 0:
                         exp += ' '
                         act += ' '
-                out += exp + '\n' + act + '\n'
+                out += '%s- %d \n' % (exp, line + 1)
+                out += '%s- %d \n' % (act, line + 1)
                 a
             print out
 
     def test_asm_compiler(self):
         f = open ('fixtures/movingsprite/movingsprite.asm')
-        line = 125
+        line = 173
         lines = f.read().split('\n')[0:line]
         code = '\n'.join(lines)
         f.close()
