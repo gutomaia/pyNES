@@ -241,7 +241,10 @@ def semantic(ast, iNES=False):
 
                 if 'rel' == address_mode:
                     address = 126 + (address - get_pc())
-                    address = address | 0b10000000
+                    if address == 128: #UGLY
+                        address = 0
+                    elif address < 128:
+                        address = address | 0b10000000
 
                 if address_mode_def[address_mode]['size'] == 2:
                     code.extend([opcode, address])
@@ -259,8 +262,6 @@ def semantic(ast, iNES=False):
         nes_header = generate_ines_header()
         nes_code.extend(nes_header)
         nes_code.extend(code)
-        for n in nes_code:
-            print hex(n)
         return nes_code
     else:
         return code
