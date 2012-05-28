@@ -144,7 +144,7 @@ class GuideTest(unittest.TestCase):
 
         self.assertEquals('T_LABEL', tokens[7]['type'])
         self.assertEquals('T_INSTRUCTION', tokens[8]['type'])
-        self.assertEquals('T_NUMBER', tokens[9]['type'])
+        self.assertEquals('T_HEX_NUMBER', tokens[9]['type'])
         self.assertEquals('T_ENDLINE', tokens[10]['type'])
 
         self.assertEquals('T_INSTRUCTION', tokens[11]['type'])

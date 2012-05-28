@@ -14,8 +14,8 @@ from directives import directive_list, reset_pc, get_pc, increment_pc
 asm65_tokens = [
     dict(type='T_INSTRUCTION', regex=r'^(ADC|AND|ASL|BCC|BCS|BEQ|BIT|BMI|BNE|BPL|BRK|BVC|BVS|CLC|CLD|CLI|CLV|CMP|CPX|CPY|DEC|DEX|DEY|EOR|INC|INX|INY|JMP|JSR|LDA|LDX|LDY|LSR|NOP|ORA|PHA|PHP|PLA|PLP|ROL|ROR|RTI|RTS|SBC|SEC|SED|SEI|STA|STX|STY|TAX|TAY|TSX|TXA|TXS|TYA)', store=True),
     dict(type='T_ADDRESS', regex=r'\$([\dA-F]{2,4})', store=True),
-    dict(type='T_NUMBER', regex=r'\#\$?([\dA-F]{2})', store=True),
-    dict(type='T_BINARY', regex=r'\#%([01]{8})', store=True),
+    dict(type='T_HEX_NUMBER', regex=r'\#\$?([\dA-F]{2})', store=True), #TODO: change to HEX_NUMBER
+    dict(type='T_BINARY', regex=r'\#%([01]{8})', store=True), #TODO: change to BINARY_NUMBER
     dict(type='T_STRING', regex=r'^"[^"]*"', store=True),
     dict(type='T_SEPARATOR', regex=r'^,', store=True),
     dict(type='T_REGISTER', regex=r'^(X|x|Y|y)', store=True),
@@ -24,7 +24,7 @@ asm65_tokens = [
     dict(type='T_LABEL', regex=r'^([a-zA-Z][a-zA-Z\d]*)\:', store=True),
     dict(type='T_MARKER', regex=r'^[a-zA-Z][a-zA-Z\d]*', store=True),
     dict(type='T_DIRECTIVE', regex=r'^\.[a-z]+', store=True),
-    dict(type='T_NUM', regex=r'^[\d]+', store=True), #TODO
+    dict(type='T_NUM', regex=r'^[\d]+', store=True), #TODO change to DECIMAL ARGUMENT
     dict(type='T_ENDLINE', regex=r'^\n', store=True),
     dict(type='T_WHITESPACE', regex=r'^[ \t\r]+', store=False),
     dict(type='T_COMMENT', regex=r'^;[^\n]*', store=False)
@@ -79,7 +79,7 @@ def t_address_or_t_marker(tokens, index):
     return OR([t_address, t_marker], tokens, index)
 
 def t_number(tokens, index):
-    return look_ahead(tokens, index, 'T_NUMBER')
+    return look_ahead(tokens, index, 'T_HEX_NUMBER')
 
 def t_separator(tokens , index):
     return look_ahead(tokens, index, 'T_SEPARATOR')
@@ -95,9 +95,6 @@ def t_open(tokens, index):
 
 def t_close(tokens, index):
     return look_ahead(tokens, index, 'T_CLOSE', ')')
-
-def t_operands(tokens, index):
-    return OR([t_number, t_address, t_marker], tokens, index)
 
 def OR(args, tokens, index):
     for t in args:
@@ -117,7 +114,7 @@ asm65_bnf = [
     dict(type='S_INDIRECT_X', short='indx', bnf=[t_instruction, t_open, t_address_or_t_marker, t_separator, t_register_x, t_close]),
     dict(type='S_INDIRECT_Y', short='indy', bnf=[t_instruction, t_open, t_address_or_t_marker, t_close, t_separator, t_register_y]),
     dict(type='S_IMPLIED', short='sngl', bnf=[t_instruction]),
-    #dict(type='S_DIRECTIVE', short='sngl', bnf=[t_directive, [OR, t_num, t_address]]),
+    #TODO dict(type='S_DIRECTIVE', short='sngl', bnf=[t_directive, [OR, t_num, t_address]]),
 ]
 
 def lexical(code):

@@ -10,7 +10,7 @@ class CpyTest(unittest.TestCase):
         tokens = lexical('CPY #10')
         self.assertEquals(2 , len(tokens))
         self.assertEquals('T_INSTRUCTION', tokens[0]['type'])
-        self.assertEquals('T_NUMBER', tokens[1]['type'])
+        self.assertEquals('T_HEX_NUMBER', tokens[1]['type'])
         ast = syntax(tokens)
         self.assertEquals(1 , len(ast))
         self.assertEquals('S_IMMEDIATE', ast[0]['type'])
