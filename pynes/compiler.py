@@ -78,8 +78,14 @@ def t_address(tokens, index):
 def t_address_or_t_marker(tokens, index):
     return OR([t_address, t_marker], tokens, index)
 
-def t_number(tokens, index):
+def t_hex_number(tokens, index):
     return look_ahead(tokens, index, 'T_HEX_NUMBER')
+
+def t_binary_number(tokens, index):
+    return look_ahead(tokens, index, 'T_BINARY_NUMBER')
+
+def t_number(tokens, index):
+    return OR([t_hex_number, t_binary_number], tokens, index)
 
 def t_separator(tokens , index):
     return look_ahead(tokens, index, 'T_SEPARATOR')
@@ -124,8 +130,12 @@ def get_value(number_token):
     m = match(asm65_tokens[1]['regex'], number_token)
     if m:
         return m.group(1)
-    else:
+    elif match(asm65_tokens[2]['regex'], number_token):
         m = match(asm65_tokens[2]['regex'], number_token)
+        return m.group(1)
+    elif match(asm65_tokens[3]['regex'], number_token):
+        m = match(asm65_tokens[3]['regex'], number_token)
+        print m.group(1)
         return m.group(1)
 
 def get_label(number_token):
