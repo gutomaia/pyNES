@@ -9,7 +9,7 @@ from binascii import hexlify
 
 from asm import generate_ines_header
 
-from directives import directive_list, reset_pc, get_pc, increment_pc, get_bank
+from directives import directive_list
 
 from cartridge import Cartridge
 
@@ -242,8 +242,6 @@ def syntax(t):
 
 def semantic(ast, iNES=False):
     cart = Cartridge()
-    bank = {0:[], 1:[], 2:[]}
-    code = []
     labels = {}
     #find all labels o the symbol table
     labels['palette'] = 0xE000 #TODO stealing on test
@@ -254,7 +252,6 @@ def semantic(ast, iNES=False):
             directive = leaf['directive']['value']
             if '.org' == directive:
                 address = int(leaf['args']['value'][1:], 16)
-                directive_list[directive](address)
 
         if 'labels' in leaf:
             for label in leaf['labels']:
