@@ -244,8 +244,8 @@ def semantic(ast, iNES=False):
     labels = {}
     #find all labels o the symbol table
     reset_pc()
-    labels['palette'] = 0xE000
-    labels['sprites'] = 0xE000 + 32
+    labels['palette'] = 0xE000 #TODO stealing on test
+    labels['sprites'] = 0xE000 + 32 #TODO stealing on test
     for leaf in ast:
         if leaf['type'] == 'S_DIRECTIVE':
             directive = leaf['directive']['value']
@@ -280,7 +280,6 @@ def semantic(ast, iNES=False):
                 elements = leaf['args']['elements']
                 c = directive_list[directive](elements)
                 bank[bank_id].extend(c)
-                #code.extend(c)
         else:
             instruction = leaf['instruction']['value']
             address_mode = leaf['short']
