@@ -1,4 +1,5 @@
 
+from asm import generate_ines_header
 
 class Cartridge:
 
@@ -25,6 +26,8 @@ class Cartridge:
         self.bank_id = id
 
     def set_org(self, org):
+        if self.bank_id not in self.banks:
+            self.set_bank_id(self.bank_id)
         if not self.banks[self.bank_id]['start']:
             self.banks[self.bank_id]['start'] = org
             self.pc = org
@@ -44,5 +47,14 @@ class Cartridge:
         return self.banks[self.bank_id]['code']
 
     def get_ines_code(self):
-        pass
-
+        if self.bank_id not in self.banks:
+            self.set_bank_id(self.bank_id)
+        bin = []
+        nes_header = generate_ines_header()
+        for i in range(len(self.banks[0]['code']), self.banks[0]['size']):
+            self.banks[0]['code'].append(0xff)
+        bin.extend(nes_header)
+        bin.extend(self.banks[0]['code'])
+        if 1 in self.banks:
+            bin.extend(self.banks[1]['code'])
+        return bin
