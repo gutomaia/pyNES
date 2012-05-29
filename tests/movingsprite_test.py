@@ -54,9 +54,7 @@ class MovingSpriteTest(unittest.TestCase):
 
     def test_asm_compiler(self):
         f = open ('fixtures/movingsprite/movingsprite.asm')
-        line = 179
-        lines = f.read().split('\n')[0:line]
-        code = '\n'.join(lines)
+        code = f.read()
         f.close()
         tokens = lexical(code)
         ast = syntax(tokens)
@@ -116,11 +114,12 @@ class MovingSpriteTest(unittest.TestCase):
         self.assertEquals(0, get_var('inesmap'))
         self.assertEquals(1, get_var('inesmir'))
         self.assertIsNotNone(opcodes)
-
+        #print opcodes
         #self.assertTrue(False)
         bin = ''.join([chr(opcode) for opcode in opcodes])
         f = open('fixtures/movingsprite/movingsprite.nes', 'rb')
         content = f.read(len(bin))
+        #content = f.read()
         f.close()
         self.assertHexEquals(content,bin)
         self.assertEquals(content, bin)

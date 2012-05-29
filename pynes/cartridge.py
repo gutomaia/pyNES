@@ -60,10 +60,13 @@ class Cartridge:
         else:
             while self.pc < org:
                 self.append_code([0xff])
+            self.pc = org
 
     def append_code(self, code):
         if self.bank_id not in self.banks:
             self.set_bank_id(self.bank_id)
+        for c in code:
+            assert c <= 0xff
         self.banks[self.bank_id]['code'].extend(code)
         self.pc += len(code)
 
@@ -79,6 +82,10 @@ class Cartridge:
         nes_header = self.nes_get_header()
         for i in range(len(self.banks[0]['code']), self.banks[0]['size']):
             self.banks[0]['code'].append(0xff)
+        '''
+        for i in range(len(self.banks[1]['code']), 1024):
+            self.banks[1]['code'].append(0xff)
+        '''
         bin.extend(nes_header)
         bin.extend(self.banks[0]['code'])
         if 1 in self.banks:

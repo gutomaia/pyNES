@@ -77,6 +77,9 @@ def t_marker(tokens, index):
 def t_address(tokens, index):
     return look_ahead(tokens, index, 'T_ADDRESS')
 
+def t_string(tokens, index):
+    return look_ahead(tokens, index, 'T_STRING')
+
 def t_address_or_t_marker(tokens, index):
     return OR([t_address, t_marker], tokens, index)
 
@@ -117,18 +120,13 @@ def t_list(tokens, index):
     return False
 
 def get_list_jump(tokens, index):
-    return 32
     keep = True
     a = 0
-    print index
     while keep:
         keep = keep & (
                 t_address(tokens, index + a) |
                 t_separator(tokens, index + a)
             )
-        print t_address(tokens, index + a)
-        print t_separator(tokens, index + a)
-        print keep
         a += 1
     return a
 
@@ -185,14 +183,14 @@ def syntax(t):
             leaf = {}
             leaf['type'] = 'S_DIRECTIVE'
             leaf['directive'] = t[x]
-            end = get_list_jump(t,x)
+            end = get_list_jump(t,x+1)
             leaf['args'] = dict(
                 type = 'S_LIST',
                 elements = t[ x: x+end]
             ) 
             ast.append(leaf)
             x += end
-        elif t_directive(t,x) and OR([t_num, t_address], t, x+1):
+        elif t_directive(t,x) and OR([t_num, t_address, t_marker, t_string], t, x+1):
             leaf = {}
             leaf['type'] = 'S_DIRECTIVE'
             leaf['directive'] = t[x]
@@ -232,11 +230,7 @@ def syntax(t):
                     break;
         debug += 1
         if debug > 10000:
-            print x
             print t[x]
-            print t[x+1]
-            print t[x+2]
-            print t[x+3]
             raise Exception('Infinity Loop')
     return ast
 
@@ -273,6 +267,12 @@ def semantic(ast, iNES=False):
             elif 'T_ADDRESS' == leaf['args']['type']:
                 address = int(leaf['args']['value'][1:], 16)
                 directive_list[directive](address, cart)
+            elif 'T_MARKER' == leaf['args']['type']:
+                address = get_int_value(leaf['args'], labels)
+                directive_list[directive](address, cart)
+            elif 'T_STRING' == leaf['args']['type']:
+                string = leaf['args']['value'][1:-1]
+                directive_list[directive](string, cart)
             elif 'S_LIST' == leaf['args']['type']:
                 elements = leaf['args']['elements']
                 directive_list[directive](elements, cart)
