@@ -1,8 +1,3 @@
-
-from asm import generate_ines_header
-from asm import register_var
-
-
 class Cartridge:
 
     def __init__(self):
@@ -32,19 +27,15 @@ class Cartridge:
 
     def set_iNES_prg(self, inespgr):
         self.inespgr = inespgr
-        register_var('inesprg', inespgr)
 
     def set_iNES_chr(self, ineschr):
         self.ineschr = ineschr
-        register_var('ineschr', ineschr)
 
     def set_iNES_map(self, inesmap):
         self.inesmap = inesmap
-        register_var('inesmap', inesmap)
 
     def set_iNES_mir(self, inesmir):
         self.inesmir = inesmir
-        register_var('inesmir', inesmir)
 
     def set_bank_id(self, id):
         if id not in self.banks:

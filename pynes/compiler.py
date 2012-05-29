@@ -7,8 +7,6 @@ from re import match
 import inspect
 from binascii import hexlify
 
-from asm import generate_ines_header
-
 from directives import directive_list
 
 from cartridge import Cartridge
