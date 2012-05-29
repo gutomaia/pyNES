@@ -2,7 +2,7 @@ import unittest
 
 from pynes.cartridge import Cartridge
 
-class iNESheaderTest(unittest.TestCase):
+class CartridgeTest(unittest.TestCase):
 
     def setUp(self):
         self.cart = Cartridge()
