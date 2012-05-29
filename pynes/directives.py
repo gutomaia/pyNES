@@ -2,23 +2,33 @@
 
 from asm import register_var
 
-def d_inesprg(arg):
+def d_inesprg(arg, cart=None):
+    if cart:
+        cart.set_iNES_prg(arg)
     register_var('inesprg', arg)
 
-def d_ineschr(arg):
+def d_ineschr(arg, cart=None):
+    if cart:
+        cart.set_iNES_chr(arg)
     register_var('ineschr', arg)
 
-def d_inesmap(arg):
+def d_inesmap(arg, cart=None):
+    if cart:
+        cart.set_iNES_map(arg)
     register_var('inesmap', arg)
 
-def d_inesmir(arg):
+def d_inesmir(arg, cart=None):
+    if cart:
+        cart.set_iNES_map(arg)
     register_var('inesmir', arg)
 
 bank = 0
 
-def d_bank(arg):
+def d_bank(arg, cart=None):
     global bank
     bank = int(arg)
+    if cart:
+        cart.set_bank_id(arg)
 
 def get_bank():
     global bank
@@ -26,15 +36,18 @@ def get_bank():
 
 pc_counter = 0
 
-def d_org(arg):
+def d_org(arg, cart=None):
     global pc_counter
     pc_counter = arg
+    if cart:
+        cart.set_org(arg)
 
-def d_db(arg):
+def d_db(arg, cart=None):
     l = []
     for token in arg:
         if token['type'] == 'T_ADDRESS':
             l.append(int(token['value'][1:], 16))
+    cart.append_code(l)
     return l
 
 def reset_pc():

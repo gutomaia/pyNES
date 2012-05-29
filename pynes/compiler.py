@@ -11,6 +11,8 @@ from asm import generate_ines_header
 
 from directives import directive_list, reset_pc, get_pc, increment_pc, get_bank
 
+from cartridge import Cartridge
+
 asm65_tokens = [
     dict(type='T_INSTRUCTION', regex=r'^(ADC|AND|ASL|BCC|BCS|BEQ|BIT|BMI|BNE|BPL|BRK|BVC|BVS|CLC|CLD|CLI|CLV|CMP|CPX|CPY|DEC|DEX|DEY|EOR|INC|INX|INY|JMP|JSR|LDA|LDX|LDY|LSR|NOP|ORA|PHA|PHP|PLA|PLP|ROL|ROR|RTI|RTS|SBC|SEC|SED|SEI|STA|STX|STY|TAX|TAY|TSX|TXA|TXS|TYA)', store=True),
     dict(type='T_ADDRESS', regex=r'\$([\dA-F]{2,4})', store=True),
@@ -239,6 +241,7 @@ def syntax(t):
     return ast
 
 def semantic(ast, iNES=False):
+    cart = Cartridge()
     bank = {0:[], 1:[], 2:[]}
     code = []
     labels = {}
@@ -271,14 +274,14 @@ def semantic(ast, iNES=False):
             if 'T_NUM' == leaf['args']['type']:
                 args = leaf['args']['value']
                 num = int(args)
-                directive_list[directive](num)
+                directive_list[directive](num, cart)
                 bank_id = get_bank()
             elif 'T_ADDRESS' == leaf['args']['type']:
                 address = int(leaf['args']['value'][1:], 16)
-                directive_list[directive](address)
+                directive_list[directive](address, cart)
             elif 'S_LIST' == leaf['args']['type']:
                 elements = leaf['args']['elements']
-                c = directive_list[directive](elements)
+                c = directive_list[directive](elements, cart)
                 bank[bank_id].extend(c)
         else:
             instruction = leaf['instruction']['value']
@@ -299,14 +302,17 @@ def semantic(ast, iNES=False):
                 if address_mode_def[address_mode]['size'] == 2:
                     bank[bank_id].extend([opcode, address])
                     increment_pc(2)
+                    cart.append_code([opcode, address])
                 else:
                     arg1 = (address & 0x00ff)
                     arg2 = (address & 0xff00) >> 8
                     bank[bank_id].extend([opcode, arg1, arg2])
+                    cart.append_code([opcode, arg1, arg2])
                     increment_pc(3)
             else:
                 bank[bank_id].append(opcode)
                 increment_pc(1)
+                cart.append_code([opcode])
     nes_code = []
     if iNES:
         cardige = []
@@ -316,6 +322,7 @@ def semantic(ast, iNES=False):
         cardige.extend(nes_header)
         cardige.extend(bank[0])
         cardige.extend(bank[1])
+        return cart.get_ines_code()
         return cardige
     else:
-        return bank[bank_id]
+        return cart.get_code()
