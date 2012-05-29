@@ -9,7 +9,7 @@ from binascii import hexlify
 
 from asm import generate_ines_header
 
-from directives import directive_list, reset_pc, get_pc, increment_pc
+from directives import directive_list, reset_pc, get_pc, increment_pc, get_bank
 
 asm65_tokens = [
     dict(type='T_INSTRUCTION', regex=r'^(ADC|AND|ASL|BCC|BCS|BEQ|BIT|BMI|BNE|BPL|BRK|BVC|BVS|CLC|CLD|CLI|CLV|CMP|CPX|CPY|DEC|DEX|DEY|EOR|INC|INX|INY|JMP|JSR|LDA|LDX|LDY|LSR|NOP|ORA|PHA|PHP|PLA|PLP|ROL|ROR|RTI|RTS|SBC|SEC|SED|SEI|STA|STX|STY|TAX|TAY|TSX|TXA|TXS|TYA)', store=True),
@@ -239,7 +239,7 @@ def syntax(t):
     return ast
 
 def semantic(ast, iNES=False):
-    bank = []
+    bank = {0:[], 1:[], 2:[]}
     code = []
     labels = {}
     #find all labels o the symbol table
@@ -264,6 +264,7 @@ def semantic(ast, iNES=False):
 
     #translate statments to opcode
     reset_pc()
+    bank_id = 0
     for leaf in ast:
         if leaf['type'] == 'S_DIRECTIVE':
             directive = leaf['directive']['value']
@@ -271,13 +272,15 @@ def semantic(ast, iNES=False):
                 args = leaf['args']['value']
                 num = int(args)
                 directive_list[directive](num)
+                bank_id = get_bank()
             elif 'T_ADDRESS' == leaf['args']['type']:
                 address = int(leaf['args']['value'][1:], 16)
                 directive_list[directive](address)
             elif 'S_LIST' == leaf['args']['type']:
                 elements = leaf['args']['elements']
                 c = directive_list[directive](elements)
-                code.extend(c)
+                bank[bank_id].extend(c)
+                #code.extend(c)
         else:
             instruction = leaf['instruction']['value']
             address_mode = leaf['short']
@@ -295,21 +298,25 @@ def semantic(ast, iNES=False):
                         address = address & 0b01111111
 
                 if address_mode_def[address_mode]['size'] == 2:
-                    code.extend([opcode, address])
+                    bank[bank_id].extend([opcode, address])
                     increment_pc(2)
                 else:
                     arg1 = (address & 0x00ff)
                     arg2 = (address & 0xff00) >> 8
-                    code.extend([opcode, arg1, arg2])
+                    bank[bank_id].extend([opcode, arg1, arg2])
                     increment_pc(3)
             else:
-                code.append(opcode)
+                bank[bank_id].append(opcode)
                 increment_pc(1)
     nes_code = []
     if iNES:
+        cardige = []
         nes_header = generate_ines_header()
-        nes_code.extend(nes_header)
-        nes_code.extend(code)
-        return nes_code
+        for i in range(len(bank[0]),(1024 * 8)):
+            bank[0].append(0xff)
+        cardige.extend(nes_header)
+        cardige.extend(bank[0])
+        cardige.extend(bank[1])
+        return cardige
     else:
-        return code
+        return bank[bank_id]

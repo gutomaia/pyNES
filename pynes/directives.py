@@ -14,8 +14,15 @@ def d_inesmap(arg):
 def d_inesmir(arg):
     register_var('inesmir', arg)
 
+bank = 0
+
 def d_bank(arg):
-    pass
+    global bank
+    bank = int(arg)
+
+def get_bank():
+    global bank
+    return bank
 
 pc_counter = 0
 

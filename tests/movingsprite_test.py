@@ -54,7 +54,7 @@ class MovingSpriteTest(unittest.TestCase):
 
     def test_asm_compiler(self):
         f = open ('fixtures/movingsprite/movingsprite.asm')
-        line = 173
+        line = 179
         lines = f.read().split('\n')[0:line]
         code = '\n'.join(lines)
         f.close()
