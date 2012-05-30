@@ -106,7 +106,7 @@ class MovingSpriteTest(unittest.TestCase):
         self.assertEquals('S_IMPLIED', ast[8]['type'])
         self.assertFalse('labels' in ast[8])
         self.assertEquals('T_INSTRUCTION', ast[8]['instruction']['type'])
-        #self.assertEquals('RTS', ast[8]['instruction']['value'])
+        self.assertEquals('RTS', ast[8]['instruction']['value'])
 
         opcodes = semantic(ast, True)
         self.assertEquals(1, get_var('inesprg'))
@@ -114,12 +114,11 @@ class MovingSpriteTest(unittest.TestCase):
         self.assertEquals(0, get_var('inesmap'))
         self.assertEquals(1, get_var('inesmir'))
         self.assertIsNotNone(opcodes)
-        #print opcodes
-        #self.assertTrue(False)
         bin = ''.join([chr(opcode) for opcode in opcodes])
         f = open('fixtures/movingsprite/movingsprite.nes', 'rb')
-        content = f.read(len(bin))
-        #content = f.read()
+        content = f.read()
+        a = len(content) - len(bin)
+        c = content[a:]
         f.close()
         self.assertHexEquals(content,bin)
         self.assertEquals(content, bin)
