@@ -6,7 +6,7 @@ from binascii import a2b_hex, hexlify
 from pynes.asm import nes_id
 from pynes.asm import nes_get_header
 
-import pynes.opcodes
+import pynes.c6502
 
 from os import remove
 from os.path import exists

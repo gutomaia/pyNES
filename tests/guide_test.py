@@ -3,7 +3,6 @@
 import unittest
 
 import pynes
-import pynes.opcodes
 from pynes.compiler import lexical, syntax, semantic
 
 '''

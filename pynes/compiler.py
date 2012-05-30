@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 from analyzer import analyse
-from opcodes import opcodes, address_mode_def
+from c6502 import opcodes, address_mode_def
 from re import match
 
 import inspect
