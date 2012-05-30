@@ -71,14 +71,9 @@ class Cartridge:
             self.set_bank_id(self.bank_id)
         bin = []
         nes_header = self.nes_get_header()
-        for i in range(len(self.banks[0]['code']), self.banks[0]['size']):
-            self.banks[0]['code'].append(0xff)
         bin.extend(nes_header)
-        bin.extend(self.banks[0]['code'])
-        if 1 in self.banks:
-            for i in range(len(self.banks[1]['code']), 1024*8):
-                self.banks[1]['code'].append(0xff)
-            bin.extend(self.banks[1]['code'])
-        if 2 in self.banks:
-            bin.extend(self.banks[2]['code'])
+        for i in self.banks:
+            for j in range(len(self.banks[i]['code']), self.banks[i]['size']):
+                self.banks[i]['code'].append(0xff)
+            bin.extend(self.banks[i]['code'])
         return bin
