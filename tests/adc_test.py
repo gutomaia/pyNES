@@ -50,7 +50,6 @@ class AdcTest(unittest.TestCase):
         '''
         tokens = lexical('ADC $10,X')
         self.assertEquals(4 , len(tokens))
-        token = tokens[0]
         self.assertEquals('T_INSTRUCTION', tokens[0]['type'])
         self.assertEquals('T_ADDRESS', tokens[1]['type'])
         self.assertEquals('T_SEPARATOR', tokens[2]['type'])
@@ -86,7 +85,6 @@ class AdcTest(unittest.TestCase):
         '''
         tokens = lexical('ADC $1234,X')
         self.assertEquals(4 , len(tokens))
-        token = tokens[0]
         self.assertEquals('T_INSTRUCTION', tokens[0]['type'])
         self.assertEquals('T_ADDRESS', tokens[1]['type'])
         self.assertEquals('$1234', tokens[1]['value'])
