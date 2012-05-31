@@ -88,7 +88,7 @@ class AndTest(unittest.TestCase):
         code = semantic(ast)
         self.assertEquals(code, [0x3d, 0x34, 0x12])
 
-    def test_sta_absy(self):
+    def test_and_absy(self):
         tokens = lexical('AND $1234,Y')
         self.assertEquals(4 , len(tokens))
         self.assertEquals('T_INSTRUCTION', tokens[0]['type'])
@@ -101,7 +101,7 @@ class AndTest(unittest.TestCase):
         code = semantic(ast)
         self.assertEquals(code, [0x39, 0x34, 0x12])
 
-    def test_sta_indx(self):
+    def test_and_indx(self):
         tokens = lexical('AND ($20,X)')
         self.assertEquals(6 , len(tokens))
         self.assertEquals('T_INSTRUCTION', tokens[0]['type'])
@@ -117,7 +117,7 @@ class AndTest(unittest.TestCase):
         code = semantic(ast)
         self.assertEquals(code, [0x21, 0x20])
 
-    def test_sta_indy(self):
+    def test_and_indy(self):
         tokens = lexical('AND ($20),Y')
         self.assertEquals(6 , len(tokens))
         self.assertEquals('T_INSTRUCTION', tokens[0]['type'])
