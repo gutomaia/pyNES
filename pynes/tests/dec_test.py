@@ -19,7 +19,6 @@ class DecTest(unittest.TestCase):
     def test_dec_zpx(self):
         tokens = lexical('DEC $10,X')
         self.assertEquals(4 , len(tokens))
-        token = tokens[0]
         self.assertEquals('T_INSTRUCTION', tokens[0]['type'])
         self.assertEquals('T_ADDRESS', tokens[1]['type'])
         self.assertEquals('T_SEPARATOR', tokens[2]['type'])
@@ -30,7 +29,7 @@ class DecTest(unittest.TestCase):
         code = semantic(ast)
         self.assertEquals(code, [0xd6, 0x10])
 
-    def test_adc_abs(self):
+    def test_dec_abs(self):
         tokens = lexical('DEC $1234')
         self.assertEquals(2 , len(tokens))
         self.assertEquals('T_INSTRUCTION', tokens[0]['type'])
@@ -43,10 +42,9 @@ class DecTest(unittest.TestCase):
         self.assertEquals(code, [0xce, 0x34, 0x12])
 
 
-    def test_adc_absx(self):
+    def test_dec_absx(self):
         tokens = lexical('DEC $1234,X')
         self.assertEquals(4 , len(tokens))
-        token = tokens[0]
         self.assertEquals('T_INSTRUCTION', tokens[0]['type'])
         self.assertEquals('T_ADDRESS', tokens[1]['type'])
         self.assertEquals('$1234', tokens[1]['value'])

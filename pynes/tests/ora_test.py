@@ -34,7 +34,6 @@ class OraTest(unittest.TestCase):
     def test_ora_zpx(self):
         tokens = lexical('ORA $10,X')
         self.assertEquals(4 , len(tokens))
-        token = tokens[0]
         self.assertEquals('T_INSTRUCTION', tokens[0]['type'])
         self.assertEquals('T_ADDRESS', tokens[1]['type'])
         self.assertEquals('T_SEPARATOR', tokens[2]['type'])
@@ -61,7 +60,6 @@ class OraTest(unittest.TestCase):
     def test_ora_absx(self):
         tokens = lexical('ORA $1234,X')
         self.assertEquals(4 , len(tokens))
-        token = tokens[0]
         self.assertEquals('T_INSTRUCTION', tokens[0]['type'])
         self.assertEquals('T_ADDRESS', tokens[1]['type'])
         self.assertEquals('$1234', tokens[1]['value'])

@@ -6,7 +6,7 @@ from pynes.compiler import lexical, syntax, semantic
 
 class CldTest(unittest.TestCase):
 
-    def test_sed_sngl(self):
+    def test_cld_sngl(self):
         tokens = lexical('CLD')
         self.assertEquals(1 , len(tokens))
         self.assertEquals('T_INSTRUCTION', tokens[0]['type'])

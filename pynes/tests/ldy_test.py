@@ -30,7 +30,6 @@ class LdyTest(unittest.TestCase):
     def test_ldy_zpx(self):
         tokens = lexical('LDY $10,X')
         self.assertEquals(4 , len(tokens))
-        token = tokens[0]
         self.assertEquals('T_INSTRUCTION', tokens[0]['type'])
         self.assertEquals('T_ADDRESS', tokens[1]['type'])
         self.assertEquals('T_SEPARATOR', tokens[2]['type'])

@@ -45,7 +45,7 @@ class EorTest(unittest.TestCase):
         code = semantic(ast)
         self.assertEquals(code, [0x55, 0x10])
 
-    def test_sta_abs(self):
+    def test_eor_abs(self):
         tokens = lexical('EOR $1234')
         self.assertEquals(2 , len(tokens))
         self.assertEquals('T_INSTRUCTION', tokens[0]['type'])
@@ -58,7 +58,7 @@ class EorTest(unittest.TestCase):
         self.assertEquals(code, [0x4D, 0x34, 0x12])
 
 
-    def test_sta_absx(self):
+    def test_eor_absx(self):
         tokens = lexical('EOR $1234,X')
         self.assertEquals(4 , len(tokens))
         token = tokens[0]
@@ -73,7 +73,7 @@ class EorTest(unittest.TestCase):
         code = semantic(ast)
         self.assertEquals(code, [0x5D, 0x34, 0x12])
 
-    def test_sta_absy(self):
+    def test_eor_absy(self):
         tokens = lexical('EOR $1234,Y')
         self.assertEquals(4 , len(tokens))
         self.assertEquals('T_INSTRUCTION', tokens[0]['type'])
@@ -86,7 +86,7 @@ class EorTest(unittest.TestCase):
         code = semantic(ast)
         self.assertEquals(code, [0x59, 0x34, 0x12])
 
-    def test_sta_indx(self):
+    def test_eor_indx(self):
         tokens = lexical('EOR ($20,X)')
         self.assertEquals(6 , len(tokens))
         self.assertEquals('T_INSTRUCTION', tokens[0]['type'])
@@ -102,7 +102,7 @@ class EorTest(unittest.TestCase):
         code = semantic(ast)
         self.assertEquals(code, [0x41, 0x20])
 
-    def test_sta_indy(self):
+    def test_eor_indy(self):
         tokens = lexical('EOR ($20),Y')
         self.assertEquals(6 , len(tokens))
         self.assertEquals('T_INSTRUCTION', tokens[0]['type'])

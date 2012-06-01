@@ -53,7 +53,6 @@ class CpmTest(unittest.TestCase):
         code = semantic(ast)
         self.assertEquals(code, [0xcd, 0x34, 0x12])
 
-
     def test_cmp_absx(self):
         tokens = lexical('CMP $1234,X')
         self.assertEquals(4 , len(tokens))
