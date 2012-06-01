@@ -32,12 +32,12 @@ asm65_tokens = [
 
 def look_ahead(tokens, index, type, value = None):
     if index > len(tokens) - 1:
-        return False
+        return 0
     token = tokens[index]
     if token['type'] == type:
         if value == None or token['value'].upper() == value.upper():
-            return True
-    return False
+            return 1
+    return 0
 
 def t_endline (tokens, index):
     return look_ahead(tokens, index, 'T_ENDLINE', '\n')
@@ -57,8 +57,8 @@ def t_relative (tokens, index):
             'BCC', 'BCS', 'BEQ', 'BNE',
             'BMI', 'BPL', 'BVC', 'BVS'
         ]):
-        return True
-    return False
+        return 1
+    return 0
 
 def t_instruction (tokens, index):
     return look_ahead(tokens, index, 'T_INSTRUCTION')
@@ -66,8 +66,8 @@ def t_instruction (tokens, index):
 def t_zeropage (tokens,index):
     lh = look_ahead(tokens, index, 'T_ADDRESS')
     if lh and len(tokens[index]['value']) == 3:
-        return True
-    return False
+        return 1
+    return 0
 
 def t_label(tokens, index):
     return look_ahead(tokens, index, 'T_LABEL')
@@ -134,8 +134,8 @@ def get_list_jump(tokens, index):
 def OR(args, tokens, index):
     for t in args:
         if t(tokens, index):
-            return True
-    return False
+            return 1
+    return 0
 
 asm65_bnf = [
     dict(type='S_RELATIVE', short='rel', bnf=[t_relative, t_address_or_t_marker]),
@@ -217,15 +217,14 @@ def syntax(t):
                     if len(labels) > 0:
                         leaf['labels'] = labels
                         labels = []
-                    leaf['instruction'] = t[x]
+                    size = 0;
+                    walk = 0;
+                    for b in bnf['bnf']:
+                        size += b(t,x+walk)
+                        walk += 1
+                    leaf['children'] = t[x: x+size]
                     leaf['type'] = bnf['type']
                     leaf['short'] = bnf['short']
-                    if bnf['short'] == 'sngl':
-                        pass
-                    elif bnf['short'] == 'indx' or bnf['short'] == 'indy':
-                        leaf['arg'] = t[x+2]
-                    else:
-                        leaf['arg'] = t[x+1]
                     ast.append(leaf)
                     x += look_ahead
                     break;
@@ -247,11 +246,9 @@ def semantic(ast, iNES=False):
             directive = leaf['directive']['value']
             if '.org' == directive:
                 address = int(leaf['args']['value'][1:], 16)
-
         if 'labels' in leaf:
             for label in leaf['labels']:
                 labels[label] = address
-
         if leaf['type'] != 'S_DIRECTIVE':
             size =  address_mode_def[leaf['short']]['size']
             address += size
@@ -259,6 +256,7 @@ def semantic(ast, iNES=False):
     #translate statments to opcode
     bank_id = 0
     for leaf in ast:
+        print leaf
         if leaf['type'] == 'S_DIRECTIVE':
             directive = leaf['directive']['value']
             if 'T_DECIMAL_ARGUMENT' == leaf['args']['type']:
@@ -278,11 +276,24 @@ def semantic(ast, iNES=False):
                 elements = leaf['args']['elements']
                 directive_list[directive](elements, cart)
         else:
-            instruction = leaf['instruction']['value']
+            if leaf['type'] == 'S_IMPLIED':
+                instruction = leaf['children'][0]['value']
+                address = False
+            elif leaf['type'] in ['S_RELATIVE', 'S_IMMEDIATE', 'S_ZEROPAGE', 'S_ABSOLUTE']:
+                instruction = leaf['children'][0]['value']
+                address = get_int_value(leaf['children'][1], labels)
+            elif leaf['type'] in ['S_ZEROPAGE_X', 'S_ZEROPAGE_Y', 'S_ABSOLUTE_X', 'S_ABSOLUTE_Y']:
+                instruction = leaf['children'][0]['value']
+                address = get_int_value(leaf['children'][1], labels)
+            elif leaf['type'] in ['S_INDIRECT_X', 'S_INDIRECT_Y']:
+                instruction = leaf['children'][0]['value']
+                address = get_int_value(leaf['children'][2], labels)
+
+            #instruction = leaf['instruction']['value']
             address_mode = leaf['short']
             opcode = opcodes[instruction][address_mode]
             if address_mode != 'sngl':
-                address = get_int_value(leaf['arg'], labels)
+                #address = get_int_value(leaf['arg'], labels)
 
                 if 'rel' == address_mode:
                     address = 126 + (address - cart.pc)
