@@ -24,7 +24,7 @@ asm65_tokens = [
     dict(type='T_LABEL', regex=r'^([a-zA-Z][a-zA-Z\d]*)\:', store=True),
     dict(type='T_MARKER', regex=r'^[a-zA-Z][a-zA-Z\d]*', store=True),
     dict(type='T_DIRECTIVE', regex=r'^\.[a-z]+', store=True),
-    dict(type='T_NUM', regex=r'^[\d]+', store=True), #TODO change to DECIMAL ARGUMENT
+    dict(type='T_DECIMAL_ARGUMENT', regex=r'^[\d]+', store=True),
     dict(type='T_ENDLINE', regex=r'^\n', store=True),
     dict(type='T_WHITESPACE', regex=r'^[ \t\r]+', store=False),
     dict(type='T_COMMENT', regex=r'^;[^\n]*', store=False)
@@ -45,8 +45,8 @@ def t_endline (tokens, index):
 def t_directive (tokens, index):
     return look_ahead(tokens, index, 'T_DIRECTIVE')
 
-def t_num(tokens, index):
-    return look_ahead(tokens, index, 'T_NUM')
+def t_decimal_argument(tokens, index):
+    return look_ahead(tokens, index, 'T_DECIMAL_ARGUMENT')
 
 def t_relative (tokens, index):
     if (look_ahead(tokens, index, 'T_INSTRUCTION') and 
@@ -188,7 +188,7 @@ def syntax(t):
             ) 
             ast.append(leaf)
             x += end
-        elif t_directive(t,x) and OR([t_num, t_address, t_marker, t_string], t, x+1):
+        elif t_directive(t,x) and OR([t_decimal_argument, t_address, t_marker, t_string], t, x+1):
             leaf = {}
             leaf['type'] = 'S_DIRECTIVE'
             leaf['directive'] = t[x]
@@ -258,7 +258,7 @@ def semantic(ast, iNES=False):
     for leaf in ast:
         if leaf['type'] == 'S_DIRECTIVE':
             directive = leaf['directive']['value']
-            if 'T_NUM' == leaf['args']['type']:
+            if 'T_DECIMAL_ARGUMENT' == leaf['args']['type']:
                 args = leaf['args']['value']
                 num = int(args)
                 directive_list[directive](num, cart)
@@ -303,3 +303,10 @@ def semantic(ast, iNES=False):
         return cart.get_ines_code()
     else:
         return cart.get_code()
+
+
+def main():
+    print 'yo'
+
+if __name__ == '__main__':
+    main()
