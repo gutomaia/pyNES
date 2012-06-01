@@ -269,21 +269,18 @@ def semantic(ast, iNES=False):
             if leaf['type'] == 'S_IMPLIED':
                 instruction = leaf['children'][0]['value']
                 address = False
-            elif leaf['type'] in ['S_RELATIVE', 'S_IMMEDIATE', 'S_ZEROPAGE', 'S_ABSOLUTE']:
-                instruction = leaf['children'][0]['value']
-                address = get_int_value(leaf['children'][1], labels)
-            elif leaf['type'] in ['S_ZEROPAGE_X', 'S_ZEROPAGE_Y', 'S_ABSOLUTE_X', 'S_ABSOLUTE_Y']:
+            elif leaf['type'] in [
+                'S_RELATIVE', 'S_IMMEDIATE', 'S_ZEROPAGE', 'S_ABSOLUTE',
+                'S_ZEROPAGE_X', 'S_ZEROPAGE_Y', 'S_ABSOLUTE_X', 'S_ABSOLUTE_Y']:
                 instruction = leaf['children'][0]['value']
                 address = get_int_value(leaf['children'][1], labels)
             elif leaf['type'] in ['S_INDIRECT_X', 'S_INDIRECT_Y']:
                 instruction = leaf['children'][0]['value']
                 address = get_int_value(leaf['children'][2], labels)
 
-            #instruction = leaf['instruction']['value']
             address_mode = address_mode_def[leaf['type']]['short']
             opcode = opcodes[instruction][address_mode]
             if address_mode != 'sngl':
-                #address = get_int_value(leaf['arg'], labels)
 
                 if 'rel' == address_mode:
                     address = 126 + (address - cart.pc)
