@@ -45,6 +45,9 @@ def t_endline (tokens, index):
 def t_directive (tokens, index):
     return look_ahead(tokens, index, 'T_DIRECTIVE')
 
+def t_directive_argument(tokens, index):
+    return OR([t_decimal_argument, t_address, t_marker, t_string], tokens, index)
+
 def t_decimal_argument(tokens, index):
     return look_ahead(tokens, index, 'T_DECIMAL_ARGUMENT')
 
@@ -188,7 +191,7 @@ def syntax(t):
             ) 
             ast.append(leaf)
             x += end
-        elif t_directive(t,x) and OR([t_decimal_argument, t_address, t_marker, t_string], t, x+1):
+        elif t_directive(t,x) and t_directive_argument(t,x+1):
             leaf = {}
             leaf['type'] = 'S_DIRECTIVE'
             leaf['directive'] = t[x]
