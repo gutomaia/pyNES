@@ -224,7 +224,6 @@ def syntax(t):
                         walk += 1
                     leaf['children'] = t[x: x+size]
                     leaf['type'] = bnf['type']
-                    leaf['short'] = bnf['short']
                     ast.append(leaf)
                     x += look_ahead
                     break;
@@ -248,7 +247,7 @@ def semantic(ast, iNES=False):
             for label in leaf['labels']:
                 labels[label] = address
         if leaf['type'] != 'S_DIRECTIVE':
-            size =  address_mode_def[leaf['short']]['size']
+            size =  address_mode_def[leaf['type']]['size']
             address += size
 
     labels['palette'] = 0xE000 #TODO stealing on test
@@ -281,7 +280,7 @@ def semantic(ast, iNES=False):
                 address = get_int_value(leaf['children'][2], labels)
 
             #instruction = leaf['instruction']['value']
-            address_mode = leaf['short']
+            address_mode = address_mode_def[leaf['type']]['short']
             opcode = opcodes[instruction][address_mode]
             if address_mode != 'sngl':
                 #address = get_int_value(leaf['arg'], labels)
@@ -295,7 +294,7 @@ def semantic(ast, iNES=False):
                     elif address > 128:
                         address = address & 0b01111111
 
-                if address_mode_def[address_mode]['size'] == 2:
+                if address_mode_def[leaf['type']]['size'] == 2:
                     cart.append_code([opcode, address])
                 else:
                     arg1 = (address & 0x00ff)

@@ -1,17 +1,17 @@
 # -*- coding: utf-8 -*-
 
 address_mode_def = {}
-address_mode_def['sngl'] = dict(size=1)
-address_mode_def['imm'] = dict(size=2)
-address_mode_def['zp'] = dict(size=2)
-address_mode_def['zpx'] = dict(size=2)
-address_mode_def['zpy'] = dict(size=2)
-address_mode_def['abs'] = dict(size=3)
-address_mode_def['absx'] = dict(size=3)
-address_mode_def['absy'] = dict(size=3)
-address_mode_def['indx'] = dict(size=2)
-address_mode_def['indy'] = dict(size=2)
-address_mode_def['rel'] = dict(size=2)
+address_mode_def['S_IMPLIED'] = dict(size=1, short='sngl')
+address_mode_def['S_IMMEDIATE'] = dict(size=2, short='imm')
+address_mode_def['S_ZEROPAGE'] = dict(size=2, short='zp')
+address_mode_def['S_ZEROPAGE_X'] = dict(size=2, short='zpx')
+address_mode_def['S_ZEROPAGE_Y'] = dict(size=2, short='zpy')
+address_mode_def['S_ABSOLUTE'] = dict(size=3, short='abs')
+address_mode_def['S_ABSOLUTE_X'] = dict(size=3, short='absx')
+address_mode_def['S_ABSOLUTE_Y'] = dict(size=3, short='absy')
+address_mode_def['S_INDIRECT_X'] = dict(size=2, short='indx')
+address_mode_def['S_INDIRECT_Y'] = dict(size=2, short='indy')
+address_mode_def['S_RELATIVE'] = dict(size=2, short='rel')
 
 opcodes = {}
 opcodes['ADC'] = dict(imm=0x69, zp=0x65, zpx=0x75, abs=0x6d, absx=0x7d,
