@@ -138,6 +138,7 @@ def OR(args, tokens, index):
     return 0
 
 asm65_bnf = [
+    dict(type='S_DIRECTIVE', short='rel', bnf=[t_directive, t_directive_argument]),
     dict(type='S_RELATIVE', short='rel', bnf=[t_relative, t_address_or_t_marker]),
     dict(type='S_IMMEDIATE', short='imm', bnf=[t_instruction, t_number]),
     dict(type='S_ZEROPAGE_X', short='zpx', bnf=[t_instruction, t_zeropage, t_separator, t_register_x]),
@@ -149,7 +150,6 @@ asm65_bnf = [
     dict(type='S_INDIRECT_X', short='indx', bnf=[t_instruction, t_open, t_address_or_t_marker, t_separator, t_register_x, t_close]),
     dict(type='S_INDIRECT_Y', short='indy', bnf=[t_instruction, t_open, t_address_or_t_marker, t_close, t_separator, t_register_y]),
     dict(type='S_IMPLIED', short='sngl', bnf=[t_instruction]),
-    #TODO dict(type='S_DIRECTIVE', short='sngl', bnf=[t_directive, [OR, t_num, t_address]]),
 ]
 
 def lexical(code):
@@ -167,6 +167,12 @@ def get_int_value(token, labels = []):
         return int(m.group(1), 2)
     elif token['type'] == 'T_MARKER':
         return labels[token['value']]
+    elif token['type'] == 'T_DECIMAL_ARGUMENT':
+        return int(token['value'])
+    elif token['type'] == 'T_STRING':
+        return token['value'][1:-1]
+    else:
+        raise Exception('could not get value')
 
 def get_label(number_token):
     m = match(asm65_tokens[9]['regex'], number_token)
@@ -185,19 +191,13 @@ def syntax(t):
             leaf['type'] = 'S_DIRECTIVE'
             leaf['directive'] = t[x]
             end = get_list_jump(t,x+1)
+            leaf['children'] = t[x: x+end]
             leaf['args'] = dict(
                 type = 'S_LIST',
-                elements = t[ x: x+end]
+                elements = t[x+1: x+end]
             ) 
             ast.append(leaf)
             x += end
-        elif t_directive(t,x) and t_directive_argument(t,x+1):
-            leaf = {}
-            leaf['type'] = 'S_DIRECTIVE'
-            leaf['directive'] = t[x]
-            leaf['args'] = t[x+1]
-            ast.append(leaf)
-            x += 2
         elif t_label(t,x):
             labels.append(get_label(t[x]['value']))
             x += 1
@@ -238,14 +238,12 @@ def semantic(ast, iNES=False):
     cart = Cartridge()
     labels = {}
     #find all labels o the symbol table
-    labels['palette'] = 0xE000 #TODO stealing on test
-    labels['sprites'] = 0xE000 + 32 #TODO stealing on test
     address = 0
     for leaf in ast:
         if leaf['type'] == 'S_DIRECTIVE':
-            directive = leaf['directive']['value']
+            directive = leaf['children'][0]['value']
             if '.org' == directive:
-                address = int(leaf['args']['value'][1:], 16)
+                address = int(leaf['children'][1]['value'][1:], 16)
         if 'labels' in leaf:
             for label in leaf['labels']:
                 labels[label] = address
@@ -253,28 +251,21 @@ def semantic(ast, iNES=False):
             size =  address_mode_def[leaf['short']]['size']
             address += size
 
+    labels['palette'] = 0xE000 #TODO stealing on test
+    labels['sprites'] = 0xE000 + 32 #TODO stealing on test
+
     #translate statments to opcode
     bank_id = 0
     for leaf in ast:
-        print leaf
         if leaf['type'] == 'S_DIRECTIVE':
-            directive = leaf['directive']['value']
-            if 'T_DECIMAL_ARGUMENT' == leaf['args']['type']:
-                args = leaf['args']['value']
-                num = int(args)
-                directive_list[directive](num, cart)
-            elif 'T_ADDRESS' == leaf['args']['type']:
-                address = int(leaf['args']['value'][1:], 16)
-                directive_list[directive](address, cart)
-            elif 'T_MARKER' == leaf['args']['type']:
-                address = get_int_value(leaf['args'], labels)
-                directive_list[directive](address, cart)
-            elif 'T_STRING' == leaf['args']['type']:
-                string = leaf['args']['value'][1:-1]
-                directive_list[directive](string, cart)
-            elif 'S_LIST' == leaf['args']['type']:
+            if len(leaf['children']) > 5:
+                directive = leaf['children'][0]['value']
                 elements = leaf['args']['elements']
                 directive_list[directive](elements, cart)
+            else:
+                directive = leaf['children'][0]['value']
+                argument = get_int_value(leaf['children'][1], labels)
+                directive_list[directive](argument, cart)
         else:
             if leaf['type'] == 'S_IMPLIED':
                 instruction = leaf['children'][0]['value']
