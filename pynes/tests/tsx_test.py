@@ -4,7 +4,7 @@ import unittest
 
 from pynes.compiler import lexical, syntax, semantic
 
-class TyaTest(unittest.TestCase):
+class TsxTest(unittest.TestCase):
 
     def test_tsx_sngl(self):
         tokens = lexical('TSX')

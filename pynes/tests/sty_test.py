@@ -30,7 +30,7 @@ class StyTest(unittest.TestCase):
         code = semantic(ast)
         self.assertEquals(code, [0x94, 0x10])
 
-    def test_stx_abs(self):
+    def test_sty_abs(self):
         tokens = lexical('STY $1234')
         self.assertEquals(2 , len(tokens))
         self.assertEquals('T_INSTRUCTION', tokens[0]['type'])

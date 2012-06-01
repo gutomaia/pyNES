@@ -16,7 +16,7 @@ class SbcTest(unittest.TestCase):
         code = semantic(ast)
         self.assertEquals(code, [0xe9, 0x10])
 
-    def test_adc_zp(self):
+    def test_sbc_zp(self):
         tokens = lexical('SBC $00')
         self.assertEquals(2 , len(tokens))
         self.assertEquals('T_INSTRUCTION', tokens[0]['type'])
@@ -27,10 +27,9 @@ class SbcTest(unittest.TestCase):
         code = semantic(ast)
         self.assertEquals(code, [0xe5, 0x00])
 
-    def test_adc_zpx(self):
+    def test_sbc_zpx(self):
         tokens = lexical('SBC $10,X')
         self.assertEquals(4 , len(tokens))
-        token = tokens[0]
         self.assertEquals('T_INSTRUCTION', tokens[0]['type'])
         self.assertEquals('T_ADDRESS', tokens[1]['type'])
         self.assertEquals('T_SEPARATOR', tokens[2]['type'])
@@ -41,7 +40,7 @@ class SbcTest(unittest.TestCase):
         code = semantic(ast)
         self.assertEquals(code, [0xf5, 0x10])
 
-    def test_adc_abs(self):
+    def test_sbc_abs(self):
         tokens = lexical('SBC $1234')
         self.assertEquals(2 , len(tokens))
         self.assertEquals('T_INSTRUCTION', tokens[0]['type'])
@@ -54,10 +53,9 @@ class SbcTest(unittest.TestCase):
         self.assertEquals(code, [0xed, 0x34, 0x12])
 
 
-    def test_adc_absx(self):
+    def test_sbc_absx(self):
         tokens = lexical('SBC $1234,X')
         self.assertEquals(4 , len(tokens))
-        token = tokens[0]
         self.assertEquals('T_INSTRUCTION', tokens[0]['type'])
         self.assertEquals('T_ADDRESS', tokens[1]['type'])
         self.assertEquals('$1234', tokens[1]['value'])
@@ -69,7 +67,7 @@ class SbcTest(unittest.TestCase):
         code = semantic(ast)
         self.assertEquals(code, [0xfd, 0x34, 0x12])
 
-    def test_adc_absy(self):
+    def test_sbc_absy(self):
         tokens = lexical('SBC $1234,Y')
         self.assertEquals(4 , len(tokens))
         self.assertEquals('T_INSTRUCTION', tokens[0]['type'])
@@ -82,7 +80,7 @@ class SbcTest(unittest.TestCase):
         code = semantic(ast)
         self.assertEquals(code, [0xf9, 0x34, 0x12])
 
-    def test_adc_indx(self):
+    def test_sbc_indx(self):
         tokens = lexical('SBC ($20,X)')
         self.assertEquals(6 , len(tokens))
         self.assertEquals('T_INSTRUCTION', tokens[0]['type'])
@@ -98,7 +96,7 @@ class SbcTest(unittest.TestCase):
         code = semantic(ast)
         self.assertEquals(code, [0xe1, 0x20])
 
-    def test_adc_indy(self):
+    def test_sbc_indy(self):
         tokens = lexical('SBC ($20),Y')
         self.assertEquals(6 , len(tokens))
         self.assertEquals('T_INSTRUCTION', tokens[0]['type'])
