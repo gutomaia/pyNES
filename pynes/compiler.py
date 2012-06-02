@@ -138,18 +138,18 @@ def OR(args, tokens, index):
     return 0
 
 asm65_bnf = [
-    dict(type='S_DIRECTIVE', short='rel', bnf=[t_directive, t_directive_argument]),
-    dict(type='S_RELATIVE', short='rel', bnf=[t_relative, t_address_or_t_marker]),
-    dict(type='S_IMMEDIATE', short='imm', bnf=[t_instruction, t_number]),
-    dict(type='S_ZEROPAGE_X', short='zpx', bnf=[t_instruction, t_zeropage, t_separator, t_register_x]),
-    dict(type='S_ZEROPAGE_Y', short='zpy', bnf=[t_instruction, t_zeropage, t_separator, t_register_y]),
-    dict(type='S_ZEROPAGE', short='zp', bnf=[t_instruction, t_zeropage]),
-    dict(type='S_ABSOLUTE_X', short='absx', bnf=[t_instruction, t_address_or_t_marker, t_separator, t_register_x]),
-    dict(type='S_ABSOLUTE_Y', short='absy', bnf=[t_instruction, t_address_or_t_marker, t_separator, t_register_y]),
-    dict(type='S_ABSOLUTE', short='abs', bnf=[t_instruction, t_address_or_t_marker]),
-    dict(type='S_INDIRECT_X', short='indx', bnf=[t_instruction, t_open, t_address_or_t_marker, t_separator, t_register_x, t_close]),
-    dict(type='S_INDIRECT_Y', short='indy', bnf=[t_instruction, t_open, t_address_or_t_marker, t_close, t_separator, t_register_y]),
-    dict(type='S_IMPLIED', short='sngl', bnf=[t_instruction]),
+    dict(type='S_DIRECTIVE', bnf=[t_directive, t_directive_argument]),
+    dict(type='S_RELATIVE', bnf=[t_relative, t_address_or_t_marker]),
+    dict(type='S_IMMEDIATE', bnf=[t_instruction, t_number]),
+    dict(type='S_ZEROPAGE_X', bnf=[t_instruction, t_zeropage, t_separator, t_register_x]),
+    dict(type='S_ZEROPAGE_Y', bnf=[t_instruction, t_zeropage, t_separator, t_register_y]),
+    dict(type='S_ZEROPAGE', bnf=[t_instruction, t_zeropage]),
+    dict(type='S_ABSOLUTE_X', bnf=[t_instruction, t_address_or_t_marker, t_separator, t_register_x]),
+    dict(type='S_ABSOLUTE_Y', bnf=[t_instruction, t_address_or_t_marker, t_separator, t_register_y]),
+    dict(type='S_ABSOLUTE', bnf=[t_instruction, t_address_or_t_marker]),
+    dict(type='S_INDIRECT_X', bnf=[t_instruction, t_open, t_address_or_t_marker, t_separator, t_register_x, t_close]),
+    dict(type='S_INDIRECT_Y', bnf=[t_instruction, t_open, t_address_or_t_marker, t_close, t_separator, t_register_y]),
+    dict(type='S_IMPLIED', bnf=[t_instruction]),
 ]
 
 def lexical(code):
@@ -254,7 +254,6 @@ def semantic(ast, iNES=False):
     labels['sprites'] = 0xE000 + 32 #TODO stealing on test
 
     #translate statments to opcode
-    bank_id = 0
     for leaf in ast:
         if leaf['type'] == 'S_DIRECTIVE':
             if len(leaf['children']) > 5:
