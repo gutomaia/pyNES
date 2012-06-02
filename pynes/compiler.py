@@ -155,7 +155,7 @@ asm65_bnf = [
 def lexical(code):
     return analyse(code, asm65_tokens)
 
-def get_int_value(token, labels = []):
+def get_value(token, labels = []):
     if token['type'] == 'T_ADDRESS':
         m = match(asm65_tokens[1]['regex'], token['value'])
         return int(m.group(1), 16)
@@ -262,7 +262,7 @@ def semantic(ast, iNES=False):
                 directive_list[directive](elements, cart)
             else:
                 directive = leaf['children'][0]['value']
-                argument = get_int_value(leaf['children'][1], labels)
+                argument = get_value(leaf['children'][1], labels)
                 directive_list[directive](argument, cart)
         else:
             if leaf['type'] == 'S_IMPLIED':
@@ -272,10 +272,10 @@ def semantic(ast, iNES=False):
                 'S_RELATIVE', 'S_IMMEDIATE', 'S_ZEROPAGE', 'S_ABSOLUTE',
                 'S_ZEROPAGE_X', 'S_ZEROPAGE_Y', 'S_ABSOLUTE_X', 'S_ABSOLUTE_Y']:
                 instruction = leaf['children'][0]['value']
-                address = get_int_value(leaf['children'][1], labels)
+                address = get_value(leaf['children'][1], labels)
             elif leaf['type'] in ['S_INDIRECT_X', 'S_INDIRECT_Y']:
                 instruction = leaf['children'][0]['value']
-                address = get_int_value(leaf['children'][2], labels)
+                address = get_value(leaf['children'][2], labels)
 
             address_mode = address_mode_def[leaf['type']]['short']
             opcode = opcodes[instruction][address_mode]
