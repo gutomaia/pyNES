@@ -16,13 +16,17 @@ asm65_tokens = [
     dict(type='T_ADDRESS', regex=r'\$([\dA-F]{2,4})', store=True),
     dict(type='T_HEX_NUMBER', regex=r'\#\$?([\dA-F]{2})', store=True), #TODO: change to HEX_NUMBER
     dict(type='T_BINARY_NUMBER', regex=r'\#%([01]{8})', store=True), #TODO: change to BINARY_NUMBER
+    dict(type='T_LABEL', regex=r'^([a-zA-Z]{2}[a-zA-Z\d]*)\:', store=True),
+    dict(type='T_MARKER', regex=r'^[a-zA-Z]{2}[a-zA-Z\d]*', store=True),
     dict(type='T_STRING', regex=r'^"[^"]*"', store=True),
     dict(type='T_SEPARATOR', regex=r'^,', store=True),
+    dict(type='T_ACCUMULATOR', regex=r'^(A|a)', store=True),
     dict(type='T_REGISTER', regex=r'^(X|x|Y|y)', store=True),
+    dict(type='T_MODIFIER', regex=r'^(#LOW|#HIGH)', store=True),
     dict(type='T_OPEN', regex=r'^\(', store=True),
     dict(type='T_CLOSE', regex=r'^\)', store=True),
-    dict(type='T_LABEL', regex=r'^([a-zA-Z][a-zA-Z\d]*)\:', store=True),
-    dict(type='T_MARKER', regex=r'^[a-zA-Z][a-zA-Z\d]*', store=True),
+    dict(type='T_OPEN_SQUARE_BRACKETS', regex=r'^\[', store=True),
+    dict(type='T_CLOSE_SQUARE_BRACKETS', regex=r'^\]', store=True),
     dict(type='T_DIRECTIVE', regex=r'^\.[a-z]+', store=True),
     dict(type='T_DECIMAL_ARGUMENT', regex=r'^[\d]+', store=True),
     dict(type='T_ENDLINE', regex=r'^\n', store=True),
@@ -165,6 +169,9 @@ def get_value(token, labels = []):
     elif token['type'] == 'T_BINARY_NUMBER':
         m = match(asm65_tokens[3]['regex'], token['value'])
         return int(m.group(1), 2)
+    elif token['type'] == 'T_LABEL':
+        m = match(asm65_tokens[4]['regex'], token['value'])
+        return m.group(1)
     elif token['type'] == 'T_MARKER':
         return labels[token['value']]
     elif token['type'] == 'T_DECIMAL_ARGUMENT':
@@ -173,12 +180,6 @@ def get_value(token, labels = []):
         return token['value'][1:-1]
     else:
         raise Exception('could not get value')
-
-def get_label(number_token):
-    m = match(asm65_tokens[9]['regex'], number_token)
-    if m:
-        return m.group(1)
-    raise Exception('Invalid Label')
 
 def syntax(t):
     ast = []
@@ -199,7 +200,7 @@ def syntax(t):
             ast.append(leaf)
             x += end
         elif t_label(t,x):
-            labels.append(get_label(t[x]['value']))
+            labels.append(get_value(t[x]))
             x += 1
         elif t_endline(t,x):
             x += 1
@@ -280,7 +281,6 @@ def semantic(ast, iNES=False):
             address_mode = address_mode_def[leaf['type']]['short']
             opcode = opcodes[instruction][address_mode]
             if address_mode != 'sngl':
-
                 if 'rel' == address_mode:
                     address = 126 + (address - cart.pc)
                     if address == 128:

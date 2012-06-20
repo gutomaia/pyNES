@@ -7,6 +7,14 @@ from pynes.compiler import lexical, syntax, semantic
 
 class ScrollingTest(unittest.TestCase):
 
+    def test_asm_compiler_scrolling_5(self):
+        f = open ('fixtures/nesasm/scrolling/scrolling5.asm')
+        code = f.read()
+        f.close()
+        tokens = lexical(code)
+        #ast = syntax(tokens)
+        #opcodes = semantic(ast)
+
     def test_partial_block(self):
         example = '''
                 SEI          ; disable IRQs
