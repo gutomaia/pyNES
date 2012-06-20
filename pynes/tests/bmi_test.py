@@ -18,7 +18,7 @@ class BmiTest(unittest.TestCase):
     '''This is an relative instruction, so it works quite different
     from others. The instruction uses an offset witch can range from
     -128 to +127. The offset is added to the program counter.'''
-    def test_bpl_rel(self):
+    def test_bmi_rel(self):
         tokens = lexical('BMI $10')
         self.assertEquals(2 , len(tokens))
         self.assertEquals('T_INSTRUCTION', tokens[0]['type'])
