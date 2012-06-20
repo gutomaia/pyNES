@@ -25,8 +25,12 @@ def analyse(code, tokenTypes):
                         )
                     )
                     #print tokenType['type'] + ' ' + m.group(0)
+                if m.group(0) == "\n":
+                    line += 1
+                    column = 1
+                else:
+                    column = column + len(m.group(0))
                 code = code[len(m.group(0)):]
-                column = column + len(m.group(0))
                 break;
         if not found:
             raise Exception('Unknow Token Code:'+code[0:500])

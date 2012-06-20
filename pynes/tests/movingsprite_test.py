@@ -61,51 +61,69 @@ class MovingSpriteTest(unittest.TestCase):
 
         #.inesprg 1
         self.assertEquals('S_DIRECTIVE', ast[0]['type'])
-        #self.assertEquals('T_DIRECTIVE', ast[0]['directive']['type'])
-        #self.assertEquals('.inesprg', ast[0]['directive']['value'])
+        self.assertEquals('T_DIRECTIVE', ast[0]['children'][0]['type'])
+        self.assertEquals('.inesprg', ast[0]['children'][0]['value'])
+        self.assertEquals(5, ast[0]['children'][0]['line']);
+        self.assertEquals(3, ast[0]['children'][0]['column']);
 
         #.ineschr 1
         self.assertEquals('S_DIRECTIVE', ast[1]['type'])
-        #self.assertEquals('T_DIRECTIVE', ast[1]['directive']['type'])
-        #self.assertEquals('.ineschr', ast[1]['directive']['value'])
+        self.assertEquals('T_DIRECTIVE', ast[1]['children'][0]['type'])
+        self.assertEquals('.ineschr', ast[1]['children'][0]['value'])
+        self.assertEquals(6, ast[1]['children'][0]['line']);
+        self.assertEquals(3, ast[1]['children'][0]['column']);
 
         #.inesmap 0
         self.assertEquals('S_DIRECTIVE', ast[2]['type'])
-        #self.assertEquals('T_DIRECTIVE', ast[2]['directive']['type'])
-        #self.assertEquals('.inesmap', ast[2]['directive']['value'])
+        self.assertEquals('T_DIRECTIVE', ast[2]['children'][0]['type'])
+        self.assertEquals('.inesmap', ast[2]['children'][0]['value'])
+        self.assertEquals(7, ast[2]['children'][0]['line']);
+        self.assertEquals(3, ast[2]['children'][0]['column']);
 
         #.inesmir 1
         self.assertEquals('S_DIRECTIVE', ast[3]['type'])
-        #self.assertEquals('T_DIRECTIVE', ast[3]['directive']['type'])
-        #self.assertEquals('.inesmir', ast[3]['directive']['value'])
+        self.assertEquals('T_DIRECTIVE', ast[3]['children'][0]['type'])
+        self.assertEquals('.inesmir', ast[3]['children'][0]['value'])
+        self.assertEquals(8, ast[3]['children'][0]['line']);
+        self.assertEquals(3, ast[3]['children'][0]['column']);
 
         #.bank 0
         self.assertEquals('S_DIRECTIVE', ast[4]['type'])
-        #self.assertEquals('T_DIRECTIVE', ast[4]['directive']['type'])
-        #self.assertEquals('.bank', ast[4]['directive']['value'])
+        self.assertEquals('T_DIRECTIVE', ast[4]['children'][0]['type'])
+        self.assertEquals('.bank', ast[4]['children'][0]['value'])
+        self.assertEquals(11, ast[4]['children'][0]['line']);
+        self.assertEquals(3, ast[4]['children'][0]['column']);
 
         #.org $C000
         self.assertEquals('S_DIRECTIVE', ast[5]['type'])
-        #self.assertEquals('T_DIRECTIVE', ast[5]['directive']['type'])
-        #self.assertEquals('.org', ast[5]['directive']['value'])
+        self.assertEquals('T_DIRECTIVE', ast[5]['children'][0]['type'])
+        self.assertEquals('.org', ast[5]['children'][0]['value'])
+        self.assertEquals(12, ast[5]['children'][0]['line']);
+        self.assertEquals(3, ast[5]['children'][0]['column']);
 
         # WAITVBLANK: BIT $2002
         self.assertEquals('S_ABSOLUTE', ast[6]['type'])
         self.assertEquals(['WAITVBLANK'], ast[6]['labels'])
-        #self.assertEquals('T_INSTRUCTION', ast[6]['instruction']['type'])
-        #self.assertEquals('BIT', ast[6]['instruction']['value'])
+        self.assertEquals('T_INSTRUCTION', ast[6]['children'][0]['type'])
+        self.assertEquals('BIT', ast[6]['children'][0]['value'])
+        self.assertEquals(15, ast[6]['children'][0]['line']);
+        self.assertEquals(3, ast[6]['children'][0]['column']);
 
         # BPL WAITVBLANK
         self.assertEquals('S_RELATIVE', ast[7]['type'])
         self.assertFalse('labels' in ast[7])
-        #self.assertEquals('T_INSTRUCTION', ast[7]['instruction']['type'])
-        #self.assertEquals('BPL', ast[7]['instruction']['value'])
+        self.assertEquals('T_INSTRUCTION', ast[7]['children'][0]['type'])
+        self.assertEquals('BPL', ast[7]['children'][0]['value'])
+        self.assertEquals(16, ast[7]['children'][0]['line']);
+        self.assertEquals(3, ast[7]['children'][0]['column']);
 
         # RTS
         self.assertEquals('S_IMPLIED', ast[8]['type'])
         self.assertFalse('labels' in ast[8])
-        #self.assertEquals('T_INSTRUCTION', ast[8]['instruction']['type'])
-        #self.assertEquals('RTS', ast[8]['instruction']['value'])
+        self.assertEquals('T_INSTRUCTION', ast[8]['children'][0]['type'])
+        self.assertEquals('RTS', ast[8]['children'][0]['value'])
+        self.assertEquals(17, ast[8]['children'][0]['line']);
+        self.assertEquals(3, ast[8]['children'][0]['column']);
 
         opcodes = semantic(ast, True)
         self.assertEquals(1, get_var('inesprg'))
