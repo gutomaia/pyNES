@@ -174,7 +174,7 @@ NewAttribCheck:
   LDA scroll
   AND #%00011111            ; check for multiple of 32
   BNE NewAttribCheckDone    ; if low 5 bits = 0, time to write new attribute bytes
-  jsr DrawNewAttributes
+  JSR DrawNewAttributes
 NewAttribCheckDone:
 
 
@@ -184,11 +184,11 @@ NewColumnCheck:
   BNE NewColumnCheckDone    ; done if lower bits != 0
   JSR DrawNewColumn         ; if lower bits = 0, time for new column
   
-  lda columnNumber
-  clc
-  adc #$01             ; go to next column
-  and #%01111111       ; only 128 columns of data, throw away top bit to wrap
-  sta columnNumber
+  LDA columnNumber
+  CLC
+  ADC #$01             ; go to next column
+  AND #%01111111       ; only 128 columns of data, throw away top bit to wrap
+  STA columnNumber
 NewColumnCheckDone:
 
 
@@ -327,7 +327,7 @@ DrawNewAttributes:
 
   LDY #$00
   LDA $2002             ; read PPU status to reset the high/low latch
-DrawNewAttributesLoop
+DrawNewAttributesLoop:
   LDA columnHigh
   STA $2006             ; write the high byte of column address
   LDA columnLow
@@ -346,7 +346,7 @@ DrawNewAttributesLoop
   JMP DrawNewAttributesLoop
 DrawNewAttributesLoopDone:
 
-  rts
+  RTS
 ;;;;;;;;;;;;;;  
   
   

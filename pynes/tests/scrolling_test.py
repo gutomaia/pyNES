@@ -12,7 +12,7 @@ class ScrollingTest(unittest.TestCase):
         code = f.read()
         f.close()
         tokens = lexical(code)
-        #ast = syntax(tokens)
+        ast = syntax(tokens)
         #opcodes = semantic(ast)
 
     def test_partial_block(self):

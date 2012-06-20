@@ -46,6 +46,9 @@ def look_ahead(tokens, index, type, value = None):
 def t_endline (tokens, index):
     return look_ahead(tokens, index, 'T_ENDLINE', '\n')
 
+def t_modifier(tokens, index):
+    return look_ahead(tokens, index, 'T_MODIFIER')
+
 def t_directive (tokens, index):
     return look_ahead(tokens, index, 'T_DIRECTIVE')
 
@@ -100,6 +103,9 @@ def t_number(tokens, index):
 def t_separator(tokens , index):
     return look_ahead(tokens, index, 'T_SEPARATOR')
 
+def t_accumulator(tokens, index):
+    return look_ahead(tokens, index, 'T_ACCUMULATOR', 'A')
+
 def t_register_x(tokens, index):
     return look_ahead(tokens, index, 'T_REGISTER', 'X')
 
@@ -111,6 +117,18 @@ def t_open(tokens, index):
 
 def t_close(tokens, index):
     return look_ahead(tokens, index, 'T_CLOSE', ')')
+
+def t_open_square_brackets(tokens, index):
+    return look_ahead(tokens, index, 'T_OPEN_SQUARE_BRACKETS', '[')
+
+def t_close_square_brackets(tokens, index):
+    return look_ahead(tokens, index, 'T_CLOSE_SQUARE_BRACKETS', ']')
+
+def t_nesasm_compatible_open(tokens, index):
+        return OR([t_open, t_open_square_brackets], tokens, index)
+
+def t_nesasm_compatible_close(tokens, index):
+        return OR([t_close, t_close_square_brackets], tokens, index)
 
 def t_list(tokens, index):
     if t_address(tokens, index) and t_separator(tokens, index+1):
@@ -142,17 +160,20 @@ def OR(args, tokens, index):
     return 0
 
 asm65_bnf = [
+    dict(type='S_RS', bnf=[t_marker, t_directive, t_directive_argument]),
     dict(type='S_DIRECTIVE', bnf=[t_directive, t_directive_argument]),
     dict(type='S_RELATIVE', bnf=[t_relative, t_address_or_t_marker]),
     dict(type='S_IMMEDIATE', bnf=[t_instruction, t_number]),
+    dict(type='S_IMMEDIATE_WITH_MODIFIER', bnf=[t_instruction, t_modifier, t_open, t_address_or_t_marker, t_close]), #nesasm hack
+    dict(type='S_ACCUMULATOR', bnf=[t_instruction, t_accumulator]),
     dict(type='S_ZEROPAGE_X', bnf=[t_instruction, t_zeropage, t_separator, t_register_x]),
     dict(type='S_ZEROPAGE_Y', bnf=[t_instruction, t_zeropage, t_separator, t_register_y]),
     dict(type='S_ZEROPAGE', bnf=[t_instruction, t_zeropage]),
     dict(type='S_ABSOLUTE_X', bnf=[t_instruction, t_address_or_t_marker, t_separator, t_register_x]),
     dict(type='S_ABSOLUTE_Y', bnf=[t_instruction, t_address_or_t_marker, t_separator, t_register_y]),
     dict(type='S_ABSOLUTE', bnf=[t_instruction, t_address_or_t_marker]),
-    dict(type='S_INDIRECT_X', bnf=[t_instruction, t_open, t_address_or_t_marker, t_separator, t_register_x, t_close]),
-    dict(type='S_INDIRECT_Y', bnf=[t_instruction, t_open, t_address_or_t_marker, t_close, t_separator, t_register_y]),
+    dict(type='S_INDIRECT_X', bnf=[t_instruction, t_nesasm_compatible_open, t_address_or_t_marker, t_separator, t_register_x, t_nesasm_compatible_close]),
+    dict(type='S_INDIRECT_Y', bnf=[t_instruction, t_nesasm_compatible_open, t_address_or_t_marker, t_nesasm_compatible_close, t_separator, t_register_y]),
     dict(type='S_IMPLIED', bnf=[t_instruction]),
 ]
 
