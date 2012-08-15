@@ -3,6 +3,9 @@
 address_mode_def = {}
 address_mode_def['S_IMPLIED'] = dict(size=1, short='sngl')
 address_mode_def['S_IMMEDIATE'] = dict(size=2, short='imm')
+address_mode_def['S_IMMEDIATE_WITH_MODIFIER'] = dict(size=2, short='imm')
+address_mode_def['S_ACCUMULATOR'] = dict(size=1, short='acc')
+address_mode_def['S_IMMEDIATE'] = dict(size=2, short='imm')
 address_mode_def['S_ZEROPAGE'] = dict(size=2, short='zp')
 address_mode_def['S_ZEROPAGE_X'] = dict(size=2, short='zpx')
 address_mode_def['S_ZEROPAGE_Y'] = dict(size=2, short='zpy')
@@ -18,7 +21,7 @@ opcodes['ADC'] = dict(imm=0x69, zp=0x65, zpx=0x75, abs=0x6d, absx=0x7d,
     absy=0x79, indx=0x61, indy=0x71)
 opcodes['AND'] = dict(imm=0x29, zp=0x25, zpx=0x35, abs=0x2d, absx=0x3d,
     absy=0x39, indx=0x21, indy=0x31)
-opcodes['ASL'] = dict(imm=0x0a, zp=0x06, zpx=0x16, abs=0x0e, absx=0x1e)
+opcodes['ASL'] = dict(acc=0x0a, imm=0x0a, zp=0x06, zpx=0x16, abs=0x0e, absx=0x1e)
 opcodes['BCC'] = dict(rel=0x90)
 opcodes['BCS'] = dict(rel=0xb0)
 opcodes['BEQ'] = dict(rel=0xf0)
@@ -50,7 +53,7 @@ opcodes['LDA'] = dict(imm=0xa9, zp=0xa5, zpx=0xb5, abs=0xad, absx=0xbd,
     absy=0xb9, indx=0xa1, indy=0xb1)
 opcodes['LDX'] = dict(imm=0xa2, zp=0xa6, zpy=0xb6, abs=0xae, absy=0xbe)
 opcodes['LDY'] = dict(imm=0xa0, zp=0xa4, zpx=0xb4, abs=0xac, absx=0xbc)
-opcodes['LSR'] = dict(imm=0x4a, zp=0x46, zpx=0x56, abs=0x4e, absx=0x5e)
+opcodes['LSR'] = dict(acc=0x4a, imm=0x4a, zp=0x46, zpx=0x56, abs=0x4e, absx=0x5e)
 opcodes['NOP'] = dict(sngl=0xea)
 opcodes['ORA'] = dict(imm=0x09, zp=0x05, zpx=0x15, abs=0x0d, absx=0x1d,
     absy=0x19, indx=0x01, indy=0x11)

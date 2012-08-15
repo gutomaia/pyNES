@@ -251,12 +251,13 @@ def syntax(t):
                     break;
         debug += 1
         if debug > 10000:
-            print t[x]
+            #print t[x]
             raise Exception('Infinity Loop')
     return ast
 
-def semantic(ast, iNES=False):
-    cart = Cartridge()
+def semantic(ast, iNES=False, cart=None ):
+    if cart == None:
+        cart = Cartridge()
     labels = {}
     #find all labels o the symbol table
     address = 0
@@ -268,7 +269,7 @@ def semantic(ast, iNES=False):
         if 'labels' in leaf:
             for label in leaf['labels']:
                 labels[label] = address
-        if leaf['type'] != 'S_DIRECTIVE':
+        if leaf['type'] != 'S_DIRECTIVE' and leaf['type'] != 'S_RS':
             size =  address_mode_def[leaf['type']]['size']
             address += size
 
@@ -277,7 +278,10 @@ def semantic(ast, iNES=False):
 
     #translate statments to opcode
     for leaf in ast:
-        if leaf['type'] == 'S_DIRECTIVE':
+        if leaf['type'] == 'S_RS':
+            labels[leaf['children'][0]['value']] = cart.rs;
+            cart.rs += get_value(leaf['children'][2]);
+        elif leaf['type'] == 'S_DIRECTIVE':
             if len(leaf['children']) > 5:
                 directive = leaf['children'][0]['value']
                 elements = leaf['args']['elements']
@@ -287,9 +291,20 @@ def semantic(ast, iNES=False):
                 argument = get_value(leaf['children'][1], labels)
                 directive_list[directive](argument, cart)
         else:
-            if leaf['type'] == 'S_IMPLIED':
+            if leaf['type'] in ['S_IMPLIED', 'S_ACCUMULATOR']:
                 instruction = leaf['children'][0]['value']
                 address = False
+            elif leaf['type'] == 'S_RELATIVE':
+                instruction = leaf['children'][0]['value']
+                address = get_value(leaf['children'][1], labels)
+            elif leaf['type'] == 'S_IMMEDIATE_WITH_MODIFIER':
+                instruction = leaf['children'][0]['value']
+                modifier = leaf['children'][1]['value']
+                address = get_value(leaf['children'][3], labels);
+                if modifier == '#LOW':
+                    address = (address & 0x00ff)
+                elif modifier == '#HIGH':
+                    address = (address & 0xff00) >> 8;
             elif leaf['type'] in [
                 'S_RELATIVE', 'S_IMMEDIATE', 'S_ZEROPAGE', 'S_ABSOLUTE',
                 'S_ZEROPAGE_X', 'S_ZEROPAGE_Y', 'S_ABSOLUTE_X', 'S_ABSOLUTE_Y']:

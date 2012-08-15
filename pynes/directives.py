@@ -30,14 +30,17 @@ def d_dw(arg, cart):
     arg2 = (arg & 0xff00) >> 8
     cart.append_code([arg1, arg2])
 
-
-
 def d_incbin(arg, cart):
-    f = open('fixtures/movingsprite/'+arg, 'rw')
+    f = open(cart.path + arg, 'rw')
     content = f.read()
     for c in content:
         cart.append_code([ord(c)])
-    #raise Exception()
+
+def d_rsset(arg, cart):
+    pass
+
+def d_rs(arg, cart):
+    pass
 
 directive_list = {}
 directive_list['.inesprg'] = d_inesprg
@@ -49,3 +52,5 @@ directive_list['.org'] = d_org
 directive_list['.db'] = d_db
 directive_list['.dw'] = d_dw
 directive_list['.incbin'] = d_incbin
+directive_list['.rsset'] = d_rsset
+directive_list['.rs'] = d_rs

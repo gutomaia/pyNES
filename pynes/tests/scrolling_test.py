@@ -4,16 +4,19 @@ import unittest
 
 import pynes
 from pynes.compiler import lexical, syntax, semantic
+from pynes.cartridge import Cartridge
 
 class ScrollingTest(unittest.TestCase):
 
     def test_asm_compiler_scrolling_5(self):
+        cart = Cartridge()
+        cart.path = 'fixtures/nesasm/scrolling/'
         f = open ('fixtures/nesasm/scrolling/scrolling5.asm')
         code = f.read()
         f.close()
         tokens = lexical(code)
         ast = syntax(tokens)
-        #opcodes = semantic(ast)
+        opcodes = semantic(ast, cart = cart)
 
     def test_partial_block(self):
         example = '''
