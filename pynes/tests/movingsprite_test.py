@@ -4,6 +4,7 @@ import unittest
 
 import pynes
 from pynes.compiler import lexical, syntax, semantic
+from pynes.cartridge import Cartridge
 from pynes.asm import get_var
 
 class MovingSpriteTest(unittest.TestCase):
@@ -125,7 +126,10 @@ class MovingSpriteTest(unittest.TestCase):
         self.assertEquals(17, ast[8]['children'][0]['line']);
         self.assertEquals(3, ast[8]['children'][0]['column']);
 
-        opcodes = semantic(ast, True)
+        cart = Cartridge()
+        cart.path = 'fixtures/movingsprite/'        
+
+        opcodes = semantic(ast, True, cart=cart)
         self.assertEquals(1, get_var('inesprg'))
         self.assertEquals(1, get_var('ineschr'))
         self.assertEquals(0, get_var('inesmap'))

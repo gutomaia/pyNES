@@ -9,7 +9,7 @@ class Cartridge:
         self.inesmap = 1
         self.inesmir = 1
         self.rs = 0
-        self.path = 'fixtures/movingsprite/'
+        self.path = ''
 
     def nes_id(self):
         #NES 
