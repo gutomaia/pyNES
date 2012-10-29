@@ -61,4 +61,24 @@ def get_sprite(index, sprites):
     return decode_sprite(channelA, channelB)
 
 def encode_sprite(sprite):
-    pass
+    channelA = [];
+    channelB = [];
+    for y in range(8):
+        a = 0
+        b = 0
+        for x in range(8):
+            pixel = sprite[y][x];
+            bit = pow(2,7-x);
+            if pixel == 1:
+                a = a | bit
+            elif pixel == 2:
+                b = b | bit
+            elif pixel == 3:
+                a = a | bit
+                b = b | bit
+        channelA.append(a);
+        channelB.append(b);
+    return channelA + channelB
+
+def length(sprites):
+    return len(sprites) / 16

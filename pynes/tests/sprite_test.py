@@ -61,6 +61,16 @@ class SpriteTest(unittest.TestCase):
         s2 = sprite.get_sprite(1, self.bin)
         self.assertEquals(self.mario2, s2)
 
+    def test_sprite_length(self):
+        length = sprite.length(self.bin)
+        self.assertEquals(512, length)
 
     def test_encode_first_sprite(self):
         encoded = sprite.encode_sprite(self.mario1)
+        expected = self.bin[0:16]
+        self.assertEquals(expected, encoded)
+
+    def test_encode_second_sprite(self):
+        encoded = sprite.encode_sprite(self.mario2)
+        expected = self.bin[16:32]
+        self.assertEquals(expected, encoded)
