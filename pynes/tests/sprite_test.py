@@ -74,3 +74,35 @@ class SpriteTest(unittest.TestCase):
         encoded = sprite.encode_sprite(self.mario2)
         expected = self.bin[16:32]
         self.assertEquals(expected, encoded)
+
+    def test_put_first_sprite(self):
+        expected = [
+            [0,1,2,3,0,1,2,3],
+            [1,0,1,2,3,0,1,2],
+            [2,1,0,1,2,3,0,1],
+            [3,2,1,0,1,2,3,0],
+            [0,3,2,1,0,1,2,3],
+            [1,0,3,2,1,0,1,2],
+            [2,1,0,3,2,1,0,1],
+            [3,2,1,0,3,2,1,0]
+        ]
+        sprite.put_sprite(0, self.bin, expected)
+        s1 = sprite.get_sprite(0, self.bin)
+        self.assertEquals(expected, s1)
+
+    def test_put_second_sprite(self):
+        expected = [
+            [0,1,2,3,0,1,2,3],
+            [1,0,1,2,3,0,1,2],
+            [2,1,0,1,2,3,0,1],
+            [3,2,1,0,1,2,3,0],
+            [0,3,2,1,0,1,2,3],
+            [1,0,3,2,1,0,1,2],
+            [2,1,0,3,2,1,0,1],
+            [3,2,1,0,3,2,1,0]
+        ]
+        sprite.put_sprite(1, self.bin, expected)
+        s1 = sprite.get_sprite(1, self.bin)
+        self.assertEquals(expected, s1)
+
+

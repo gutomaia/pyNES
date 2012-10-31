@@ -80,5 +80,14 @@ def encode_sprite(sprite):
         channelB.append(b);
     return channelA + channelB
 
+def put_sprite(index, sprites, spr):
+    start = index * 16;
+    encoded = encode_sprite(spr);
+    j = 0
+    for i in range(start, start + 16):
+        sprites[i] = encoded[j]
+        j += 1
+    return sprites;
+
 def length(sprites):
     return len(sprites) / 16
