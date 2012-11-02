@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 def load_nametable(nt_file):
-    f = open('fixtures/nesasm/scrolling/SMBlevel.bin')
+    f = open(nt_file)
     nt_content = f.read()
     nt_bin = []
     for nt in nt_content:
