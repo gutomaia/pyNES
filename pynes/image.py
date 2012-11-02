@@ -2,7 +2,7 @@
 
 from PIL import Image, ImageDraw
 from pynes import write_bin_code
-import sprite
+import sprite, nametable
 
 palette = [
     (0,0,0),
@@ -97,5 +97,32 @@ def export_chr(chr_file, png_file, palette=palette, width=8):
                 draw.point((x+(8*dx),y+(8*dy)), palette[color])
     img.save(png_file, 'PNG')
 
+def draw_sprite(spr, dx, dy, draw, palette):
+    for y in range(8):
+        for x in range(8):
+            color = spr[y][x]
+            draw.point((x+(8*dx),y+(8*dy)), palette[color])
+
 def export_nametable(nametable_file, chr_file, png_file, palette=palette):
-    pass
+    nts = nametable.load_nametable(nametable_file)
+    sprs = sprite.load_sprites(chr_file)
+
+    nt = nametable.get_nametable(0, nts)
+    size = (256, 256)
+    img = Image.new('RGB', size)
+    draw = ImageDraw.Draw(img)
+
+    nt_index = 0
+
+    num_nt = nametable.length(nts)
+
+    for y in range(32):
+        for x in range(32):
+            dx = nt_index / 32
+            dy = nt_index % 32
+            spr_index = nt[y][x] + 256
+            spr = sprite.get_sprite(spr_index, sprs)
+            draw_sprite(spr, dx, dy, draw, palette)
+            nt_index += 1
+
+    img.save(png_file, 'PNG')

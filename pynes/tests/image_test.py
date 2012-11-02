@@ -87,9 +87,16 @@ class ImageTest(unittest.TestCase):
 
         os.remove('/tmp/mario.png')
 
-    def test_import_namespace(self):
-        pass
-
     def test_export_namespace(self):
-        pass
+        try:
+            os.remove('/tmp/level.png')
+        except:
+            pass
 
+        self.assertFalse(os.path.exists('/tmp/level.png'))
+        image.export_nametable(
+            'fixtures/nesasm/scrolling/SMBlevel.bin',
+            'fixtures/nesasm/scrolling/mario.chr',
+            '/tmp/level.png')
+        self.assertTrue(os.path.exists('/tmp/level.png'))
+        os.remove('/tmp/level.png')
