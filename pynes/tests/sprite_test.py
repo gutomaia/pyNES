@@ -7,7 +7,8 @@ from pynes import sprite
 
 class SpriteTest(unittest.TestCase):
 
-    def setUp(self):
+    def __init__(self, testcase_name):
+        unittest.TestCase.__init__(self, testcase_name)
         f = open('fixtures/nesasm/scrolling/mario.chr', 'rb')
         content = f.read()
         self.bin = []
@@ -105,4 +106,10 @@ class SpriteTest(unittest.TestCase):
         s1 = sprite.get_sprite(1, self.bin)
         self.assertEquals(expected, s1)
 
+    def test_find_sprite_1(self):
+        index = sprite.find_sprite(self.bin, self.mario1)
+        self.assertEquals(0, index)
 
+    def test_find_sprite_2(self):
+        index = sprite.find_sprite(self.bin, self.mario2)
+        self.assertEquals(1, index)

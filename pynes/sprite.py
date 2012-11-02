@@ -91,3 +91,9 @@ def put_sprite(index, sprites, spr):
 
 def length(sprites):
     return len(sprites) / 16
+
+def find_sprite(sprites, spr, start=0):
+    for index in range(start, length(sprites)):
+        if spr == get_sprite(index, sprites):
+            return index - start
+    return -1

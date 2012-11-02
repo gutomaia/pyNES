@@ -50,8 +50,6 @@ def convert_chr(image, nes_palette=None):
     )
     if default:
         nes_palette = palette
-    print image.size[0] / 8
-    print image.size[1] / 8
 
     sprs = []
     for y in range(image.size[1] / 8 ):
@@ -126,3 +124,38 @@ def export_nametable(nametable_file, chr_file, png_file, palette=palette):
             nt_index += 1
 
     img.save(png_file, 'PNG')
+
+def import_nametable(png_file, chr_file, nametable_file, palette=palette):
+    image = Image.open(png_file)
+    pixels = image.load()
+    colors = []
+    for i in range(image.size[0]):
+        for j in range(image.size[1]):
+            if pixels[i,j] not in colors:
+                colors.append(pixels[i,j])
+    assert len(colors) == 4, "Image has %i colors, it can only have 4" % len(colors)
+    assert image.size[0] % 8 == 0
+    assert image.size[1] % 8 == 0
+    sprs = sprite.load_sprites(chr_file)
+
+    default =  (
+        (0,0,0) in colors and
+        (255,0,0) in colors and
+        (0,255,0) in colors and
+        (0,0,255) in colors
+    )
+    if default:
+        nes_palette = palette
+
+    nametable = []
+
+    if sprite.length(sprs) == 512:
+        start = 256
+        print start
+
+    for y in range(image.size[0] / 8 ):
+        for x in range(image.size[1] / 8 ):
+            spr = fetch_chr(pixels, y, x, nes_palette)
+            index = sprite.find_sprite(sprs, spr, start)
+            nametable.append(index)
+    write_bin_code(nametable, nametable_file)
