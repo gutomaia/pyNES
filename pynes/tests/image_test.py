@@ -102,48 +102,6 @@ class ImageTest(unittest.TestCase):
         self.assertTrue(os.path.exists('/tmp/level.png'))
         os.remove('/tmp/level.png')
 
-    def assertHexEquals(self, expected, actual):
-        HEADER = '\033[95m'
-        OKBLUE = '\033[94m'
-        OKGREEN = '\033[92m'
-        WARNING = '\033[93m'
-        FAIL = '\033[91m'
-        ENDC = '\033[0m'
-        try:
-            self.assertEquals(expected, actual)
-        except:
-            line = 0
-            cursor = 0
-            lines = []
-            out = ''
-            while (cursor < len(expected) or cursor < len(actual)):
-                for a in range(16):
-                    if cursor < len(expected) and cursor < len(actual):
-                        if expected[cursor] != actual[cursor]:
-                            lines.append(line)
-                    cursor += 1
-                line += 1
-            exp = ''
-            act = ''
-            for line in lines:
-                exp = 'Expected: %04x: ' % (line)
-                act = 'Actual  : %04x: ' % (line)
-                for a in range(16):
-                    cursor = (line * 16)+ a
-                    if cursor < len(expected) and cursor < len(actual):
-                            if expected[cursor] != actual[cursor]:
-                                exp += '%s%02x%s' % (OKGREEN, ord(expected[cursor]), ENDC)
-                                act += '%s%02x%s' % (FAIL, ord(actual[cursor]), ENDC)
-                            else:
-                                exp += '%02x' % ord(expected[cursor])
-                                act += '%02x' % ord(actual[cursor])
-                    if ((a+1) % 2) == 0:
-                        exp += ' '
-                        act += ' '
-                out += '%s- %d \n' % (exp, line + 1)
-                out += '%s- %d \n' % (act, line + 1)
-            print out
-
     def test_import_nametable(self):
         try:
             os.remove('/tmp/level.bin')
@@ -160,5 +118,24 @@ class ImageTest(unittest.TestCase):
         expected = open('fixtures/nesasm/scrolling/SMBlevel.bin', 'rb').read()
         actual = open('/tmp/level.bin', 'rb').read()
         size = len(actual)
-        self.assertHexEquals(expected[:size], actual[:size])
         self.assertEquals(expected[:size], actual[:size])
+
+    def test_convert_nametable(self): 
+        level = Image.open('fixtures/level.png')
+        sprs = sprite.load_sprites('fixtures/nesasm/scrolling/mario.chr')
+        nt = image.convert_nametable(level, sprs)
+
+        return
+        expected = open('fixtures/nesasm/scrolling/SMBlevel.bin', 'rb').read()
+        actual = open('/tmp/level.bin', 'rb').read()
+        size = len(actual)
+        self.assertEquals(expected[:size], actual[:size])
+
+        sprs = image.convert_chr(img)
+        self.assertEquals(8192, len(sprs))
+        self.assertEquals(self.mario1, sprite.get_sprite(0, sprs))
+        self.assertEquals(self.mario2, sprite.get_sprite(1, sprs))
+
+    def test_convert_to_nametable(self):
+        (nt, sprs) = image.convert_to_nametable('fixtures/level.png')
+        #self.assertEquals(sprite.length(sprs), 15)

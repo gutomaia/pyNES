@@ -1,6 +1,8 @@
 # -*- coding: utf-8 -*-
 
 from PIL import Image, ImageDraw
+from collections import Counter
+
 from pynes import write_bin_code
 import sprite, nametable
 
@@ -26,13 +28,14 @@ def create_pil_palette():
     palette = []
     for p in pps:
         palette.extend(p)
-    return palette + [0, ] * (256 - len(pps)) * 3
+    while len(palette) < (256 * 3):
+        palette.extend(pps[3])
+    return palette
 
 def fetch_image(img_file):
     pass
 
-def convert_chr(image, nes_palette=None):
-    global palette
+def convert_chr(image, nes_palette=palette):
     assert image.size[0] % 8 == 0
     assert image.size[1] % 8 == 0
     pixels = image.load()
@@ -41,6 +44,7 @@ def convert_chr(image, nes_palette=None):
         for j in range(image.size[1]):
             if pixels[i,j] not in colors:
                 colors.append(pixels[i,j])
+
     assert len(colors) == 4, "Image has %i colors, it can only have 4" % len(colors)
     default =  (
         (0,0,0) in colors and
@@ -66,7 +70,11 @@ def fetch_chr(pixels, x, y, palette = palette):
     for j in range(dy, dy + 8):
         line = []
         for i in range(dx, dx + 8):
-            color = palette.index(pixels[i,j])
+            if isinstance(pixels[i,j], int):
+                color = pixels[i,j]
+            else:
+                color = palette.index(pixels[i,j])
+            assert color >= 0 and color <= 3
             line.append(color)
         spr.append(line)
     return spr
@@ -125,8 +133,7 @@ def export_nametable(nametable_file, chr_file, png_file, palette=palette):
 
     img.save(png_file, 'PNG')
 
-def import_nametable(png_file, chr_file, nametable_file, palette=palette):
-    image = Image.open(png_file)
+def convert_nametable(image, sprs, palette = palette):
     pixels = image.load()
     colors = []
     for i in range(image.size[0]):
@@ -136,7 +143,6 @@ def import_nametable(png_file, chr_file, nametable_file, palette=palette):
     assert len(colors) == 4, "Image has %i colors, it can only have 4" % len(colors)
     assert image.size[0] % 8 == 0
     assert image.size[1] % 8 == 0
-    sprs = sprite.load_sprites(chr_file)
 
     default =  (
         (0,0,0) in colors and
@@ -146,16 +152,52 @@ def import_nametable(png_file, chr_file, nametable_file, palette=palette):
     )
     if default:
         nes_palette = palette
+    #todo
+    nes_palette = palette
 
     nametable = []
-
     if sprite.length(sprs) == 512:
         start = 256
-        print start
+    else:
+        start = 0
 
     for y in range(image.size[0] / 8 ):
         for x in range(image.size[1] / 8 ):
             spr = fetch_chr(pixels, y, x, nes_palette)
             index = sprite.find_sprite(sprs, spr, start)
             nametable.append(index)
+    return nametable
+
+def import_nametable(png_file, chr_file, nametable_file, palette=palette):
+    image = Image.open(png_file)
+    sprs = sprite.load_sprites(chr_file)
+    nametable = convert_nametable(image, sprs, palette)
     write_bin_code(nametable, nametable_file)
+
+
+def convert_to_nametable(image_file):
+    colors = []
+    original = Image.open(image_file)
+    original = original.convert('RGB')
+    
+    template = Image.new('P', original.size)
+    template.putpalette(create_pil_palette())
+
+    converted = original.quantize(palette=template, colors=4)
+    pixels = converted.load()
+
+    cnt = Counter()
+    for i in range(converted.size[0]):
+        for j in range(converted.size[1]):
+            if pixels[i,j] not in colors:
+                colors.append(pixels[i,j])
+            cnt[pixels[i,j]] += 1
+        break
+
+    #cnt.most_common(4) 
+
+    sprs = convert_chr(converted)
+    nametable = convert_nametable(converted, sprs)
+    write_bin_code(sprs, 'sprite.chr')
+    return (nametable, sprs)
+
