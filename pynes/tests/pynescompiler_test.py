@@ -6,17 +6,78 @@ from pynes.python import pynes_compiler, Cartridge
 
 class PyNesCompilerTest(unittest.TestCase):
 
-    def test_wait_vblank_called_twice(self):
-        code = '''
-from pynes.bitbag import *
+    def test_movingsprite(self):
+        code = (
+            'from pynes.bitbag import *\n'
 
-def reset():
-    wait_vblank()
-    wait_vblank()'''
+            #'import_chr("player.png")\n'
+            'palette = [0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,\n'
+            '    0x0F, 48, 49, 50, 51, 53, 54, 55, 56, 57, 58, 59,\n'
+            '    60, 61, 62, 63 ]\n'
+            #'sprite = define_sprite()\n'
+            'x = rs(1)\n'
+            'y = rs(1)\n'
+
+            'def reset():\n'
+            '    wait_vblank()\n'
+            #'    clearmen()\n'
+            '    wait_vblank()\n'
+            #'    load_palette(palette)\n'
+            #'    load_sprite(sprite)\n'
+
+            'def joypad1_up():\n'
+            '    global y\n'
+            '    y += 1\n'
+
+            'def joypad1_down():\n'
+            '    global y\n'
+            '    y -= 1\n'
+
+            'def joypad1_left():\n'
+            '    global x\n'
+            '    x -= 1\n'
+
+            'def joypad1_right():\n'
+            '    global x\n'
+            '    x += 1\n')
+
         cart = pynes_compiler(code)
-        cart.to_asm()
-        self.assertEquals(1, len(cart.bitpaks))
+        asm = cart.to_asm()
+        #self.assertEquals(1, len(cart.bitpaks))
+        self.assertTrue('.bank 0' in asm)
+        self.assertTrue('.org $C000' in asm)
+        self.assertTrue('.bank 1' in asm)
+        self.assertTrue('.org $E000' in asm)
 
+
+    def test_wait_vblank(self):
+        code = (
+            'from pynes.bitbag import *\n'
+
+            'def reset():\n'
+            '    wait_vblank()')
+        cart = pynes_compiler(code)
+        asm = cart.to_asm()
+        self.assertEquals(1, len(cart.bitpaks))
+        self.assertTrue('.bank 0' in asm)
+        self.assertTrue('.org $C000' in asm)
+        self.assertTrue('.bank 1' not in asm)
+        self.assertTrue('.org $E000' not in asm)
+
+    def test_wait_vblank_called_twice(self):
+        code = (
+            'from pynes.bitbag import *\n'
+
+            'def reset():\n'
+            '    wait_vblank()\n'
+            '    wait_vblank()')
+        cart = pynes_compiler(code)
+        asm = cart.to_asm()
+        self.assertEquals(1, len(cart.bitpaks))
+        self.assertTrue('.bank 0' in asm)
+        self.assertTrue('.org $C000' in asm)
+        self.assertTrue('.bank 1' not in asm)
+        self.assertTrue('.org $E000' not in asm)
 
     def test_palette_list_definition_from_00_to_0F(self):
         code = 'palette = [0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15]'

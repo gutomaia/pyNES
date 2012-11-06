@@ -31,7 +31,21 @@ class wait_vblank(BitPak):
           '  BPL WAITVBLANK\n'
           '  RTS\n')
 
-class import_sprite(BitPak):
+class import_chr(BitPak):
+
+    def __call__(self, filename):
+      return ""
+
+    def procedure(self):
+      return ""
+
+class define_sprite(BitPak):
+    pass
+    #(y, tile, $03, x)
+    #sprite:
+    #.db $80, $00, $03, $80; Y pos, tile id, attributes, X pos
+
+class get_sprite(BitPak):
 
     def __call__(self):
       return None

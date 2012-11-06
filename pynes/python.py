@@ -1,9 +1,8 @@
 import compiler
 import ast
 from inspect import getmembers
-#from pynes.asm import register_var
 
-from pynes.bitbag import *
+import pynes.bitbag
 
 class BitArray:
     def __init__(self, lst):
@@ -42,6 +41,7 @@ class Cartridge:
         self._vars = {}
         self.bitpaks = {}
         self._progcode = ""
+        self._joypad1 = False
 
     @property
     def state(self):
@@ -116,6 +116,9 @@ class Cartridge:
             return ("  .bank 1\n  .org $E000\n\n" + asm_code + '\n\n')
         return ""
 
+    def nmi(self):
+        return ""
+
     def set_var(self, varname, value):
         self._vars[varname] = value
 
@@ -129,6 +132,7 @@ class Cartridge:
         asm_code += self.prog()
         asm_code += self.bank1()
         asm_code += self.boot()
+        asm_code += self.nmi()
 
         print asm_code
         return asm_code
@@ -192,11 +196,14 @@ class PyNesVisitor(ast.NodeVisitor):
         global cart
         if node.func.id:
             if node.func.id not in cart.bitpaks:
-                bp = wait_vblank() #todo
-                cart.bitpaks[node.func.id] = bp
+                obj = getattr(pynes.bitbag, node.func.id, None)
+                if (obj):
+                    bp = obj()
+                    cart.bitpaks[node.func.id] = bp
+                    cart._progcode += bp()
             else:
                 bp = cart.bitpaks[node.func.id]
-            cart._progcode += bp()
+                cart._progcode += bp()
         elif node.func.value.id == 'pynes':
             if node.func.attr == 'wait_vblank':
                 print 'wait_vblank'
