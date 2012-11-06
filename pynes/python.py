@@ -26,7 +26,8 @@ class Cartridge:
 
     def __init__(self):
         self._state = None
-        
+        self._asm_chunks = {}
+
         self.has_reset = False #reset def is found
         self.has_nmi = False #nmi def is found
 
@@ -71,7 +72,7 @@ class Cartridge:
         else:
             asm_code += '  .dw 0\n'
         
-        asm_code += '  .dw 0\n'
+        asm_code += '  .dw 0\n\n'
 
         return asm_code
 
@@ -117,6 +118,27 @@ class Cartridge:
         return ""
 
     def nmi(self):
+        joypad1_code = ""
+        if self._joypad1:
+            joypad1_code = (
+                "\nJoyPad1Up:\n"
+                "  LDA $4016\n"
+                "  AND #%00000001\n"
+                "  BEQ EndUp\n"
+            )
+            if 'joypad1_up' in self._asm_chunks:
+                joypad1_code += self._asm_chunks['joypad1_up']
+            joypad1_code += "EndUp:\n"
+        nmi_code = ""
+        if len(joypad1_code) > 0:
+            nmi_code = (
+                "NMI:\n"
+                "  LDA #$00\n"
+                "  STA $2003 ; Write Only: Sets the offset in sprite ram.\n"
+                "  LDA #$02\n"
+                "  STA $4014 ; Write Only; DMA\n"
+            )
+            return nmi_code + joypad1_code + "\n"
         return ""
 
     def set_var(self, varname, value):
@@ -130,9 +152,9 @@ class Cartridge:
         asm_code += self.headers()
         asm_code += self.rsset()
         asm_code += self.prog()
+        asm_code += self.nmi()
         asm_code += self.bank1()
         asm_code += self.boot()
-        asm_code += self.nmi()
 
         print asm_code
         return asm_code
@@ -190,6 +212,31 @@ class PyNesVisitor(ast.NodeVisitor):
             elif node.name == 'nmi':
                 cart.has_nmi = True
             self.generic_visit(node)
+        elif node.name[:8] == 'joypad1_':
+            cart.has_nmi = True
+            cart._joypad1 = True
+            cart.state = node.name
+            cart._asm_chunks[cart.state] = ""
+            cart._asm_chunks[cart.state] += (
+                "  LDA py          ; Y position\n"
+                "  SEC\n"
+                "  SBC #$01        ; Y = Y - 1\n"
+                "  STA py\n")
+            action = node.name[8:]
+            if action == 'a':
+                pass
+            elif action == 'b':
+                pass
+            elif action == 'select':
+                pass
+            elif action == 'start':
+                pass
+            elif action == 'up':
+                pass
+                #cart._progcode += 'JoyPad1Up:'
+            self.generic_visit(node)
+
+
 
 
     def visit_Call(self, node):
@@ -212,12 +259,17 @@ class PyNesVisitor(ast.NodeVisitor):
 
     def visit_Add(self, node):
         #self.generic_visit(node)
+        #print node 
+        #print node.left
+        print 'this is an ADD'
+
+    def visit_Sub(self, node):
         print node
 
     def visit_BinOp(self, node):
-        #self.generic_visit(node)
+        self.generic_visit(node)
         print 'BinOp'
-        print type(node.left).__name__
+        #print type(node.left).__name__
         print node.left._fields
         print node.left
         print node.left.n

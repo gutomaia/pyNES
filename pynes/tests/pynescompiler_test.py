@@ -6,6 +6,13 @@ from pynes.python import pynes_compiler, Cartridge
 
 class PyNesCompilerTest(unittest.TestCase):
 
+    def test_1_plus_1(self):
+        code = '1 + 1'
+
+        cart = pynes_compiler(code)
+        asm = cart.to_asm()
+        self.assertEquals(1, len(cart.bitpaks))
+
     def test_movingsprite(self):
         code = (
             'from pynes.bitbag import *\n'
@@ -15,8 +22,8 @@ class PyNesCompilerTest(unittest.TestCase):
             '    0x0F, 48, 49, 50, 51, 53, 54, 55, 56, 57, 58, 59,\n'
             '    60, 61, 62, 63 ]\n'
             #'sprite = define_sprite()\n'
-            'x = rs(1)\n'
-            'y = rs(1)\n'
+            'px = rs(1)\n'
+            'py = rs(1)\n'
 
             'def reset():\n'
             '    wait_vblank()\n'
@@ -27,19 +34,20 @@ class PyNesCompilerTest(unittest.TestCase):
 
             'def joypad1_up():\n'
             '    global y\n'
-            '    y += 1\n'
+            '    py += 1\n'
 
-            'def joypad1_down():\n'
-            '    global y\n'
-            '    y -= 1\n'
+            #'def joypad1_down():\n'
+            #'    global y\n'
+            #'    py -= 1\n'
 
-            'def joypad1_left():\n'
-            '    global x\n'
-            '    x -= 1\n'
+            #'def joypad1_left():\n'
+            #'    global x\n'
+            #'    px -= 1\n'
 
-            'def joypad1_right():\n'
-            '    global x\n'
-            '    x += 1\n')
+            #'def joypad1_right():\n'
+            #'    global x\n'
+            #'    px += 1\n'
+            )
 
         cart = pynes_compiler(code)
         asm = cart.to_asm()
@@ -48,7 +56,9 @@ class PyNesCompilerTest(unittest.TestCase):
         self.assertTrue('.org $C000' in asm)
         self.assertTrue('.bank 1' in asm)
         self.assertTrue('.org $E000' in asm)
-
+        self.assertTrue('NMI:' in asm)
+        #self.assertTrue('JoyPad1Select:' in asm)
+        self.assertTrue('JoyPad1Up:' in asm)
 
     def test_wait_vblank(self):
         code = (
