@@ -3,12 +3,12 @@ import os
 
 setup(name = 'pyNES',
       version = '0.1',
-      description = 'A NES ASM Compiler and SDK',
+      description = 'Python Programming for Nintendo 8bits',
       #long_description = open(os.path.join(os.path.dirname(__file__), "README.rst")).read(),
       author = "Gustavo Maia Neto (Guto Maia)", author_email = "guto@guto.net",
       license = "GPL3",
       packages = find_packages(exclude=["*.tests", "*.tests.*", "examples"]),
-      scripts = ['bin/pyNES'],
+      scripts = ['bin/pynes'],
       classifiers = [
           'Development Status :: 3 - Alpha',
           'Environment :: Console',
