@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 
+from os.path import dirname, realpath
 from analyzer import analyse
 from c6502 import opcodes, address_mode_def
 from re import match
@@ -10,6 +11,8 @@ from binascii import hexlify
 from directives import directive_list
 
 from cartridge import Cartridge
+
+import pynes
 
 asm65_tokens = [
     dict(type='T_INSTRUCTION', regex=r'^(ADC|AND|ASL|BCC|BCS|BEQ|BIT|BMI|BNE|BPL|BRK|BVC|BVS|CLC|CLD|CLI|CLV|CMP|CPX|CPY|DEC|DEX|DEY|EOR|INC|INX|INY|JMP|JSR|LDA|LDX|LDY|LSR|NOP|ORA|PHA|PHP|PLA|PLP|ROL|ROR|RTI|RTS|SBC|SEC|SED|SEI|STA|STX|STY|TAX|TAY|TSX|TXA|TXS|TYA)', store=True),
@@ -341,8 +344,22 @@ def semantic(ast, iNES=False, cart=None ):
         return cart.get_code()
 
 
-def main():
-    print 'yo'
+def compile(asmfile, output=None, path=None):
+    f = open(asmfile)
+    code = f.read()
+    f.close()
 
-if __name__ == '__main__':
-    main()
+    if path == None:
+        path = dirname(realpath(asmfile)) + '/'
+
+    cart = Cartridge()
+    cart.path = path
+
+    tokens = lexical(code)
+    ast = syntax(tokens)
+    opcodes = semantic(ast, True, cart)
+
+    pynes.write_bin_code(opcodes, 'output.nes')
+
+
+
