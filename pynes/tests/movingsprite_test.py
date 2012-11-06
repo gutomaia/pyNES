@@ -127,7 +127,7 @@ class MovingSpriteTest(unittest.TestCase):
         self.assertEquals(3, ast[8]['children'][0]['column']);
 
         cart = Cartridge()
-        cart.path = 'fixtures/movingsprite/'        
+        cart.path = 'fixtures/movingsprite/'
 
         opcodes = semantic(ast, True, cart=cart)
         self.assertEquals(1, get_var('inesprg'))
@@ -138,8 +138,6 @@ class MovingSpriteTest(unittest.TestCase):
         bin = ''.join([chr(opcode) for opcode in opcodes])
         f = open('fixtures/movingsprite/movingsprite.nes', 'rb')
         content = f.read()
-        a = len(content) - len(bin)
-        c = content[a:]
         f.close()
         self.assertHexEquals(content,bin)
         self.assertEquals(content, bin)
