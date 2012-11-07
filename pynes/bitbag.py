@@ -1,5 +1,36 @@
 # -*- coding: utf-8 -*-
 
+class Joypad():
+
+    def __init__(self, player_num, cart):
+        assert player_num == 1 or player_num == 2
+        self.num = player_num
+        if player_num == 1:
+            self.port = '$4016'
+        else:
+            self.port = '$4017'
+        self.cart = cart
+        self.actions = ['a', 'b', 'select', 'start', 
+          'up', 'down', 'left', 'right']
+
+    def __iter__(self):
+        for action in self.actions:
+            tag = action.capitalize()
+            asm_code = (
+                "JoyPad" + str(self.num) + tag + ":\n"
+                "  LDA " + self.port + "\n"
+                "  AND #%00000001\n"
+                "  BEQ End" + tag +"\n"
+            )
+            index = 'joypad' + str(self.num) + '_' + action
+            if index in self.cart._asm_chunks:
+                asm_code += self.cart._asm_chunks[index]
+            asm_code += "End" + tag + ":\n"
+            yield asm_code
+
+    def to_asm(self):
+        return '\n'.join(self)
+
 class BitPak:
 
     def __call__(self):
