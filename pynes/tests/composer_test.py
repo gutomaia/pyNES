@@ -2,9 +2,9 @@
 
 import unittest
 
-from pynes.python import pynes_compiler, Cartridge
+from pynes.composer import pynes_compiler, Cartridge
 
-class PyNesCompilerTest(unittest.TestCase):
+class ComposerTest(unittest.TestCase):
 
     def test_1_plus_1(self):
         code = '1 + 1'

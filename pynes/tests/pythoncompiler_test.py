@@ -1,5 +1,5 @@
 import unittest
-from pynes.python import pynes_compiler
+from pynes.composer import pynes_compiler
 
 class PythonTest(unittest.TestCase):
 

@@ -2,9 +2,11 @@
 
 import unittest
 
-from pynes.python import *
+from pynes.composer import *
 
 from pynes.bitbag import *
+
+a = 1
 
 class JoypadTest(unittest.TestCase):
 

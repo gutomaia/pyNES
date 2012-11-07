@@ -6,7 +6,7 @@ import subprocess
 import logging
 import argparse
 
-from pynes.python import pynes_compiler
+from pynes.composer import pynes_compiler
 
 import pynes.compiler
 
