@@ -1,5 +1,7 @@
 # -*- coding: utf-8 -*-
 
+from re import match
+
 class Joypad():
 
     def __init__(self, player_num, cart):
@@ -28,8 +30,17 @@ class Joypad():
             asm_code += "End" + tag + ":\n"
             yield asm_code
 
+    @property
+    def is_used(self):
+        for status in self.cart._asm_chunks:
+            if match('^joypad[12]_(a|b|select|start|up|down|left|right)', status):
+                return True
+        return False
+
     def to_asm(self):
-        return '\n'.join(self)
+        if self.is_used:
+            return '\n'.join(self)
+        return ''
 
 class BitPak:
 
