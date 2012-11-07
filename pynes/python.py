@@ -1,8 +1,11 @@
 import compiler
 import ast
+from re import match
 from inspect import getmembers
 
 import pynes.bitbag
+
+from pynes.bitbag import Joypad
 
 class BitArray:
     def __init__(self, lst):
@@ -118,19 +121,12 @@ class Cartridge:
         return ""
 
     def nmi(self):
-        joypad1_code = ""
-        if self._joypad1:
-            joypad1_code = (
-                "\nJoyPad1Up:\n"
-                "  LDA $4016\n"
-                "  AND #%00000001\n"
-                "  BEQ EndUp\n"
-            )
-            if 'joypad1_up' in self._asm_chunks:
-                joypad1_code += self._asm_chunks['joypad1_up']
-            joypad1_code += "EndUp:\n"
-        nmi_code = ""
-        if len(joypad1_code) > 0:
+        joypad_1 = Joypad(1, self)
+        joypad_2 = Joypad(2, self)
+        joypad_code = ''
+        if joypad_1.is_used:
+            joypad_code += joypad_1.to_asm()
+        if len(joypad_code) > 0:
             nmi_code = (
                 "NMI:\n"
                 "  LDA #$00\n"
@@ -138,7 +134,7 @@ class Cartridge:
                 "  LDA #$02\n"
                 "  STA $4014 ; Write Only; DMA\n"
             )
-            return nmi_code + joypad1_code + "\n"
+            return nmi_code + joypad_code + "\n"
         return ""
 
     def set_var(self, varname, value):

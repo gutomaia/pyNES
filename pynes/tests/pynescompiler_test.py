@@ -11,13 +11,13 @@ class PyNesCompilerTest(unittest.TestCase):
 
         cart = pynes_compiler(code)
         asm = cart.to_asm()
-        self.assertEquals(1, len(cart.bitpaks))
+        #self.assertEquals(1, len(cart.bitpaks))
 
     def test_movingsprite(self):
         code = (
             'from pynes.bitbag import *\n'
 
-            #'import_chr("player.png")\n'
+            #'import_chr("player.chr")\n'
             'palette = [0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,\n'
             '    0x0F, 48, 49, 50, 51, 53, 54, 55, 56, 57, 58, 59,\n'
             '    60, 61, 62, 63 ]\n'
@@ -57,8 +57,14 @@ class PyNesCompilerTest(unittest.TestCase):
         self.assertTrue('.bank 1' in asm)
         self.assertTrue('.org $E000' in asm)
         self.assertTrue('NMI:' in asm)
-        #self.assertTrue('JoyPad1Select:' in asm)
+        self.assertTrue('JoyPad1Select:' in asm)
+        self.assertTrue('JoyPad1Start:' in asm)
+        self.assertTrue('JoyPad1A:' in asm)
+        self.assertTrue('JoyPad1B:' in asm)
         self.assertTrue('JoyPad1Up:' in asm)
+        self.assertTrue('JoyPad1Down:' in asm)
+        self.assertTrue('JoyPad1Left:' in asm)
+        self.assertTrue('JoyPad1Right:' in asm)
 
     def test_wait_vblank(self):
         code = (
