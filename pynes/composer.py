@@ -256,9 +256,6 @@ class PyNesVisitor(ast.NodeVisitor):
                 if len(self.stack) == 2:
                     address = getattr(self.stack[0], self.stack[1])
                     cart += '  STA $%04x\n' % address
-        else:
-            raise Exception('dammit')
-
 
 
     def visit_Attribute(self, node):
@@ -303,11 +300,6 @@ class PyNesVisitor(ast.NodeVisitor):
                 bp = cart.bitpaks[node.func.id]
                 self.stack.append(bp(*args))
                 cart += bp.asm()
-        elif node.func.value.id == 'pynes':
-            if node.func.attr == 'wait_vblank':
-                print 'wait_vblank'
-            elif node.func.attr == 'load_sprite':
-                print 'load_sprite'
 
     def visit_Add(self, node):
         self.stack.append('+')
