@@ -66,6 +66,20 @@ class ComposerTest(unittest.TestCase):
         self.assertTrue('ADC #5' in asm)
         self.assertTrue('STA $0200' in asm)
 
+    def test_sprite_augassign_plus_two_inside_a_joystick_up(self):
+        code = (
+            'from pynes.bitbag import *\n'
+
+            'def joypad1_up():'
+            '   sprite(0).y += 5')
+        cart = pynes_compiler(code)
+        asm = cart.to_asm()
+        self.assertTrue('BEQ EndUp\n  LDA $0200' in asm)
+        self.assertTrue('LDA $0200' in asm)
+        self.assertTrue('CLC' in asm)
+        self.assertTrue('ADC #5' in asm)
+        self.assertTrue('STA $0200' in asm)
+
     def test_movingsprite(self):
         code = (
             'from pynes.bitbag import *\n'

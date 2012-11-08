@@ -28,7 +28,7 @@ class BitArray:
 class Cartridge:
 
     def __init__(self):
-        self._state = None
+        self._state = 'prog'
         self._asm_chunks = {}
 
         self.has_reset = False #reset def is found
@@ -44,8 +44,15 @@ class Cartridge:
         self.nametable = {}
         self._vars = {}
         self.bitpaks = {}
-        self._progcode = ""
         self._joypad1 = False
+
+    def __add__(self, other):
+        if other and isinstance(other, str):
+            if self._state not in self._asm_chunks:
+                self._asm_chunks[self._state] = other
+            else:
+                self._asm_chunks[self._state] += other
+        return self
 
     @property
     def state(self):
@@ -106,7 +113,8 @@ class Cartridge:
         asm_code = ""
         for bp in self.bitpaks:
             asm_code += self.bitpaks[bp].procedure() + '\n'
-        asm_code += self._progcode 
+        if 'prog' in self._asm_chunks:
+            asm_code += self._asm_chunks['prog'] 
         if len(asm_code) > 0:
             return ("  .bank 0\n  .org $C000\n\n" + asm_code + '\n\n')
         return ""
@@ -196,12 +204,14 @@ class PyNesVisitor(ast.NodeVisitor):
                 isinstance(self.stack[2], HardSprite) and
                 isinstance(self.stack[3], str)): #TODO how to check
                 address = getattr(self.stack[2], self.stack[3])
-                cart._progcode += '  LDA $%04x\n' % address
-                cart._progcode += '  CLC\n'
-                cart._progcode += '  ADC #%d\n' % self.stack[0]
-                cart._progcode += '  STA $%04x\n' % address
+                global cart
+                cart += '  LDA $%04x\n' % address
+                cart += '  CLC\n'
+                cart += '  ADC #%d\n' % self.stack[0]
+                cart += '  STA $%04x\n' % address
 
     def visit_Assign(self, node):
+        global cart
         if (len(node.targets) == 1):
             if isinstance(node.value, ast.Call):
                 varname = node.targets[0].id
@@ -220,10 +230,10 @@ class PyNesVisitor(ast.NodeVisitor):
             elif 'ctx' in dir(node.targets[0]): #TODO fix this please
                 self.generic_visit(node)
                 if len(self.pile[-1]) == 1 and isinstance(self.pile[-1][0], int):
-                    cart._progcode += '  LDA #%d\n' % self.pile.pop()[0]
+                    cart += '  LDA #%d\n' % self.pile.pop()[0]
                 if len(self.stack) == 2:
                     address = getattr(self.stack[0], self.stack[1])
-                    cart._progcode += '  STA $%04x\n' % address
+                    cart += '  STA $%04x\n' % address
         else:
             raise Exception('dammit')
 
@@ -235,40 +245,23 @@ class PyNesVisitor(ast.NodeVisitor):
         self.stack.append(attrib)
 
     def visit_FunctionDef(self, node):
+        global cart
         if node.name in ['reset','nmi']:
-            cart._progcode += node.name.upper() + ':\n'
+            cart._state = node.name
+            cart += node.name.upper() + ':\n'
             if node.name == 'reset':
                 cart.has_reset = True
-                cart._progcode += cart.init()
+                cart += cart.init()
             elif node.name == 'nmi':
                 cart.has_nmi = True
             self.generic_visit(node)
-        elif node.name[:8] == 'joypad1_':
+        elif  match('^joypad[12]_(a|b|select|start|up|down|left|right)', node.name):
+            cart._state = node.name
             cart.has_nmi = True
-            cart._joypad1 = True
-            cart.state = node.name
-            cart._asm_chunks[cart.state] = ""
-            cart._asm_chunks[cart.state] += (
-                "  LDA py          ; Y position\n"
-                "  SEC\n"
-                "  SBC #$01        ; Y = Y - 1\n"
-                "  STA py\n")
-            action = node.name[8:]
-            if action == 'a':
-                pass
-            elif action == 'b':
-                pass
-            elif action == 'select':
-                pass
-            elif action == 'start':
-                pass
-            elif action == 'up':
-                pass
-                #cart._progcode += 'JoyPad1Up:'
             self.generic_visit(node)
 
-
     def visit_Call(self, node):
+        global cart
         if node.func.id:
             if node.func.id not in cart.bitpaks:
                 obj = getattr(pynes.bitbag, node.func.id, None)
@@ -276,11 +269,11 @@ class PyNesVisitor(ast.NodeVisitor):
                     bp = obj()
                     cart.bitpaks[node.func.id] = bp
                     self.stack.append(bp())
-                    cart._progcode += bp.asm()
+                    cart += bp.asm()
             else:
                 bp = cart.bitpaks[node.func.id]
                 self.stack.append(bp())
-                cart._progcode += bp.asm()
+                cart += bp.asm()
         elif node.func.value.id == 'pynes':
             if node.func.attr == 'wait_vblank':
                 print 'wait_vblank'
