@@ -147,4 +147,4 @@ class load_palette(BitPak):
         )
 
     def procedure(self):
-        return None
+        return ''

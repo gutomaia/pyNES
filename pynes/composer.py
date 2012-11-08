@@ -7,7 +7,12 @@ import pynes.bitbag
 
 from pynes.bitbag import Joypad, HardSprite
 
-class NesArray:
+class NesType:
+
+    def __init__(self):
+        pass
+
+class NesArray(NesType):
     def __init__(self, lst):
         self.value = []
         for l in lst:
