@@ -206,9 +206,11 @@ class PyNesVisitor(ast.NodeVisitor):
                 cart.set_var(varname, BitArray(node.value.elts))
             elif 'ctx' in dir(node.targets[0]): #TODO fix this please
                 self.generic_visit(node)
+                if len(self.pile[-1]) == 1 and isinstance(self.pile[-1][0], int):
+                    cart._progcode += '  LDA #%d\n' % self.pile.pop()[0]
                 if len(self.stack) == 2:
                     address = getattr(self.stack[0], self.stack[1][1]) #TODO
-                    cart._progcode += '  STA $%04x' % address
+                    cart._progcode += '  STA $%04x\n' % address
         else:
             raise Exception('dammit')
 

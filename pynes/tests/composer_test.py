@@ -13,7 +13,7 @@ class ComposerTest(unittest.TestCase):
         asm = cart.to_asm()
         #self.assertEquals(1, len(cart.bitpaks))
 
-    def test_sprite_function(self):
+    def test_sprite_assigned_128_to_x(self):
         code = (
             'from pynes.bitbag import *\n'
 
@@ -21,9 +21,10 @@ class ComposerTest(unittest.TestCase):
             )
         cart = pynes_compiler(code)
         asm = cart.to_asm()
+        self.assertTrue('LDA #128' in asm)
         self.assertTrue('STA $0203' in asm)
 
-    def test_sprite_function2(self):
+    def test_sprite_assigned_128_to_x_with_optimized_code(self):
         code = (
             'from pynes.bitbag import *\n'
 
@@ -31,8 +32,19 @@ class ComposerTest(unittest.TestCase):
             )
         cart = pynes_compiler(code)
         asm = cart.to_asm()
+        self.assertTrue('LDA #128' in asm)
         self.assertTrue('STA $0203' in asm)
 
+    def test_sprite_assigned_129_to_y(self):
+        code = (
+            'from pynes.bitbag import *\n'
+
+            'sprite(0).y = 129'
+            )
+        cart = pynes_compiler(code)
+        asm = cart.to_asm()
+        self.assertTrue('LDA #129' in asm)
+        self.assertTrue('STA $0200' in asm)
 
     def test_movingsprite(self):
         code = (
