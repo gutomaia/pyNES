@@ -189,7 +189,6 @@ class PyNesVisitor(ast.NodeVisitor):
             print node.test.comparators[0].s
 
     def visit_Assign(self, node):
-        global cart
         if (len(node.targets) == 1):
             if isinstance(node.value, ast.Call):
                 varname = node.targets[0].id
@@ -222,7 +221,6 @@ class PyNesVisitor(ast.NodeVisitor):
 
     def visit_FunctionDef(self, node):
         if node.name in ['reset','nmi']:
-            global cart
             cart._progcode += node.name.upper() + ':\n'
             if node.name == 'reset':
                 cart.has_reset = True
@@ -256,7 +254,6 @@ class PyNesVisitor(ast.NodeVisitor):
 
 
     def visit_Call(self, node):
-        global cart
         if node.func.id:
             if node.func.id not in cart.bitpaks:
                 obj = getattr(pynes.bitbag, node.func.id, None)
