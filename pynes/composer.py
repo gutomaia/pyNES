@@ -5,7 +5,7 @@ from inspect import getmembers
 
 import pynes.bitbag
 
-from pynes.bitbag import Joypad
+from pynes.bitbag import Joypad, HardSprite
 
 class BitArray:
     def __init__(self, lst):
@@ -158,12 +158,21 @@ class Cartridge:
 
 class PyNesVisitor(ast.NodeVisitor):
 
-    def generic_visit(self, node, index = 0):
+    def __init__(self):
+        self.stack = []
+        self.pile = []
+
+    def generic_visit(self, node, debug = False):
         for field, value in reversed(list(ast.iter_fields(node))):
-            #print value
+            if debug:
+                print value
             if isinstance(value, list):
                 for item in value:
                     if isinstance(item, ast.AST):
+                        if debug:
+                            print item
+                        self.pile.append(self.stack)
+                        self.stack = []
                         self.visit(item)
             elif isinstance(value, ast.AST):
                 self.visit(value)
@@ -182,8 +191,8 @@ class PyNesVisitor(ast.NodeVisitor):
     def visit_Assign(self, node):
         global cart
         if (len(node.targets) == 1):
-            varname = node.targets[0].id
             if isinstance(node.value, ast.Call):
+                varname = node.targets[0].id
                 call = node.value
                 if call.func.id:
                     if call.func.id == 'rs':
@@ -194,9 +203,22 @@ class PyNesVisitor(ast.NodeVisitor):
                         #print 'opa rsset'
                         pass
             elif isinstance(node.value, ast.List):
+                varname = node.targets[0].id
                 cart.set_var(varname, BitArray(node.value.elts))
+            elif 'ctx' in dir(node.targets[0]): #TODO fix this please
+                self.generic_visit(node)
+                if len(self.stack) == 2:
+                    address = getattr(self.stack[0], self.stack[1][1]) #TODO
+                    cart._progcode += '  STA $%04x' % address
         else:
             raise Exception('dammit')
+
+
+
+    def visit_Attribute(self, node):
+        self.generic_visit(node)
+        attrib = '{' + node.attr + '}'
+        self.stack.append(attrib)
 
     def visit_FunctionDef(self, node):
         if node.name in ['reset','nmi']:
@@ -233,8 +255,6 @@ class PyNesVisitor(ast.NodeVisitor):
             self.generic_visit(node)
 
 
-
-
     def visit_Call(self, node):
         global cart
         if node.func.id:
@@ -243,10 +263,12 @@ class PyNesVisitor(ast.NodeVisitor):
                 if (obj):
                     bp = obj()
                     cart.bitpaks[node.func.id] = bp
-                    cart._progcode += bp()
+                    self.stack.append(bp())
+                    cart._progcode += bp.asm()
             else:
                 bp = cart.bitpaks[node.func.id]
-                cart._progcode += bp()
+                self.stack.append(bp())
+                cart._progcode += bp.asm()
         elif node.func.value.id == 'pynes':
             if node.func.attr == 'wait_vblank':
                 print 'wait_vblank'
@@ -254,23 +276,22 @@ class PyNesVisitor(ast.NodeVisitor):
                 print 'load_sprite'
 
     def visit_Add(self, node):
-        #self.generic_visit(node)
-        #print node 
-        #print node.left
-        print 'this is an ADD'
+        self.stack.append('+')
 
     def visit_Sub(self, node):
         print node
 
     def visit_BinOp(self, node):
-        self.generic_visit(node)
-        print 'BinOp'
-        #print type(node.left).__name__
-        print node.left._fields
-        print node.left
-        print node.left.n
+        if (isinstance(node.left, ast.Num) and
+            isinstance(node.right, ast.Num)):
+            a = node.left.n
+            b = node.right.n
+            self.stack.append(a + b)
+        else:
+            self.generic_visit(node)
 
-        a = getmembers(node.left)
+    def visit_Num(self, node):
+        self.stack.append(node.n)
 
     def visit_Name(self, node):
         print node.id + 'oi'

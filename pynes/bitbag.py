@@ -44,14 +44,20 @@ class Joypad():
 
 class BitPak:
 
+    def __init__(self):
+       pass
+
     def __call__(self):
         return None
 
+    def asm(self):
+        return ''
+
     def procedure(self):
-        return None
+        return ''
 
     def attribute(self):
-        return None
+        return ''
 
 class rs(BitPak):
 
@@ -61,10 +67,32 @@ class rs(BitPak):
     def attribute(self):
         return None
 
+class HardSprite:
+
+    def __init__(self, pos):
+      address = 0x0200 + (4* pos)
+      self.y = address
+      self.x = address + 3
+
+
+class sprite(BitPak):
+
+    def __init__(self):
+        BitPak.__init__(self)
+
+    def __call__(self, position = 0):
+        return HardSprite(position)
+
 
 class wait_vblank(BitPak):
 
+    def __init__(self):
+        BitPak.__init__(self)
+
     def __call__(self):
+        return None
+
+    def asm(self):
         return '  JSR WAITVBLANK\n'
 
     def procedure(self):
@@ -74,6 +102,9 @@ class wait_vblank(BitPak):
           '  RTS\n')
 
 class import_chr(BitPak):
+
+    def __init__(self):
+        BitPak.__init__(self)
 
     def __call__(self, filename):
       return ""
