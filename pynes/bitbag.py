@@ -80,7 +80,7 @@ class sprite(BitPak):
     def __init__(self):
         BitPak.__init__(self)
 
-    def __call__(self, position = 0):
+    def __call__(self, position):
         return HardSprite(position)
 
 

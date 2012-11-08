@@ -163,20 +163,52 @@ class Cartridge:
         return asm_code
 
 
+class OperationStack:
+
+    def __init__(self):
+        self._stack = []
+        self._pile = []
+
+    def __call__(self, operand = None):
+        if operand != None:
+            self._stack.append(operand)
+        return self._stack
+
+    def store(self):
+        if len(self._stack) > 0:
+            self._pile.append(self._stack)
+            self._stack = []
+
+    def current(self):
+        return self._stack
+
+    def wipe(self):
+        self._stack = []
+
+    def last(self):
+        if len(self._pile) > 0:
+            return self._pile[-1]
+        return [] #TODO if none breaks some len()
+
+    def pendding(self):
+        return self._pile
+
+    def resolve(self):
+        return self._pile.pop()
+
+
+
 class PyNesVisitor(ast.NodeVisitor):
 
     def __init__(self):
-        self.stack = []
-        self.pile = []
+        self.stack = OperationStack()
 
     def generic_visit(self, node, debug = True):
         if isinstance(node, list):
             for n in node:
                 if debug:
                     print n
-                print 'dammit'
-                self.pile.append(self.stack)
-                self.stack = []
+                self.stack.store()
                 self.visit(n)
         else:
             for field, value in reversed(list(ast.iter_fields(node))):
@@ -187,8 +219,7 @@ class PyNesVisitor(ast.NodeVisitor):
                         if isinstance(item, ast.AST):
                             if debug:
                                 print item
-                            self.pile.append(self.stack)
-                            self.stack = []
+                            self.stack.store()
                             self.visit(item)
                 elif isinstance(value, ast.AST):
                     self.visit(value)
@@ -206,11 +237,11 @@ class PyNesVisitor(ast.NodeVisitor):
 
     def visit_AugAssign(self, node):
         self.generic_visit(node)
-        if len(self.stack) == 4:
-            if (isinstance(self.stack[0], int) and
-                isinstance(self.stack[1], str) and #TODO op
-                isinstance(self.stack[2], HardSprite) and
-                isinstance(self.stack[3], str)): #TODO how to check
+        if len(self.stack.current()) == 4:
+            if (isinstance(self.stack.current()[0], int) and
+                isinstance(self.stack.current()[1], str) and #TODO op
+                isinstance(self.stack.current()[2], HardSprite) and
+                isinstance(self.stack.current()[3], str)): #TODO how to check
                 address = getattr(self.stack[2], self.stack[3])
                 global cart
                 cart += '  LDA $%04x\n' % address
@@ -218,13 +249,14 @@ class PyNesVisitor(ast.NodeVisitor):
                 cart += '  ADC #%d\n' % self.stack[0]
                 cart += '  STA $%04x\n' % address
 
-        elif len(self.stack) == 2 and len(self.pile[-1]) == 2:
-            if (isinstance(self.pile[-1][0], int) and
-                isinstance(self.pile[-1][1], str) and #TODO op
-                isinstance(self.stack[0], HardSprite) and
-                isinstance(self.stack[1], str)): #TODO how to check
-                address = getattr(self.stack[0], self.stack[1])
-                operand = self.pile.pop()
+        elif len(self.stack.current()) == 2 and len(self.stack.last()) == 2:
+            if (isinstance(self.stack.last()[0], int) and
+                isinstance(self.stack.last()[1], str) and #TODO op
+                isinstance(self.stack.current()[0], HardSprite) and
+                isinstance(self.stack.current()[1], str)): #TODO how to check
+                address = getattr(self.stack.current()[0], self.stack.current()[1])
+                self.stack.wipe()
+                operand = self.stack.resolve()
                 self.stack = []
                 global cart
                 cart += '  LDA $%04x\n' % address
@@ -251,17 +283,17 @@ class PyNesVisitor(ast.NodeVisitor):
                 cart.set_var(varname, BitArray(node.value.elts))
             elif 'ctx' in dir(node.targets[0]): #TODO fix this please
                 self.generic_visit(node)
-                if len(self.pile[-1]) == 1 and isinstance(self.pile[-1][0], int):
-                    cart += '  LDA #%d\n' % self.pile.pop()[0]
-                if len(self.stack) == 2:
-                    address = getattr(self.stack[0], self.stack[1])
+                if len(self.stack.last()) == 1 and isinstance(self.stack.last()[0], int):
+                    cart += '  LDA #%d\n' % self.stack.resolve()[0]
+                if len(self.stack.current()) == 2:
+                    address = getattr(self.stack.current()[0], self.stack.current()[1])
                     cart += '  STA $%04x\n' % address
 
 
     def visit_Attribute(self, node):
         self.generic_visit(node)
         attrib = node.attr
-        self.stack.append(attrib)
+        self.stack(attrib)
 
     def visit_FunctionDef(self, node):
         global cart
@@ -282,10 +314,10 @@ class PyNesVisitor(ast.NodeVisitor):
     def visit_Call(self, node):
         global cart
         if node.func.id:
-            if len(node.args) > 0 and node.args[0].n ==1:
+            if len(node.args) > 0:
                 self.generic_visit(node.args, debug=True)
-                args = self.stack
-                self.stack = []
+                args = self.stack.current()
+                self.stack.wipe()
             else:
                 args = []
 
@@ -294,15 +326,15 @@ class PyNesVisitor(ast.NodeVisitor):
                 if (obj):
                     bp = obj()
                     cart.bitpaks[node.func.id] = bp
-                    self.stack.append(bp(*args))
+                    self.stack(bp(*args))
                     cart += bp.asm()
             else:
                 bp = cart.bitpaks[node.func.id]
-                self.stack.append(bp(*args))
+                self.stack(bp(*args))
                 cart += bp.asm()
 
     def visit_Add(self, node):
-        self.stack.append('+')
+        self.stack('+')
 
     def visit_Sub(self, node):
         print node
@@ -312,12 +344,12 @@ class PyNesVisitor(ast.NodeVisitor):
             isinstance(node.right, ast.Num)):
             a = node.left.n
             b = node.right.n
-            self.stack.append(a + b)
+            self.stack(a + b)
         else:
             self.generic_visit(node)
 
     def visit_Num(self, node):
-        self.stack.append(node.n)
+        self.stack(node.n)
 
     def visit_Name(self, node):
         print node.id + 'oi'

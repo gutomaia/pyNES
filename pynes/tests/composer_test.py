@@ -6,13 +6,6 @@ from pynes.composer import pynes_compiler, Cartridge
 
 class ComposerTest(unittest.TestCase):
 
-    def test_1_plus_1(self):
-        code = '1 + 1'
-
-        cart = pynes_compiler(code)
-        asm = cart.to_asm()
-        #self.assertEquals(1, len(cart.bitpaks))
-
     def test_sprite_assigned_128_to_x(self):
         code = (
             'from pynes.bitbag import *\n'
@@ -93,9 +86,9 @@ class ComposerTest(unittest.TestCase):
         cart = pynes_compiler(code)
         asm = cart.to_asm()
         self.assertTrue('LDA $0204' in asm)
-        #self.assertTrue('CLC' in asm)
-        #self.assertTrue('ADC #100' in asm)
-        #self.assertTrue('STA $0204' in asm)
+        self.assertTrue('CLC' in asm)
+        self.assertTrue('ADC #100' in asm)
+        self.assertTrue('STA $0204' in asm)
 
     def test_movingsprite(self):
         code = (
