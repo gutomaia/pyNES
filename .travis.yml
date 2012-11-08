@@ -1,4 +1,10 @@
 language: python
+before_script:
+  - sudo apt-get install libjpeg libjpeg-dev libfreetype6 libfreetype6-dev zlib1g-dev
+  - sudo apt-get install libjpeg8 libjpeg8-dev libfreetype6 libfreetype6-dev zlib1g-dev
+  - sudo ln -s /usr/lib/x86_64-linux-gnu/libjpeg.so /usr/lib
+  - sudo ln -s /usr/lib/x86_64-linux-gnu/libfreetype.so /usr/lib
+  - sudo ln -s /usr/lib/x86_64-linux-gnu/libz.so /usr/lib
 python:
   - "2.7"
 script: nosetests
