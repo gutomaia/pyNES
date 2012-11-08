@@ -7,7 +7,7 @@ import pynes.bitbag
 
 from pynes.bitbag import Joypad, HardSprite
 
-class BitArray:
+class NesArray:
     def __init__(self, lst):
         self.value = []
         for l in lst:
@@ -122,7 +122,7 @@ class Cartridge:
     def bank1(self):
         asm_code = ""
         for v in self._vars:
-            if isinstance(self._vars[v], BitArray) and self._vars[v].to_asm():
+            if isinstance(self._vars[v], NesArray) and self._vars[v].to_asm():
                 asm_code += v + ':\n' +self._vars[v].to_asm()
         if len(asm_code) > 0:
             return ("  .bank 1\n  .org $E000\n\n" + asm_code + '\n\n')
@@ -196,14 +196,12 @@ class OperationStack:
     def resolve(self):
         return self._pile.pop()
 
-
-
 class PyNesVisitor(ast.NodeVisitor):
 
     def __init__(self):
         self.stack = OperationStack()
 
-    def generic_visit(self, node, debug = True):
+    def generic_visit(self, node, debug = False):
         if isinstance(node, list):
             for n in node:
                 if debug:
@@ -257,7 +255,6 @@ class PyNesVisitor(ast.NodeVisitor):
                 address = getattr(self.stack.current()[0], self.stack.current()[1])
                 self.stack.wipe()
                 operand = self.stack.resolve()
-                self.stack = []
                 global cart
                 cart += '  LDA $%04x\n' % address
                 cart += '  CLC\n'
@@ -280,7 +277,7 @@ class PyNesVisitor(ast.NodeVisitor):
                         pass
             elif isinstance(node.value, ast.List):
                 varname = node.targets[0].id
-                cart.set_var(varname, BitArray(node.value.elts))
+                cart.set_var(varname, NesArray(node.value.elts))
             elif 'ctx' in dir(node.targets[0]): #TODO fix this please
                 self.generic_visit(node)
                 if len(self.stack.last()) == 1 and isinstance(self.stack.last()[0], int):
@@ -320,7 +317,8 @@ class PyNesVisitor(ast.NodeVisitor):
                 self.stack.wipe()
             else:
                 args = []
-
+            print node.func.id
+            print args
             if node.func.id not in cart.bitpaks:
                 obj = getattr(pynes.bitbag, node.func.id, None)
                 if (obj):
@@ -352,7 +350,7 @@ class PyNesVisitor(ast.NodeVisitor):
         self.stack(node.n)
 
     def visit_Name(self, node):
-        print node.id + 'oi'
+        self.stack(node.id) #TODO: create a diference from string to memonic
 
 cart = None
 
