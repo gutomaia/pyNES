@@ -4,6 +4,7 @@ import unittest
 
 from pynes.composer import pynes_compiler, Cartridge
 
+#TODO assert in asm occors in the ordem it is called
 class ComposerTest(unittest.TestCase):
 
     def test_sprite_assigned_128_to_x(self):
