@@ -188,6 +188,19 @@ class PyNesVisitor(ast.NodeVisitor):
             print dir(node.test.comparators[0])
             print node.test.comparators[0].s
 
+    def visit_AugAssign(self, node):
+        self.generic_visit(node)
+        if len(self.stack) == 4:
+            if (isinstance(self.stack[0], int) and
+                isinstance(self.stack[1], str) and #TODO op
+                isinstance(self.stack[2], HardSprite) and
+                isinstance(self.stack[3], str)): #TODO how to check
+                address = getattr(self.stack[2], self.stack[3])
+                cart._progcode += '  LDA $%04x\n' % address
+                cart._progcode += '  CLC\n'
+                cart._progcode += '  ADC #%d\n' % self.stack[0]
+                cart._progcode += '  STA $%04x\n' % address
+
     def visit_Assign(self, node):
         if (len(node.targets) == 1):
             if isinstance(node.value, ast.Call):
@@ -209,7 +222,7 @@ class PyNesVisitor(ast.NodeVisitor):
                 if len(self.pile[-1]) == 1 and isinstance(self.pile[-1][0], int):
                     cart._progcode += '  LDA #%d\n' % self.pile.pop()[0]
                 if len(self.stack) == 2:
-                    address = getattr(self.stack[0], self.stack[1][1]) #TODO
+                    address = getattr(self.stack[0], self.stack[1])
                     cart._progcode += '  STA $%04x\n' % address
         else:
             raise Exception('dammit')
@@ -218,7 +231,7 @@ class PyNesVisitor(ast.NodeVisitor):
 
     def visit_Attribute(self, node):
         self.generic_visit(node)
-        attrib = '{' + node.attr + '}'
+        attrib = node.attr
         self.stack.append(attrib)
 
     def visit_FunctionDef(self, node):

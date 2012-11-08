@@ -24,12 +24,21 @@ class ComposerTest(unittest.TestCase):
         self.assertTrue('LDA #128' in asm)
         self.assertTrue('STA $0203' in asm)
 
-    def test_sprite_assigned_128_to_x_with_optimized_code(self):
+    def test_sprite_assigned_126_plus_2_optimized(self):
         code = (
             'from pynes.bitbag import *\n'
 
-            'sprite(0).x = 127 + 1'
-            )
+            'sprite(0).x = 126 + 2')
+        cart = pynes_compiler(code)
+        asm = cart.to_asm()
+        self.assertTrue('LDA #128' in asm)
+        self.assertTrue('STA $0203' in asm)
+
+    def test_sprite_assigned_127_plus_1_optimized(self):
+        code = (
+            'from pynes.bitbag import *\n'
+
+            'sprite(0).x = 127 + 1')
         cart = pynes_compiler(code)
         asm = cart.to_asm()
         self.assertTrue('LDA #128' in asm)
@@ -39,11 +48,22 @@ class ComposerTest(unittest.TestCase):
         code = (
             'from pynes.bitbag import *\n'
 
-            'sprite(0).y = 129'
-            )
+            'sprite(0).y = 129')
         cart = pynes_compiler(code)
         asm = cart.to_asm()
         self.assertTrue('LDA #129' in asm)
+        self.assertTrue('STA $0200' in asm)
+
+    def test_sprite_augassign_plus_five(self):
+        code = (
+            'from pynes.bitbag import *\n'
+
+            'sprite(0).y += 5')
+        cart = pynes_compiler(code)
+        asm = cart.to_asm()
+        self.assertTrue('LDA $0200' in asm)
+        self.assertTrue('CLC' in asm)
+        self.assertTrue('ADC #5' in asm)
         self.assertTrue('STA $0200' in asm)
 
     def test_movingsprite(self):
@@ -73,7 +93,8 @@ class ComposerTest(unittest.TestCase):
             '    global y\n'
             '    py -= 1\n'
 
-            #'def joypad1_left():\n'
+            'def joypad1_left():\n'
+            '     sprite(0).x += 1'
             #'    global x\n'
             #'    px -= 1\n'
 
