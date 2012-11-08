@@ -34,7 +34,7 @@ class ComposerTest(unittest.TestCase):
         self.assertTrue('LDA #128' in asm)
         self.assertTrue('STA $0203' in asm)
 
-    def test_sprite_assigned_127_plus_1_optimized(self):
+    def test_sprite_zero_assigned_127_plus_1_optimized(self):
         code = (
             'from pynes.bitbag import *\n'
 
@@ -44,7 +44,7 @@ class ComposerTest(unittest.TestCase):
         self.assertTrue('LDA #128' in asm)
         self.assertTrue('STA $0203' in asm)
 
-    def test_sprite_assigned_129_to_y(self):
+    def test_sprite_zero_assigned_129_to_y(self):
         code = (
             'from pynes.bitbag import *\n'
 
@@ -54,7 +54,7 @@ class ComposerTest(unittest.TestCase):
         self.assertTrue('LDA #129' in asm)
         self.assertTrue('STA $0200' in asm)
 
-    def test_sprite_augassign_plus_five(self):
+    def test_sprite_zero_augassign_plus_five(self):
         code = (
             'from pynes.bitbag import *\n'
 
@@ -66,7 +66,7 @@ class ComposerTest(unittest.TestCase):
         self.assertTrue('ADC #5' in asm)
         self.assertTrue('STA $0200' in asm)
 
-    def test_sprite_augassign_plus_two_inside_a_joystick_up(self):
+    def test_sprite_zero_augassign_plus_two_inside_a_joystick_up(self):
         code = (
             'from pynes.bitbag import *\n'
 
@@ -79,6 +79,23 @@ class ComposerTest(unittest.TestCase):
         self.assertTrue('CLC' in asm)
         self.assertTrue('ADC #5' in asm)
         self.assertTrue('STA $0200' in asm)
+
+    def test_hardsprite_with_1(self):
+        from pynes.bitbag import HardSprite
+        hs = HardSprite(1)
+        self.assertTrue(0x0204, hs.y)
+
+    def test_sprite_one_assign_100(self):
+        code = (
+            'from pynes.bitbag import *\n'
+
+            'sprite(1).y += 100')
+        cart = pynes_compiler(code)
+        asm = cart.to_asm()
+        self.assertTrue('LDA $0204' in asm)
+        #self.assertTrue('CLC' in asm)
+        #self.assertTrue('ADC #100' in asm)
+        #self.assertTrue('STA $0204' in asm)
 
     def test_movingsprite(self):
         code = (

@@ -70,7 +70,7 @@ class rs(BitPak):
 class HardSprite:
 
     def __init__(self, pos):
-      address = 0x0200 + (4* pos)
+      address = 0x0200 + (4 * pos)
       self.y = address
       self.x = address + 3
 
