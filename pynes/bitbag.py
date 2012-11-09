@@ -46,8 +46,8 @@ class Joypad():
 
 class BitPak:
 
-    def __init__(self):
-       pass
+    def __init__(self, cart):
+        self.cart = cart
 
     def __call__(self):
         return None
@@ -79,8 +79,8 @@ class HardSprite:
 
 class sprite(BitPak):
 
-    def __init__(self):
-        BitPak.__init__(self)
+    def __init__(self, cart):
+        BitPak.__init__(self, cart)
 
     def __call__(self, position):
         return HardSprite(position)
@@ -88,8 +88,8 @@ class sprite(BitPak):
 
 class wait_vblank(BitPak):
 
-    def __init__(self):
-        BitPak.__init__(self)
+    def __init__(self, cart):
+        BitPak.__init__(self, cart)
 
     def __call__(self):
         return None
@@ -105,8 +105,8 @@ class wait_vblank(BitPak):
 
 class clearmen(BitPak):
 
-    def __init__(self):
-        BitPak.__init__(self)
+    def __init__(self, cart):
+        BitPak.__init__(self, cart)
 
     def asm(self):
         return (
@@ -145,8 +145,8 @@ class define_sprite(BitPak):
 
 class load_palette(BitPak):
 
-    def __init__(self):
-        BitPak.__init__(self)
+    def __init__(self, cart):
+        BitPak.__init__(self, cart)
 
     def  __call__(self, palette):
         print palette

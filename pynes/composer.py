@@ -296,7 +296,7 @@ class PyNesVisitor(ast.NodeVisitor):
             if node.func.id not in cart.bitpaks:
                 obj = getattr(pynes.bitbag, node.func.id, None)
                 if (obj):
-                    bp = obj() #TODO: pass cart
+                    bp = obj(cart)
                     cart.bitpaks[node.func.id] = bp
                     self.stack(bp(*args))
                     cart += bp.asm()
