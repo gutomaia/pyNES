@@ -324,6 +324,7 @@ class PyNesVisitor(ast.NodeVisitor):
     def visit_Name(self, node):
         if node.id in cart._vars:
             value = cart.get_var(node.id)
+            value.instance_name = node.id
             self.stack(value)
         else:
             self.stack(node.id) #TODO

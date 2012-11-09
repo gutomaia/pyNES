@@ -107,7 +107,7 @@ class ComposerTest(ComposerTestCase):
         .has('.bank 0')
         .and_then('LoadPalettes:')
         .and_then('LoadPalettesIntoPPU:')
-        #TODO: .and_then('LDA my_palette, x')
+        .and_then('LDA my_palette, x')
         .and_then('STA $2007')
         .and_then('INX')
         .and_then('CPX #$08')

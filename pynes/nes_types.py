@@ -3,7 +3,8 @@
 class NesType:
 
     def __init__(self):
-        pass
+        self.instance_name = None
+
 
 class NesRs(NesType):
 

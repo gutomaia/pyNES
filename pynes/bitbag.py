@@ -157,6 +157,7 @@ class load_palette(BitPak):
         return None
 
     def asm(self):
+
         asmcode = (
           'LoadPalettes:\n'
           '  LDA $2002             ; Reset PPU, start writing\n'
@@ -166,9 +167,9 @@ class load_palette(BitPak):
           '  STA $2006             ; Low byte = $3F00\n'
           '  LDX #$00\n'
           'LoadPalettesIntoPPU:\n'
-          '  LDA palette, x\n'
+          '  LDA %s, x\n'
           '  STA $2007\n'
-          '  INX\n' ) 
-        asmcode += '  CPX #$%02x' % len(self.palette.list())
+          '  INX\n' ) % self.palette.instance_name
+        asmcode += '  CPX #$%02x\n' % len(self.palette.list())
         asmcode += '  BNE LoadPalettesIntoPPU\n'
         return asmcode
