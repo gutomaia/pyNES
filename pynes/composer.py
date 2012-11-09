@@ -16,20 +16,10 @@ class Cartridge:
         self._state = 'prog'
         self._asm_chunks = {}
 
-        self.has_reset = False #reset def is found
-        self.has_nmi = False #nmi def is found
-
-        self.has_prog = False #has any program
-        self.has_bank1 = False #has any attrib def
-        self.has_chr = False #has any sprite
-
         self._header = {'.inesprg':1, '.ineschr':1,
             '.inesmap':0, '.inesmir':1}
-        self.sprites = []
-        self.nametable = {}
         self._vars = {}
         self.bitpaks = {}
-        self._joypad1 = False
 
     def __add__(self, other):
         if other and isinstance(other, str):
@@ -57,12 +47,13 @@ class Cartridge:
 
     def boot(self):
         asm_code = "  .org $FFFA\n"
-        if self.has_nmi:
+
+        if 'nmi' in self._asm_chunks:
             asm_code += '  .dw NMI\n'
         else:
             asm_code += '  .dw 0\n'
         
-        if self.has_reset:
+        if 'reset' in self._asm_chunks:
             asm_code += '  .dw RESET\n'
         else:
             asm_code += '  .dw 0\n'
@@ -278,15 +269,12 @@ class PyNesVisitor(ast.NodeVisitor):
         cart._state = node.name
         cart += node.name.upper() + ':\n'
         if 'reset' == node.name:
-            cart.has_reset = True
             cart += cart.init()
             self.generic_visit(node)
         elif 'nmi' == node.name:
-            cart.has_nmi = True
             self.generic_visit(node)
         elif  match('^joypad[12]_(a|b|select|start|up|down|left|right)', node.name):
             cart._state = node.name
-            cart.has_nmi = True
             self.generic_visit(node)
         else:
             pass
