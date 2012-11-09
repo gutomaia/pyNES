@@ -2,7 +2,7 @@
 
 from re import match
 
-from nes_types import NesArray
+from nes_types import NesRs, NesArray
 
 class Joypad():
 
@@ -48,6 +48,8 @@ class BitPak:
 
     def __init__(self, cart):
         self.cart = cart
+        self.assigned = None
+
 
     def __call__(self):
         return None
@@ -56,18 +58,21 @@ class BitPak:
         return ''
 
     def procedure(self):
-        return ''
+        return None
 
     def attribute(self):
         return ''
+
+    def assigned_to(self, assigned):
+        self.assigned = assigned
 
 class rs(BitPak):
 
-    def __call__(self, size):
-        return None
+    def __init__(self, cart):
+        BitPak.__init__(self, cart)
 
-    def attribute(self):
-        return None
+    def __call__(self, size):
+        return NesRs(size)
 
 class HardSprite:
 
@@ -128,13 +133,10 @@ class clearmen(BitPak):
 
 class import_chr(BitPak):
 
-    def __init__(self):
-        BitPak.__init__(self)
+    def __init__(self, cart):
+        BitPak.__init__(self, cart)
 
-    def __call__(self, filename):
-      return ""
-
-    def procedure(self):
+    def __call__(self, filename="a"):
       return ""
 
 class define_sprite(BitPak):

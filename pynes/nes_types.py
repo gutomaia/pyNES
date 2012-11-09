@@ -5,7 +5,13 @@ class NesType:
     def __init__(self):
         pass
 
+class NesRs(NesType):
+
+    def __init__(self, size):
+        self.size = size
+
 class NesArray(NesType):
+
     def __init__(self, lst):
         self.value = []
         for l in lst:

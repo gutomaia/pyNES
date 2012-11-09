@@ -8,7 +8,7 @@ from inspect import getmembers
 import pynes.bitbag
 
 from pynes.bitbag import Joypad, HardSprite
-from pynes.nes_types import NesArray
+from pynes.nes_types import NesRs, NesArray
 
 class Cartridge:
 
@@ -88,8 +88,8 @@ class Cartridge:
     def rsset(self):
         asm_code = ""
         for v in self._vars:
-            if isinstance(self._vars[v], int):
-                asm_code += v + ' .rs ' + str(self._vars[v]) + '\n'
+            if isinstance(self._vars[v], NesRs):
+                asm_code += v + ' .rs ' + str(self._vars[v].size) + '\n'
         if len(asm_code) > 0:
             return ("  .rsset $0000\n" + asm_code + '\n\n')
         return ""
@@ -99,9 +99,11 @@ class Cartridge:
         if 'prog' in self._asm_chunks:
             asm_code += self._asm_chunks['prog'] 
         for bp in self.bitpaks:
-            asm_code += self.bitpaks[bp].procedure() + '\n'
+            procedure = self.bitpaks[bp].procedure()
+            if isinstance(procedure, str):
+                asm_code += procedure + '\n'
         if 'reset' in self._asm_chunks:
-            asm_code += self._asm_chunks['reset'] 
+            asm_code += self._asm_chunks['reset']
         if len(asm_code) > 0:
             return ("  .bank 0\n  .org $C000\n\n" + asm_code + '\n\n')
         return ""
@@ -240,26 +242,35 @@ class PyNesVisitor(ast.NodeVisitor):
         global cart
         if (len(node.targets) == 1):
             if isinstance(node.value, ast.Call):
+                self.generic_visit(node)
                 varname = node.targets[0].id
                 call = node.value
                 if call.func.id:
-                    if call.func.id == 'rs':
-                        arg = call.args[0].n
-                        cart.set_var(varname, arg)
+                    if (len(self.stack.last()) == 1 and
+                        isinstance(self.stack.last()[0], NesRs)):
+                        rs = self.stack.resolve()[0]
+                        self.stack.wipe()
+                        cart.set_var(varname, rs)
+                #TODO: try to remove this latter
                 elif call.func.value.id == 'pynes' \
                     and node.value.func.attr == 'rsset':
                         pass
             elif isinstance(node.value, ast.List):
+                self.generic_visit(node, debug=True)
+                #TODO: just umpile
                 varname = node.targets[0].id
                 cart.set_var(varname, NesArray(node.value.elts))
             elif 'ctx' in dir(node.targets[0]): #TODO fix this please
-                self.generic_visit(node) #TODO: upthis
+                self.generic_visit(node, debug=True) #TODO: upthis
                 if len(self.stack.last()) == 1 and isinstance(self.stack.last()[0], int):
                     cart += '  LDA #%d\n' % self.stack.resolve()[0]
                 if len(self.stack.current()) == 2:
                     address = getattr(self.stack.current()[0], self.stack.current()[1])
                     cart += '  STA $%04x\n' % address
 
+    def visit_List(self, node):
+        print 'aaa'
+        self.stack(NesArray(node.elts))
 
     def visit_Attribute(self, node):
         self.generic_visit(node)
@@ -296,10 +307,13 @@ class PyNesVisitor(ast.NodeVisitor):
             if node.func.id not in cart.bitpaks:
                 obj = getattr(pynes.bitbag, node.func.id, None)
                 if (obj):
-                    bp = obj(cart)
-                    cart.bitpaks[node.func.id] = bp
-                    self.stack(bp(*args))
-                    cart += bp.asm()
+                    try:
+                        bp = obj(cart)
+                        cart.bitpaks[node.func.id] = bp
+                        self.stack(bp(*args))
+                        cart += bp.asm()
+                    except TypeError, e:
+                        raise(TypeError('Problem with %s' % node.func.id, e))
             else:
                 bp = cart.bitpaks[node.func.id]
                 self.stack(bp(*args))
@@ -327,6 +341,8 @@ class PyNesVisitor(ast.NodeVisitor):
         if node.id in cart._vars:
             value = cart.get_var(node.id)
             self.stack(value)
+        else:
+            self.stack(node.id) #TODO
 
 cart = None
 
