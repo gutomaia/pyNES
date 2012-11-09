@@ -18,6 +18,7 @@ def reset():
     global palette, player_sprite
     wait_vblank()
     clearmen()
+    wait_vblank()
     load_palette(palette)
     load_sprite(player_sprite, 0)
     infinity_loop()

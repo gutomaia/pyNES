@@ -12,7 +12,7 @@ class WhatElse():
 
     def has(self, text):
         index = self.testcase.asm.find(text)
-        if index:
+        if index > 0:
             self.start = index + len(text)
             self.last = text
         else:
@@ -21,8 +21,8 @@ class WhatElse():
 
     def and_then(self, text):
         index = self.testcase.asm[self.start:].find(text)
-        if index:
-            self.start += index
+        if index > 0:
+            self.start += index + len(text)
             self.last = text
         else:
             raise(AssertionError('"%s" was not found after "%s" in code' % (text, self.last)))
@@ -36,6 +36,13 @@ class ComposerTestCase(TestCase):
 
     def setUp(self):
         self.code = None
+        self.cart = None
+        self.asm = None
+
+    def tearDown(self):
+        self.code = None
+        self.cart = None
+        self.asm = None
 
     def assert_asm_from(self, code):
         self.code = code

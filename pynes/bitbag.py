@@ -2,6 +2,8 @@
 
 from re import match
 
+# from composer import NesArray
+
 class Joypad():
 
     def __init__(self, player_num, cart):
@@ -101,6 +103,29 @@ class wait_vblank(BitPak):
           '  BPL WAITVBLANK\n'
           '  RTS\n')
 
+class clearmen(BitPak):
+
+    def __init__(self):
+        BitPak.__init__(self)
+
+    def asm(self):
+        return (
+          'CLEARMEM:\n'
+          '  LDA #$00\n'
+          '  STA $0000, x\n'
+          '  STA $0100, x\n'
+          '  STA $0200, x\n'
+          '  STA $0400, x\n'
+          '  STA $0500, x\n'
+          '  STA $0600, x\n'
+          '  STA $0700, x\n'
+          '  LDA #$FE\n'
+          '  STA $0300, x\n'
+          '  INX\n'
+          '  BNE CLEARMEM\n'
+        )
+
+
 class import_chr(BitPak):
 
     def __init__(self):
@@ -118,18 +143,17 @@ class define_sprite(BitPak):
     #sprite:
     #.db $80, $00, $03, $80; Y pos, tile id, attributes, X pos
 
-class get_sprite(BitPak):
-
-    def __call__(self):
-      return None
-
-    def procedure(self):
-      return None
-
-
 class load_palette(BitPak):
 
+    def __init__(self):
+        BitPak.__init__(self)
+
     def  __call__(self, palette):
+        #TODO assert isinstance(palette, NesArray)
+        self.palette = palette
+        return None
+
+    def asm(self):
         return (
           'LoadPalettes:\n'
           '  LDA $2002             ; Reset PPU, start writing\n'
@@ -145,6 +169,3 @@ class load_palette(BitPak):
           '  CPX #$20                  ; Hex 20 = 32 decimal\n'
           '  BNE LoadPalettesIntoPPU\n'
         )
-
-    def procedure(self):
-        return ''

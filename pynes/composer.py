@@ -116,10 +116,12 @@ class Cartridge:
 
     def prog(self):
         asm_code = ""
-        for bp in self.bitpaks:
-            asm_code += self.bitpaks[bp].procedure() + '\n'
         if 'prog' in self._asm_chunks:
             asm_code += self._asm_chunks['prog'] 
+        for bp in self.bitpaks:
+            asm_code += self.bitpaks[bp].procedure() + '\n'
+        if 'reset' in self._asm_chunks:
+            asm_code += self._asm_chunks['reset'] 
         if len(asm_code) > 0:
             return ("  .bank 0\n  .org $C000\n\n" + asm_code + '\n\n')
         return ""
