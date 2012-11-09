@@ -222,19 +222,7 @@ class PyNesVisitor(ast.NodeVisitor):
 
     def visit_AugAssign(self, node):
         self.generic_visit(node)
-        if len(self.stack.current()) == 4:
-            if (isinstance(self.stack.current()[0], int) and
-                isinstance(self.stack.current()[1], str) and #TODO op
-                isinstance(self.stack.current()[2], HardSprite) and
-                isinstance(self.stack.current()[3], str)): #TODO how to check
-                address = getattr(self.stack[2], self.stack[3])
-                global cart
-                cart += '  LDA $%04x\n' % address
-                cart += '  CLC\n'
-                cart += '  ADC #%d\n' % self.stack[0]
-                cart += '  STA $%04x\n' % address
-
-        elif len(self.stack.current()) == 2 and len(self.stack.last()) == 2:
+        if len(self.stack.current()) == 2 and len(self.stack.last()) == 2:
             if (isinstance(self.stack.last()[0], int) and
                 isinstance(self.stack.last()[1], str) and #TODO op
                 isinstance(self.stack.current()[0], HardSprite) and
@@ -265,7 +253,7 @@ class PyNesVisitor(ast.NodeVisitor):
                 varname = node.targets[0].id
                 cart.set_var(varname, NesArray(node.value.elts))
             elif 'ctx' in dir(node.targets[0]): #TODO fix this please
-                self.generic_visit(node)
+                self.generic_visit(node) #TODO: upthis
                 if len(self.stack.last()) == 1 and isinstance(self.stack.last()[0], int):
                     cart += '  LDA #%d\n' % self.stack.resolve()[0]
                 if len(self.stack.current()) == 2:
@@ -280,19 +268,21 @@ class PyNesVisitor(ast.NodeVisitor):
 
     def visit_FunctionDef(self, node):
         global cart
-        if node.name in ['reset','nmi']:
-            cart._state = node.name
-            cart += node.name.upper() + ':\n'
-            if node.name == 'reset':
-                cart.has_reset = True
-                cart += cart.init()
-            elif node.name == 'nmi':
-                cart.has_nmi = True
+        cart._state = node.name
+        cart += node.name.upper() + ':\n'
+        if 'reset' == node.name:
+            cart.has_reset = True
+            cart += cart.init()
+            self.generic_visit(node)
+        elif 'nmi' == node.name:
+            cart.has_nmi = True
             self.generic_visit(node)
         elif  match('^joypad[12]_(a|b|select|start|up|down|left|right)', node.name):
             cart._state = node.name
             cart.has_nmi = True
             self.generic_visit(node)
+        else:
+            pass
 
     def visit_Call(self, node):
         global cart
@@ -306,7 +296,7 @@ class PyNesVisitor(ast.NodeVisitor):
             if node.func.id not in cart.bitpaks:
                 obj = getattr(pynes.bitbag, node.func.id, None)
                 if (obj):
-                    bp = obj()
+                    bp = obj() #TODO: pass cart
                     cart.bitpaks[node.func.id] = bp
                     self.stack(bp(*args))
                     cart += bp.asm()
@@ -319,7 +309,7 @@ class PyNesVisitor(ast.NodeVisitor):
         self.stack('+')
 
     def visit_Sub(self, node):
-        print node
+        self.stack('-')
 
     def visit_BinOp(self, node):
         if (isinstance(node.left, ast.Num) and
