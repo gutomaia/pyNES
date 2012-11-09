@@ -260,7 +260,6 @@ class PyNesVisitor(ast.NodeVisitor):
                         cart.set_var(varname, arg)
                 elif call.func.value.id == 'pynes' \
                     and node.value.func.attr == 'rsset':
-                        #print 'opa rsset'
                         pass
             elif isinstance(node.value, ast.List):
                 varname = node.targets[0].id
@@ -299,13 +298,11 @@ class PyNesVisitor(ast.NodeVisitor):
         global cart
         if node.func.id:
             if len(node.args) > 0:
-                self.generic_visit(node.args, debug=True)
+                self.generic_visit(node.args)
                 args = self.stack.current()
                 self.stack.wipe()
             else:
                 args = []
-            print node.func.id
-            print args
             if node.func.id not in cart.bitpaks:
                 obj = getattr(pynes.bitbag, node.func.id, None)
                 if (obj):
@@ -337,7 +334,9 @@ class PyNesVisitor(ast.NodeVisitor):
         self.stack(node.n)
 
     def visit_Name(self, node):
-        self.stack(node.id) #TODO: create a diference from string to memonic
+        if node.id in cart._vars:
+            value = cart.get_var(node.id)
+            self.stack(value)
 
 cart = None
 

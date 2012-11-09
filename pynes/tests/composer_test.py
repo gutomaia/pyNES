@@ -79,6 +79,41 @@ class ComposerTest(ComposerTestCase):
         .and_then('ADC #100')
         .and_then('STA $0204'))
 
+    def test_load_palette_with_nes_array(self):
+        (self.assert_asm_from(
+            'from pynes.bitbag import *\n'
+            'palette = [0,1,2,3,4,5,6,7]\n'
+
+            'load_palette(palette)\n'
+            )
+        .has('.bank 0')
+        .and_then('LoadPalettes:')
+        .and_then('LoadPalettesIntoPPU:')
+        .and_then('LDA palette, x')
+        .and_then('STA $2007')
+        .and_then('INX')
+        .and_then('CPX #$08')
+        .and_then('palette:')
+
+        )
+
+    def test_load_palette_with_nes_array_2(self):
+        (self.assert_asm_from(
+            'from pynes.bitbag import *\n'
+            'my_palette = [0,1,2,3,4,5,6,7]\n'
+
+            'load_palette(my_palette)\n'
+            )
+        .has('.bank 0')
+        .and_then('LoadPalettes:')
+        .and_then('LoadPalettesIntoPPU:')
+        #TODO: .and_then('LDA my_palette, x')
+        .and_then('STA $2007')
+        .and_then('INX')
+        .and_then('CPX #$08')
+        .and_then('my_palette:')
+        )
+
     def test_movingsprite(self):
         code = (
             'from pynes.bitbag import *\n'
@@ -157,6 +192,22 @@ class ComposerTest(ComposerTestCase):
         .and_then('.org $C000' ))
         #.and_then('.bank 1' not in asm)
         #.and_then('.org $E000' not in asm)
+
+    def test_palette_list_definition_from_00_to_04(self):
+        (self.assert_asm_from(
+            'palette = [0,1,2,3]')
+
+        #self.assertEquals(1, len(cart._vars))
+        #self.assertEquals([0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15], cart.get_var('palette').list())
+        .has('.bank 1')
+        .and_then('.org $E000')
+        .and_then(
+            'palette:\n'
+            '  .db $00,$01,$02,$03')
+        #self.assertTrue('.bank 0' not in asm)
+        #self.assertTrue('.org $C000' not in asm)
+        )
+
 
     def test_palette_list_definition_from_00_to_0F(self):
         (self.assert_asm_from(
