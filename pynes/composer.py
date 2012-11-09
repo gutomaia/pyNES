@@ -251,17 +251,13 @@ class PyNesVisitor(ast.NodeVisitor):
                         rs = self.stack.resolve()[0]
                         self.stack.wipe()
                         cart.set_var(varname, rs)
-                #TODO: try to remove this latter
-                elif call.func.value.id == 'pynes' \
-                    and node.value.func.attr == 'rsset':
-                        pass
             elif isinstance(node.value, ast.List):
                 self.generic_visit(node, debug=True)
                 #TODO: just umpile
                 varname = node.targets[0].id
                 cart.set_var(varname, NesArray(node.value.elts))
             elif 'ctx' in dir(node.targets[0]): #TODO fix this please
-                self.generic_visit(node, debug=True) #TODO: upthis
+                self.generic_visit(node) #TODO: upthis
                 if len(self.stack.last()) == 1 and isinstance(self.stack.last()[0], int):
                     cart += '  LDA #%d\n' % self.stack.resolve()[0]
                 if len(self.stack.current()) == 2:
