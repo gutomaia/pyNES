@@ -118,6 +118,17 @@ class ComposerTest(ComposerTestCase):
         .and_then('my_palette:')
         )
 
+    def test_import_chr(self):
+        (self.assert_asm_from(
+            'from pynes.bitbag import *\n'
+
+            'asset = import_chr("player.chr")\n'
+            )
+        .has('.bank 2')
+        .and_then('.org $0000')
+        .and_then('.incbin "player.chr"')
+        )
+
     def test_movingsprite(self):
         code = (
             'from pynes.bitbag import *\n'

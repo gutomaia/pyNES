@@ -54,3 +54,8 @@ class NesArray(NesType):
         if len(asm) > 0:
             return asm
         return False
+
+class NesChrFile(NesType):
+
+    def __init__(self, filename):
+        self.filename = filename

@@ -8,7 +8,7 @@ from inspect import getmembers
 import pynes.bitbag
 
 from pynes.bitbag import Joypad, HardSprite
-from pynes.nes_types import NesType, NesRs, NesArray, NesSprite
+from pynes.nes_types import NesType, NesRs, NesArray, NesSprite, NesChrFile
 
 class Cartridge:
 
@@ -110,6 +110,16 @@ class Cartridge:
             return ("  .bank 1\n  .org $E000\n\n" + asm_code + '\n\n')
         return ""
 
+    def bank2(self):
+        asm_code = ""
+        for v in self._vars:
+            if isinstance(self._vars[v], NesChrFile):
+                asm_code += '  .incbin "%s"' % self._vars[v].filename
+
+        if len(asm_code) > 0:
+            return ("  .bank 2\n  .org $0000\n\n" + asm_code + '\n\n')
+        return ""
+
     def nmi(self):
         joypad_1 = Joypad(1, self)
         joypad_2 = Joypad(2, self)
@@ -142,7 +152,9 @@ class Cartridge:
             self.prog() +
             self.nmi() +
             self.bank1() +
-            self.boot() )
+            self.boot() +
+            self.bank2()
+            )
         print asm_code
         return asm_code
 

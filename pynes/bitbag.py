@@ -2,7 +2,7 @@
 
 from re import match
 
-from nes_types import NesRs, NesArray, NesSprite
+from nes_types import NesRs, NesArray, NesSprite, NesChrFile
 
 class Joypad():
 
@@ -143,8 +143,8 @@ class import_chr(BitPak):
     def __init__(self, cart):
         BitPak.__init__(self, cart)
 
-    def __call__(self, filename="a"):
-      return ""
+    def __call__(self, filename="player.chr"):
+      return NesChrFile(filename)
 
 class define_sprite(BitPak):
 
