@@ -156,7 +156,6 @@ class Cartridge:
             self.boot() +
             self.bank2()
             )
-        print asm_code
         return asm_code
 
 
@@ -353,6 +352,34 @@ class PyNesVisitor(ast.NodeVisitor):
 cart = None
 
 def pynes_compiler(code, cartridge = cart):
+    global cart
+    if cartridge == None:
+        cart = cartridge = Cartridge()
+
+    python_land = ast.parse(code)
+    turist = PyNesVisitor()
+    turist.visit(python_land)
+    cart = None
+    return cartridge
+
+def compose_file(py_file, output=None, path=None):
+    from os.path import dirname, realpath
+
+    f = open(py_file)
+    code = f.read()
+    f.close()
+
+    if path == None:
+        path = dirname(realpath(py_file)) + '/'
+
+    cart = compose(code)
+    asmcode = cart.to_asm()
+    #TODO: from compiler import compile
+    #TODO: compile(asmcode, 'output.nes', path)
+
+
+
+def compose(code, cartridge = cart):
     global cart
     if cartridge == None:
         cart = cartridge = Cartridge()

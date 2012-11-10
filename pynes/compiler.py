@@ -1,6 +1,5 @@
 # -*- coding: utf-8 -*-
 
-from os.path import dirname, realpath
 from analyzer import analyse
 from c6502 import opcodes, address_mode_def
 from re import match
@@ -343,14 +342,19 @@ def semantic(ast, iNES=False, cart=None ):
     else:
         return cart.get_code()
 
+def compile_file(asmfile, output=None, path=None):
+    from os.path import dirname, realpath
 
-def compile(asmfile, output=None, path=None):
     f = open(asmfile)
     code = f.read()
     f.close()
 
     if path == None:
         path = dirname(realpath(asmfile)) + '/'
+
+    compile(code, 'output.nes', path)
+
+def compile(code, output, path):
 
     cart = Cartridge()
     cart.path = path
@@ -360,6 +364,5 @@ def compile(asmfile, output=None, path=None):
     opcodes = semantic(ast, True, cart)
 
     pynes.write_bin_code(opcodes, 'output.nes')
-
 
 

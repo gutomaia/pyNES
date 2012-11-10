@@ -14,16 +14,10 @@ class CommandLineTest(unittest.TestCase):
 
     @patch('pynes.compiler.compile')
     def test_asm(self, compiler):
-        main("pynes --asm fixtures/movingsprite/movingsprite.asm".split())
+        main("pynes asm fixtures/movingsprite/movingsprite.asm".split())
         self.assertTrue(compiler.called)
 
-    def test_asm_c(self,):
-        shutil.copyfile("fixtures/movingsprite/movingsprite.asm", "/tmp/movingsprite.asm")
-        shutil.copyfile("fixtures/movingsprite/player.chr", "/tmp/player.chr")
-        main("pynes --asm /tmp/movingsprite.asm".split())
-        #self.assertTrue(os.path.exists('/tmp/movingsprite.nes'))
-        #os.remove('/tmp/movingsprite.nes')
-
-        #self.assertTrue(compiler.called)
-
-    
+    @patch('pynes.composer.compose')
+    def test_py(self, composer):
+        main("pynes py pynes/examples/movingsprite.py".split())
+        self.assertTrue(composer.called)

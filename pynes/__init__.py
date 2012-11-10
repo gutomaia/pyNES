@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+
 import os
 import sys
 import re
@@ -10,11 +11,21 @@ from pynes.composer import pynes_compiler
 
 import pynes.compiler
 
-def press_start():
-    f = open(sys.argv[0])
-    code = f.read()
-    f.close()
-    pynes_compiler(code, filename=sys.argv[0]+'.nes')
+def press_start(asm = False):
+    filename = sys.argv[0]
+    pyfile = open(filename)
+    code = pyfile.read()
+    pyfile.close()
+    cart = pynes_compiler(code)
+    asmcode = cart.to_asm()
+
+    if (asm):
+        asm_filename = filename + '.asm'
+        asm_file = open(asm_filename, 'w')
+        asm_file.write(asmcode)
+        asm_file.close()
+        print asm_filename
+
 
 def write_bin_code(code, file):
     target = open(file, 'wb')
@@ -28,18 +39,29 @@ def main(argv = None):
         description='pyNES - Python programming for Nintendo 8bits',
         epilog='')
 
-    group = parser.add_mutually_exclusive_group()
-    group.add_argument('-p', '--py', type=str, metavar="FILE", help='compile python')
-    group.add_argument('-a', '--asm', type=str, metavar="FILE", help='compile an asm file')
-    group.add_argument('-c', '--chr', type=str, metavar="FILE", help='import chr')
+    subparsers = parser.add_subparsers(
+        title="subcommands", description="utilities", help="aditional help")
 
-    parser.add_argument('-o', '--out', type=argparse.FileType('wb', 0), metavar="FILE", help='output file for compile and convert')
+    py_cmd = subparsers.add_parser('py') #, aliases=['py'])
+    py_cmd.add_argument('--output', metavar='OUTPUT', help="output NES file")
+    py_cmd.add_argument('input', nargs='?', metavar='INPUT', help="input Python file")
+    py_cmd.set_defaults(func=exec_py)
+
+    chr_cmd = subparsers.add_parser('chr')
+    chr_cmd.set_defaults(func=chr_cmd)
+
+    asm_cmd = subparsers.add_parser('asm') #TODO, aliases=['asm'])
+    asm_cmd.add_argument('input', nargs='?', metavar='INPUT', help="input c6502 asm file")
+    asm_cmd.set_defaults(func=exec_asm)
 
     args = parser.parse_args(argv[1:])
-    if args.asm == args.chr == None:
-        parser.print_help()
-    elif args.py != None:
-        #pynes_compiler
-        pass
-    elif args.asm != None:
-        pynes.compiler.compile(args.asm)
+    args.func(args)
+
+def exec_py(args):
+    pynes.composer.compose_file(args.input)
+
+def exec_asm(args):
+    pynes.compiler.compile_file(args.input)
+
+def exec_chr(args):
+    pass
