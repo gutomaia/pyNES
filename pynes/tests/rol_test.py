@@ -1,4 +1,10 @@
 # -*- coding: utf-8 -*-
+'''
+ROL, Rotate Left Test
+
+This is an Bit Manipulation of the 6502.
+
+'''
 
 import unittest
 
@@ -6,7 +12,7 @@ from pynes.compiler import lexical, syntax, semantic
 class RolTest(unittest.TestCase):
 
     def test_rol_imm(self):
-        tokens = lexical('ROL #10')
+        tokens = lexical('ROL #$10')
         self.assertEquals(2 , len(tokens))
         self.assertEquals('T_INSTRUCTION', tokens[0]['type'])
         self.assertEquals('T_HEX_NUMBER', tokens[1]['type'])
@@ -15,6 +21,17 @@ class RolTest(unittest.TestCase):
         self.assertEquals('S_IMMEDIATE', ast[0]['type'])
         code = semantic(ast)
         self.assertEquals(code, [0x2a, 0x10])
+
+    def test_rol_imm_with_decimal(self):
+        tokens = lexical('ROL #10')
+        self.assertEquals(2 , len(tokens))
+        self.assertEquals('T_INSTRUCTION', tokens[0]['type'])
+        self.assertEquals('T_DECIMAL_NUMBER', tokens[1]['type'])
+        ast = syntax(tokens)
+        self.assertEquals(1 , len(ast))
+        self.assertEquals('S_IMMEDIATE', ast[0]['type'])
+        code = semantic(ast)
+        self.assertEquals(code, [0x2a, 0x0a])
 
     def test_rol_zp(self):
         tokens = lexical('ROL $00')

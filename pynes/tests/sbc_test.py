@@ -1,12 +1,16 @@
 # -*- coding: utf-8 -*-
+'''
+SBC, Subtract with Carry Test
 
+This is an arithmetic instruction of the 6502.
+'''
 import unittest
 
 from pynes.compiler import lexical, syntax, semantic
 class SbcTest(unittest.TestCase):
 
     def test_sbc_imm(self):
-        tokens = lexical('SBC #10')
+        tokens = lexical('SBC #$10')
         self.assertEquals(2 , len(tokens))
         self.assertEquals('T_INSTRUCTION', tokens[0]['type'])
         self.assertEquals('T_HEX_NUMBER', tokens[1]['type'])
@@ -15,6 +19,17 @@ class SbcTest(unittest.TestCase):
         self.assertEquals('S_IMMEDIATE', ast[0]['type'])
         code = semantic(ast)
         self.assertEquals(code, [0xe9, 0x10])
+
+    def test_sbc_imm_with_decimal(self):
+        tokens = lexical('SBC #10')
+        self.assertEquals(2 , len(tokens))
+        self.assertEquals('T_INSTRUCTION', tokens[0]['type'])
+        self.assertEquals('T_DECIMAL_NUMBER', tokens[1]['type'])
+        ast = syntax(tokens)
+        self.assertEquals(1 , len(ast))
+        self.assertEquals('S_IMMEDIATE', ast[0]['type'])
+        code = semantic(ast)
+        self.assertEquals(code, [0xe9, 0x0a])
 
     def test_sbc_zp(self):
         tokens = lexical('SBC $00')

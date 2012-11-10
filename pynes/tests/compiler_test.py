@@ -45,5 +45,22 @@ class CompilerTest(unittest.TestCase):
         ast = syntax(tokens)
         self.assertEquals(2, len(ast))
 
-    def test_get_address(self):
-        pass
+    def test_compile_decimal(self):
+        code = '''
+            LDA #128
+            STA $0203
+        '''
+        tokens = lexical(code)
+        self.assertEquals(7, len(tokens))
+        self.assertEquals('T_ENDLINE', tokens[0]['type'])
+        self.assertEquals('T_INSTRUCTION', tokens[1]['type'])
+        self.assertEquals('T_DECIMAL_NUMBER', tokens[2]['type'])
+        self.assertEquals('T_ENDLINE', tokens[3]['type'])
+        self.assertEquals('T_INSTRUCTION', tokens[4]['type'])
+        self.assertEquals('T_ADDRESS', tokens[5]['type'])
+        self.assertEquals('T_ENDLINE', tokens[6]['type'])
+
+    def test_unknow_code_on_lexical(self):
+        code = '''
+            unknowcode
+        '''

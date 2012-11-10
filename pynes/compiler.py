@@ -16,8 +16,9 @@ import pynes
 asm65_tokens = [
     dict(type='T_INSTRUCTION', regex=r'^(ADC|AND|ASL|BCC|BCS|BEQ|BIT|BMI|BNE|BPL|BRK|BVC|BVS|CLC|CLD|CLI|CLV|CMP|CPX|CPY|DEC|DEX|DEY|EOR|INC|INX|INY|JMP|JSR|LDA|LDX|LDY|LSR|NOP|ORA|PHA|PHP|PLA|PLP|ROL|ROR|RTI|RTS|SBC|SEC|SED|SEI|STA|STX|STY|TAX|TAY|TSX|TXA|TXS|TYA)', store=True),
     dict(type='T_ADDRESS', regex=r'\$([\dA-F]{2,4})', store=True),
-    dict(type='T_HEX_NUMBER', regex=r'\#\$?([\dA-F]{2})', store=True), #TODO: change to HEX_NUMBER
-    dict(type='T_BINARY_NUMBER', regex=r'\#%([01]{8})', store=True), #TODO: change to BINARY_NUMBER
+    dict(type='T_HEX_NUMBER', regex=r'\#\$([\dA-F]{2})', store=True),
+    dict(type='T_BINARY_NUMBER', regex=r'\#%([01]{8})', store=True),
+    dict(type='T_DECIMAL_NUMBER', regex=r'\#(\d{1,3})', store=True),
     dict(type='T_LABEL', regex=r'^([a-zA-Z]{2}[a-zA-Z\d]*)\:', store=True),
     dict(type='T_MARKER', regex=r'^[a-zA-Z]{2}[a-zA-Z\d]*', store=True),
     dict(type='T_STRING', regex=r'^"[^"]*"', store=True),
@@ -99,8 +100,11 @@ def t_hex_number(tokens, index):
 def t_binary_number(tokens, index):
     return look_ahead(tokens, index, 'T_BINARY_NUMBER')
 
+def t_decimal_number(tokens, index):
+    return look_ahead(tokens, index, 'T_DECIMAL_NUMBER')
+
 def t_number(tokens, index):
-    return OR([t_hex_number, t_binary_number], tokens, index)
+    return OR([t_hex_number, t_binary_number, t_decimal_number], tokens, index)
 
 def t_separator(tokens , index):
     return look_ahead(tokens, index, 'T_SEPARATOR')
@@ -186,14 +190,17 @@ def get_value(token, labels = []):
     if token['type'] == 'T_ADDRESS':
         m = match(asm65_tokens[1]['regex'], token['value'])
         return int(m.group(1), 16)
-    if token['type'] == 'T_HEX_NUMBER':
+    elif token['type'] == 'T_HEX_NUMBER':
         m = match(asm65_tokens[2]['regex'], token['value'])
         return int(m.group(1), 16)
     elif token['type'] == 'T_BINARY_NUMBER':
         m = match(asm65_tokens[3]['regex'], token['value'])
         return int(m.group(1), 2)
-    elif token['type'] == 'T_LABEL':
+    elif token['type'] == 'T_DECIMAL_NUMBER':
         m = match(asm65_tokens[4]['regex'], token['value'])
+        return int(m.group(1), 10)
+    elif token['type'] == 'T_LABEL':
+        m = match(asm65_tokens[5]['regex'], token['value'])
         return m.group(1)
     elif token['type'] == 'T_MARKER':
         return labels[token['value']]

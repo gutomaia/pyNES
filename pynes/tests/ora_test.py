@@ -1,4 +1,9 @@
 # -*- coding: utf-8 -*-
+'''
+ORA, OR with Accumulator Test
+
+This is an Logical operation of the 6502
+'''
 
 import unittest
 
@@ -8,7 +13,7 @@ class OraTest(unittest.TestCase):
     '''Test logical OR operation between $10 (Decimal 16) and the
     content of the Accumulator'''
     def test_ora_imm(self):
-        tokens = lexical('ORA #10')
+        tokens = lexical('ORA #$10')
         self.assertEquals(2 , len(tokens))
         self.assertEquals('T_INSTRUCTION', tokens[0]['type'])
         self.assertEquals('T_HEX_NUMBER', tokens[1]['type'])
@@ -17,6 +22,19 @@ class OraTest(unittest.TestCase):
         self.assertEquals('S_IMMEDIATE', ast[0]['type'])
         code = semantic(ast)
         self.assertEquals(code, [0x09, 0x10])
+
+    '''Test logical OR operation between #10 (Decimal 10) and the
+    content of the Accumulator'''
+    def test_ora_imm_with_decimal(self):
+        tokens = lexical('ORA #10')
+        self.assertEquals(2 , len(tokens))
+        self.assertEquals('T_INSTRUCTION', tokens[0]['type'])
+        self.assertEquals('T_DECIMAL_NUMBER', tokens[1]['type'])
+        ast = syntax(tokens)
+        self.assertEquals(1 , len(ast))
+        self.assertEquals('S_IMMEDIATE', ast[0]['type'])
+        code = semantic(ast)
+        self.assertEquals(code, [0x09, 0x0a])
 
     '''Test logical OR operation between the content of the
     Accumulator and the content of zero page $00'''

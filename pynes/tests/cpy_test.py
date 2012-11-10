@@ -1,4 +1,8 @@
 # -*- coding: utf-8 -*-
+'''
+CPY, Compare with Y Test
+
+'''
 
 import unittest
 
@@ -7,7 +11,7 @@ from pynes.compiler import lexical, syntax, semantic
 class CpyTest(unittest.TestCase):
 
     def test_cpy_imm(self):
-        tokens = lexical('CPY #10')
+        tokens = lexical('CPY #$10')
         self.assertEquals(2 , len(tokens))
         self.assertEquals('T_INSTRUCTION', tokens[0]['type'])
         self.assertEquals('T_HEX_NUMBER', tokens[1]['type'])
@@ -16,6 +20,17 @@ class CpyTest(unittest.TestCase):
         self.assertEquals('S_IMMEDIATE', ast[0]['type'])
         code = semantic(ast)
         self.assertEquals(code, [0xc0, 0x10])
+
+    def test_cpy_imm_with_decimal(self):
+        tokens = lexical('CPY #10')
+        self.assertEquals(2 , len(tokens))
+        self.assertEquals('T_INSTRUCTION', tokens[0]['type'])
+        self.assertEquals('T_DECIMAL_NUMBER', tokens[1]['type'])
+        ast = syntax(tokens)
+        self.assertEquals(1 , len(ast))
+        self.assertEquals('S_IMMEDIATE', ast[0]['type'])
+        code = semantic(ast)
+        self.assertEquals(code, [0xc0, 0x0a])
 
     def test_cpy_zp(self):
         tokens = lexical('CPY $00')

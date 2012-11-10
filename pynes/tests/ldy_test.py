@@ -1,4 +1,9 @@
 # -*- coding: utf-8 -*-
+'''
+LDY, Load Register Y
+
+This is one of the memory operations on the 6502
+'''
 
 import unittest
 
@@ -6,7 +11,7 @@ from pynes.compiler import lexical, syntax, semantic
 class LdyTest(unittest.TestCase):
 
     def test_ldy_imm(self):
-        tokens = lexical('LDY #10')
+        tokens = lexical('LDY #$10')
         self.assertEquals(2 , len(tokens))
         self.assertEquals('T_INSTRUCTION', tokens[0]['type'])
         self.assertEquals('T_HEX_NUMBER', tokens[1]['type'])
@@ -15,6 +20,17 @@ class LdyTest(unittest.TestCase):
         self.assertEquals('S_IMMEDIATE', ast[0]['type'])
         code = semantic(ast)
         self.assertEquals(code, [0xa0, 0x10])
+
+    def test_ldy_imm_with_decimal(self):
+        tokens = lexical('LDY #10')
+        self.assertEquals(2 , len(tokens))
+        self.assertEquals('T_INSTRUCTION', tokens[0]['type'])
+        self.assertEquals('T_DECIMAL_NUMBER', tokens[1]['type'])
+        ast = syntax(tokens)
+        self.assertEquals(1 , len(ast))
+        self.assertEquals('S_IMMEDIATE', ast[0]['type'])
+        code = semantic(ast)
+        self.assertEquals(code, [0xa0, 0x0a])
 
     def test_ldy_zp(self):
         tokens = lexical('LDY $00')

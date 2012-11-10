@@ -1,4 +1,9 @@
 # -*- coding: utf-8 -*-
+'''
+LSR, Logical Shift Right Test
+
+This is an Bit Manipulation operation of the 6502
+'''
 
 import unittest
 
@@ -6,7 +11,7 @@ from pynes.compiler import lexical, syntax, semantic
 class LsrTest(unittest.TestCase):
 
     def test_lsr_imm(self):
-        tokens = lexical('LSR #10')
+        tokens = lexical('LSR #$10')
         self.assertEquals(2 , len(tokens))
         self.assertEquals('T_INSTRUCTION', tokens[0]['type'])
         self.assertEquals('T_HEX_NUMBER', tokens[1]['type'])
@@ -15,6 +20,18 @@ class LsrTest(unittest.TestCase):
         self.assertEquals('S_IMMEDIATE', ast[0]['type'])
         code = semantic(ast)
         self.assertEquals(code, [0x4a, 0x10])
+
+    def test_lsr_imm_with_decimal(self):
+        tokens = lexical('LSR #10')
+        self.assertEquals(2 , len(tokens))
+        self.assertEquals('T_INSTRUCTION', tokens[0]['type'])
+        self.assertEquals('T_DECIMAL_NUMBER', tokens[1]['type'])
+        ast = syntax(tokens)
+        self.assertEquals(1 , len(ast))
+        self.assertEquals('S_IMMEDIATE', ast[0]['type'])
+        code = semantic(ast)
+        self.assertEquals(code, [0x4a, 0x0a])
+
 
     def test_lsr_zp(self):
         tokens = lexical('LSR $00')

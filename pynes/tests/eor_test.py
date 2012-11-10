@@ -1,5 +1,9 @@
 # -*- coding: utf-8 -*-
+'''
+EOR, Exclusive OR Test
 
+This is one of the logical operations in the c6502.
+'''
 import unittest
 
 from pynes.compiler import lexical, syntax, semantic
@@ -8,7 +12,7 @@ class EorTest(unittest.TestCase):
     '''Test logical EOR operation between $10 (Decimal 16) and the
     content of the Accumulator'''
     def test_eor_imm(self):
-        tokens = lexical('EOR #10')
+        tokens = lexical('EOR #$10')
         self.assertEquals(2 , len(tokens))
         self.assertEquals('T_INSTRUCTION', tokens[0]['type'])
         self.assertEquals('T_HEX_NUMBER', tokens[1]['type'])
@@ -17,6 +21,19 @@ class EorTest(unittest.TestCase):
         self.assertEquals('S_IMMEDIATE', ast[0]['type'])
         code = semantic(ast)
         self.assertEquals(code, [0x49, 0x10])
+
+    '''Test logical EOR operation between 10 (Decimal 10) and the
+    content of the Accumulator'''
+    def test_eor_imm_with_decimal(self):
+        tokens = lexical('EOR #10')
+        self.assertEquals(2 , len(tokens))
+        self.assertEquals('T_INSTRUCTION', tokens[0]['type'])
+        self.assertEquals('T_DECIMAL_NUMBER', tokens[1]['type'])
+        ast = syntax(tokens)
+        self.assertEquals(1 , len(ast))
+        self.assertEquals('S_IMMEDIATE', ast[0]['type'])
+        code = semantic(ast)
+        self.assertEquals(code, [0x49, 0x0a])
 
     '''Test logical EOR operation between the content of the
     Accumulator and the content of zero page $00'''

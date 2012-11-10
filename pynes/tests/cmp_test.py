@@ -1,4 +1,7 @@
 # -*- coding: utf-8 -*-
+'''
+CMP, Compare with Accumulator Test
+'''
 
 import unittest
 
@@ -7,7 +10,7 @@ from pynes.compiler import lexical, syntax, semantic
 class CpmTest(unittest.TestCase):
 
     def test_cmp_imm(self):
-        tokens = lexical('CMP #10')
+        tokens = lexical('CMP #$10')
         self.assertEquals(2 , len(tokens))
         self.assertEquals('T_INSTRUCTION', tokens[0]['type'])
         self.assertEquals('T_HEX_NUMBER', tokens[1]['type'])
@@ -16,6 +19,17 @@ class CpmTest(unittest.TestCase):
         self.assertEquals('S_IMMEDIATE', ast[0]['type'])
         code = semantic(ast)
         self.assertEquals(code, [0xc9, 0x10])
+
+    def test_cmp_imm_with_decimal(self):
+        tokens = lexical('CMP #10')
+        self.assertEquals(2 , len(tokens))
+        self.assertEquals('T_INSTRUCTION', tokens[0]['type'])
+        self.assertEquals('T_DECIMAL_NUMBER', tokens[1]['type'])
+        ast = syntax(tokens)
+        self.assertEquals(1 , len(ast))
+        self.assertEquals('S_IMMEDIATE', ast[0]['type'])
+        code = semantic(ast)
+        self.assertEquals(code, [0xc9, 0x0a])
 
     def test_cmp_zp(self):
         tokens = lexical('CMP $00')

@@ -14,10 +14,10 @@ class AdcTest(unittest.TestCase):
 
     def test_adc_imm(self):
         '''
-        Test the arithmetic operation ADC between decimal 10
+        Test the arithmetic operation ADC between decimal 16
         and the content of the accumulator.
         '''
-        tokens = lexical('ADC #10')
+        tokens = lexical('ADC #$10')
         self.assertEquals(2 , len(tokens))
         self.assertEquals('T_INSTRUCTION', tokens[0]['type'])
         self.assertEquals('T_HEX_NUMBER', tokens[1]['type'])
@@ -26,6 +26,22 @@ class AdcTest(unittest.TestCase):
         self.assertEquals('S_IMMEDIATE', ast[0]['type'])
         code = semantic(ast)
         self.assertEquals(code, [0x69, 0x10])
+
+    def test_adc_imm_with_decimal(self):
+        '''
+        Test the arithmetic operation ADC between decimal 10
+        and the content of the accumulator.
+        '''
+        tokens = lexical('ADC #10')
+        self.assertEquals(2 , len(tokens))
+        self.assertEquals('T_INSTRUCTION', tokens[0]['type'])
+        self.assertEquals('T_DECIMAL_NUMBER', tokens[1]['type'])
+        ast = syntax(tokens)
+        self.assertEquals(1 , len(ast))
+        self.assertEquals('S_IMMEDIATE', ast[0]['type'])
+        code = semantic(ast)
+
+        self.assertEquals(code, [0x69, 0x0A])
 
     def test_adc_zp(self):
         '''
