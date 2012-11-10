@@ -12,7 +12,8 @@ palette = [ 0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,
 
 chr_asset = import_chr('player.chr')
 
-player_sprite = create_sprite(chr_asset, 128, 128, [0])
+player_sprite = create_sprite(128, 128, [0])
+
 
 def reset():
     global palette, player_sprite
@@ -24,13 +25,13 @@ def reset():
     infinity_loop()
 
 def joypad1_up():
-    sprite(0).y += 1
+    get_sprite(0).y += 1
 
 def joypad1_down():
-    sprite(0).y -= 1
+    get_sprite(0).y -= 1
 
 def joypad1_left():
-    sprite(0).x -=1
+    get_sprite(0).x -=1
 
 def joypad1_right():
-    sprite(0).y +=1
+    get_sprite(0).y +=1

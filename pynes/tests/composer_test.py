@@ -12,7 +12,7 @@ class ComposerTest(ComposerTestCase):
         (self.assert_asm_from(
             'from pynes.bitbag import *\n'
 
-            'sprite(0).x = 128'
+            'get_sprite(0).x = 128'
             )
         .has('LDA #128')
         .and_then('STA $0203'))
@@ -21,7 +21,7 @@ class ComposerTest(ComposerTestCase):
         (self.assert_asm_from(
             'from pynes.bitbag import *\n'
 
-            'sprite(0).x = 126 + 2')
+            'get_sprite(0).x = 126 + 2')
         .has('LDA #128')
         .and_then('STA $0203'))
 
@@ -29,7 +29,7 @@ class ComposerTest(ComposerTestCase):
         (self.assert_asm_from(
             'from pynes.bitbag import *\n'
 
-            'sprite(0).x = 127 + 1')
+            'get_sprite(0).x = 127 + 1')
         .has('LDA #128')
         .and_then('STA $0203'))
 
@@ -37,7 +37,7 @@ class ComposerTest(ComposerTestCase):
         (self.assert_asm_from(
             'from pynes.bitbag import *\n'
 
-            'sprite(0).y = 129')
+            'get_sprite(0).y = 129')
         .has('LDA #129')
         .and_then('STA $0200'))
 
@@ -45,7 +45,7 @@ class ComposerTest(ComposerTestCase):
         (self.assert_asm_from(
             'from pynes.bitbag import *\n'
 
-            'sprite(0).y += 5')
+            'get_sprite(0).y += 5')
         .has('LDA $0200')
         .and_then('CLC')
         .and_then('ADC #5')
@@ -56,7 +56,7 @@ class ComposerTest(ComposerTestCase):
             'from pynes.bitbag import *\n'
 
             'def joypad1_up():'
-            '   sprite(0).y += 5')
+            '   get_sprite(0).y += 5')
         .has('BEQ EndUp')
         .and_then('LDA $0200')
         .and_then('CLC')
@@ -73,7 +73,7 @@ class ComposerTest(ComposerTestCase):
         (self.assert_asm_from(
             'from pynes.bitbag import *\n'
 
-            'sprite(1).y += 100')
+            'get_sprite(1).y += 100')
         .has('LDA $0204')
         .and_then('CLC')
         .and_then('ADC #100')
@@ -142,7 +142,7 @@ class ComposerTest(ComposerTestCase):
             '    py -= 1\n'
 
             'def joypad1_left():\n'
-            '     sprite(0).x += 1'
+            '     get_sprite(0).x += 1'
             #'    global x\n'
             #'    px -= 1\n'
 

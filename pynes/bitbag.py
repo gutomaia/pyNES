@@ -82,7 +82,7 @@ class HardSprite:
       self.x = address + 3
 
 
-class sprite(BitPak):
+class get_sprite(BitPak):
 
     def __init__(self, cart):
         BitPak.__init__(self, cart)
