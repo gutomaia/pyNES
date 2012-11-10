@@ -12,16 +12,15 @@ palette = [ 0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,
 
 chr_asset = import_chr('player.chr')
 
-player_sprite = create_sprite(128, 128, [0])
-
+sprite = define_sprite(128, 128, 0, 3)
 
 def reset():
-    global palette, player_sprite
+    global palette, sprite
     wait_vblank()
     clearmen()
     wait_vblank()
     load_palette(palette)
-    load_sprite(player_sprite, 0)
+    load_sprite(sprite, 0)
     infinity_loop()
 
 def joypad1_up():

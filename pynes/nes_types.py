@@ -51,7 +51,6 @@ class NesArray(NesType):
             length += 1
         for i in range(length):
             asm += '  .db ' + ','.join(hexes[i*16:i*16+16]) + '\n'
-        print asm
         if len(asm) > 0:
             return asm
         return False

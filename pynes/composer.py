@@ -15,6 +15,7 @@ class Cartridge:
     def __init__(self):
         self._state = 'prog'
         self._asm_chunks = {}
+        self.has_nmi = False
 
         self._header = {'.inesprg':1, '.ineschr':1,
             '.inesmap':0, '.inesmir':1}
@@ -48,7 +49,7 @@ class Cartridge:
     def boot(self):
         asm_code = "  .org $FFFA\n"
 
-        if 'nmi' in self._asm_chunks:
+        if self.has_nmi:
             asm_code += '  .dw NMI\n'
         else:
             asm_code += '  .dw 0\n'
@@ -114,8 +115,10 @@ class Cartridge:
         joypad_2 = Joypad(2, self)
         joypad_code = ''
         if joypad_1.is_used:
+            joypad_code += joypad_1.init()
             joypad_code += joypad_1.to_asm()
         if len(joypad_code) > 0:
+            self.has_nmi = True
             nmi_code = (
                 "NMI:\n"
                 "  LDA #$00\n"
@@ -243,7 +246,7 @@ class PyNesVisitor(ast.NodeVisitor):
                         self.stack.wipe()
                         cart.set_var(varname, rs)
             elif isinstance(node.value, ast.List):
-                self.generic_visit(node, debug=True)
+                self.generic_visit(node)
                 #TODO: just umpile
                 varname = node.targets[0].id
                 cart.set_var(varname, NesArray(node.value.elts))
@@ -266,17 +269,19 @@ class PyNesVisitor(ast.NodeVisitor):
     def visit_FunctionDef(self, node):
         global cart
         cart._state = node.name
-        cart += node.name.upper() + ':\n'
         if 'reset' == node.name:
+            cart += node.name.upper() + ':\n'
             cart += cart.init()
             self.generic_visit(node)
         elif 'nmi' == node.name:
+            cart += node.name.upper() + ':\n'
             self.generic_visit(node)
         elif  match('^joypad[12]_(a|b|select|start|up|down|left|right)', node.name):
             cart._state = node.name
             self.generic_visit(node)
         else:
-            pass
+            cart += node.name.upper() + ':\n'
+            cart._state = node.name
 
     def visit_Call(self, node):
         global cart

@@ -32,6 +32,13 @@ class Joypad():
             asm_code += "End" + tag + ":\n"
             yield asm_code
 
+    def init(self):
+        return ('StartInput:\n' 
+            '  LDA #$01\n'
+            '  STA $4016\n'
+            '  LDA #$00\n'
+            '  STA $4016\n')
+
     @property
     def is_used(self):
         for status in self.cart._asm_chunks:

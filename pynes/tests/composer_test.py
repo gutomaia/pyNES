@@ -57,12 +57,16 @@ class ComposerTest(ComposerTestCase):
 
             'def joypad1_up():'
             '   get_sprite(0).y += 5')
-        .has('BEQ EndUp')
+        .has('NMI:')
+        .and_then('BEQ EndUp')
         .and_then('LDA $0200')
         .and_then('CLC')
         .and_then('ADC #5')
         .and_then('STA $0200')
-        .and_then('EndUp:'))
+        .and_then('EndUp:')
+        .and_then('.dw NMI')
+
+        )
 
     def test_hardsprite_with_1(self):
         from pynes.bitbag import HardSprite

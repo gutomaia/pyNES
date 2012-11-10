@@ -21,4 +21,5 @@ class ComposerMovingSpriteTest(ComposerTestCase):
                 .and_then('JSR WAITVBLANK')
                 .and_then('LoadPalettes:')
                 .and_then('NMI:')
+                .and_then('sprite:')
         )
