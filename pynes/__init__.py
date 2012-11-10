@@ -10,24 +10,6 @@ from pynes.composer import pynes_compiler
 
 import pynes.compiler
 
-def rsset(size):
-    pass
-
-def wait_vblank():
-    return
-    '''
-    WAITVBLANK:
-      BIT $2002
-      BPL WAITVBLANK
-      RTS
-    '''
-
-def load_sprite(index):
-    pass
-
-def boot(reset, nmi):
-    pass
-
 def press_start():
     f = open(sys.argv[0])
     code = f.read()
