@@ -345,3 +345,44 @@ class ComposerTest(ComposerTestCase):
         self.assertTrue('sourceLow .rs 1' in asm)
         self.assertTrue('sourceHigh .rs 1' in asm)
         self.assertTrue('columnNumber .rs 1' in asm)
+
+    def test_undefined_def_raises_nameerror(self):
+        code = (
+            'from pynes.bitbag import *\n'
+            
+            'undefined_def()\n'
+            )
+
+        with self.assertRaises(NameError) as nm:
+            pynes_compiler(code)
+
+        self.assertEquals("name 'undefined_def' is not defined",
+            nm.exception.message)
+
+    def test_wait_vblank_raises_typeerror_when_called_with_args(self):
+        code = (
+            'from pynes.bitbag import *\n'
+
+            'wait_vblank(1)'
+        )
+
+        with self.assertRaises(TypeError) as te:
+            pynes_compiler(code)
+
+        self.assertEquals(
+            'wait_vblank() takes exactly 1 argument (2 given)',
+            te.exception.message)
+
+    def test_load_palette_raises_typeerror_when_called_without_args(self):
+        code = (
+            'from pynes.bitbag import *\n'
+
+            'load_palette()'
+        )
+
+        with self.assertRaises(TypeError) as te:
+            pynes_compiler(code)
+
+        self.assertEquals(
+            'load_palette() takes exactly 2 arguments (1 given)',
+            te.exception.message)

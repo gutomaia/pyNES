@@ -314,7 +314,10 @@ class PyNesVisitor(ast.NodeVisitor):
                         self.stack(bp(*args))
                         cart += bp.asm()
                     except TypeError, e:
-                        raise(TypeError('Problem with %s' % node.func.id, e))
+                        msg = e.message.replace('__call__', node.func.id, 1)
+                        raise(TypeError(msg))
+                else:
+                    raise(NameError("name '%s' is not defined" % node.func.id))
             else:
                 bp = cart.bitpaks[node.func.id]
                 self.stack(bp(*args))

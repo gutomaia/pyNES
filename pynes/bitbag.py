@@ -186,3 +186,21 @@ class load_palette(BitPak):
         asmcode += '  CPX #$%02x\n' % len(self.palette.list())
         asmcode += '  BNE LoadPalettesIntoPPU\n'
         return asmcode
+
+
+class load_sprite(BitPak):
+
+    def __init__(self, cart):
+        BitPak.__init__(self, cart)
+
+    def  __call__(self, sprite, ppu_pos):
+        return None
+
+class infinity_loop(BitPak):
+
+    def __init__(self, cart):
+        BitPak.__init__(self, cart)
+
+    def  __call__(self):
+        return None
+
