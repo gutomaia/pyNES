@@ -7,7 +7,7 @@ from inspect import getmembers
 
 import pynes.bitbag
 
-from pynes.bitbag import Joypad, HardSprite
+from pynes.bitbag import PPU, Joypad, HardSprite
 from pynes.nes_types import NesType, NesRs, NesArray, NesSprite, NesChrFile
 
 class Cartridge:
@@ -88,6 +88,7 @@ class Cartridge:
 
     def prog(self):
         asm_code = ""
+        ppu = PPU()
         if 'prog' in self._asm_chunks:
             asm_code += self._asm_chunks['prog'] 
         for bp in self.bitpaks:
@@ -97,7 +98,7 @@ class Cartridge:
         if 'reset' in self._asm_chunks:
             asm_code += self._asm_chunks['reset']
         if len(asm_code) > 0:
-            return ("  .bank 0\n  .org $C000\n\n" + asm_code + '\n\n')
+            return ("  .bank 0\n  .org $C000\n\n" + asm_code + ppu.init() +'\n\n')
         return ""
 
     def bank1(self):

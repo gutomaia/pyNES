@@ -4,6 +4,19 @@ from re import match
 
 from nes_types import NesRs, NesArray, NesSprite, NesChrFile
 
+class PPU():
+
+    def __init__(self):
+        pass
+
+
+    def init(self):
+        return (
+          '  LDA #%10000000\n'
+          '  STA $2000\n'
+          '  LDA #%00010000\n'
+          '  STA $2001\n')
+
 class Joypad():
 
     def __init__(self, player_num, cart):
@@ -81,6 +94,7 @@ class rs(BitPak):
     def __call__(self, size):
         return NesRs(size)
 
+#Change to PPUSprite
 class HardSprite:
 
     def __init__(self, pos):
@@ -164,7 +178,6 @@ class load_palette(BitPak):
         BitPak.__init__(self, cart)
 
     def  __call__(self, palette):
-        print palette
         assert isinstance(palette, NesArray)
         self.palette = palette
         return None
@@ -194,7 +207,24 @@ class load_sprite(BitPak):
         BitPak.__init__(self, cart)
 
     def  __call__(self, sprite, ppu_pos):
+        assert isinstance(sprite, NesSprite)
+        self.sprite = sprite
+        self.pos = ppu_pos
+        #TODO return an HardwareSprite
         return None
+
+    def  asm(self):
+        asmcode = (
+          'LoadSprites:\n'
+          '  LDX #$00\n'
+          'LoadSpritesIntoPPU:\n'
+          '  LDA sprites, x\n'
+          '  STA $0200, x\n'
+          '  INX\n'
+          '  CPX #$20                  ; Hex 20 = 32 decimal\n'
+          '  BNE LoadSpritesIntoPPU\n'
+        )
+        return asmcode
 
 class infinity_loop(BitPak):
 
@@ -203,4 +233,10 @@ class infinity_loop(BitPak):
 
     def  __call__(self):
         return None
+
+    def asm(self):
+        return (
+          "InfiniteLoop:\n"
+          "  JMP InfiniteLoop\n"
+        )
 

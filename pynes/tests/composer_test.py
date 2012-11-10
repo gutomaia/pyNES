@@ -294,6 +294,31 @@ class ComposerTest(ComposerTestCase):
             )
         )
 
+    def test_load_sprite(self):
+        (self.assert_asm_from(
+            'from pynes.bitbag import *\n'
+
+            'sprite = define_sprite(128, 64 ,0, 3)\n'
+
+            'load_sprite(sprite, 0)'
+            )
+        .has('.bank 0')
+        .and_then('LoadSprites:')
+        .and_then('LDX #$00')
+        .and_then('LoadSpritesIntoPPU:')
+        .and_then('STA $0200, x')
+        .and_then('INX')
+        .and_then('CPX #$20') #TODO it should be 4
+        .and_then('BNE LoadSpritesIntoPPU')
+        .and_then('STA $2000')
+        .and_then('STA $2001')
+        .and_then('.bank 1')
+        .and_then(
+                'sprite:\n'
+                '  .db $40, $00, $03, $80'
+            )
+        )
+
     def test_rs_with_x_and_y_with_size_1(self):
         code = (
             'from pynes.bitbag import *\n'
