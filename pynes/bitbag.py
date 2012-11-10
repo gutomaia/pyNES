@@ -2,7 +2,7 @@
 
 from re import match
 
-from nes_types import NesRs, NesArray
+from nes_types import NesRs, NesArray, NesSprite
 
 class Joypad():
 
@@ -140,10 +140,16 @@ class import_chr(BitPak):
       return ""
 
 class define_sprite(BitPak):
-    pass
-    #(y, tile, $03, x)
-    #sprite:
-    #.db $80, $00, $03, $80; Y pos, tile id, attributes, X pos
+
+    def __init__(self, cart):
+        BitPak.__init__(self, cart)
+
+    def  __call__(self, x, y, tile, attrib=0x80):
+        assert isinstance(x, int)
+        assert isinstance(y, int)
+        assert isinstance(tile, int)
+        return NesSprite(x, y, tile, attrib)
+
 
 class load_palette(BitPak):
 

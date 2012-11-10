@@ -8,7 +8,7 @@ from inspect import getmembers
 import pynes.bitbag
 
 from pynes.bitbag import Joypad, HardSprite
-from pynes.nes_types import NesRs, NesArray
+from pynes.nes_types import NesType, NesRs, NesArray, NesSprite
 
 class Cartridge:
 
@@ -102,7 +102,8 @@ class Cartridge:
     def bank1(self):
         asm_code = ""
         for v in self._vars:
-            if isinstance(self._vars[v], NesArray) and self._vars[v].to_asm():
+            if (isinstance(self._vars[v], NesArray) or
+                isinstance(self._vars[v], NesSprite)):
                 asm_code += v + ':\n' +self._vars[v].to_asm()
         if len(asm_code) > 0:
             return ("  .bank 1\n  .org $E000\n\n" + asm_code + '\n\n')
@@ -186,7 +187,6 @@ class PyNesVisitor(ast.NodeVisitor):
             for n in node:
                 if debug:
                     print n
-                self.stack.store()
                 self.visit(n)
         else:
             for field, value in reversed(list(ast.iter_fields(node))):
@@ -238,7 +238,7 @@ class PyNesVisitor(ast.NodeVisitor):
                 call = node.value
                 if call.func.id:
                     if (len(self.stack.last()) == 1 and
-                        isinstance(self.stack.last()[0], NesRs)):
+                        isinstance(self.stack.last()[0], NesType)):
                         rs = self.stack.resolve()[0]
                         self.stack.wipe()
                         cart.set_var(varname, rs)
@@ -256,7 +256,6 @@ class PyNesVisitor(ast.NodeVisitor):
                     cart += '  STA $%04x\n' % address
 
     def visit_List(self, node):
-        print 'aaa'
         self.stack(NesArray(node.elts))
 
     def visit_Attribute(self, node):
@@ -282,6 +281,7 @@ class PyNesVisitor(ast.NodeVisitor):
     def visit_Call(self, node):
         global cart
         if node.func.id:
+            self.stack.store()
             if len(node.args) > 0:
                 self.generic_visit(node.args)
                 args = self.stack.current()

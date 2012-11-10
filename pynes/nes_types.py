@@ -9,7 +9,29 @@ class NesType:
 class NesRs(NesType):
 
     def __init__(self, size):
+        NesType.__init__(self)
         self.size = size
+
+class NesSprite(NesType):
+
+    def __init__(self, x, y, tile, attrib):
+        NesType.__init__(self)
+        self.x = x
+        self.y = y
+        self.tile = tile
+        self.attrib = attrib
+
+    def to_asm(self):
+
+        return (
+            '  .db $%02x, $%02x, $%02x, $%02x' % 
+            (
+                self.y,
+                self.tile,
+                self.attrib,
+                self.x
+            ))
+
 
 class NesArray(NesType):
 

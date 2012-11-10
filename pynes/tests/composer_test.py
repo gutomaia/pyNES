@@ -253,6 +253,32 @@ class ComposerTest(ComposerTestCase):
         #self.assertTrue('.org $C000' not in asm)
         )
 
+    def test_define_sprite_with_x_128_y_64_and_tile_0(self):
+        (self.assert_asm_from(
+            'from pynes.bitbag import *\n'
+
+            'sprite = define_sprite(128, 64 ,0, 3)\n'
+            )
+        .has('.bank 1')
+        .and_then(
+                'sprite:\n'
+                '  .db $40, $00, $03, $80'
+            )
+        )
+
+    def test_define_sprite_with_x_64_and_y_128_and_tile_1(self):
+        (self.assert_asm_from(
+            'from pynes.bitbag import *\n'
+
+            'sprite = define_sprite(64, 128, 1, 3)\n'
+            )
+        .has('.bank 1')
+        .and_then(
+                'sprite:\n'
+                '  .db $80, $01, $03, $40'
+            )
+        )
+
     def test_rs_with_x_and_y_with_size_1(self):
         code = (
             'from pynes.bitbag import *\n'
