@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 from unittest import TestCase
-from pynes.composer import pynes_compiler, Cartridge
+from pynes.composer import compose, Cartridge
 
 class WhatElse():
 
@@ -28,7 +28,6 @@ class WhatElse():
             raise(AssertionError('"%s" was not found after "%s" in code' % (text, self.last)))
         return self
 
-
 class ComposerTestCase(TestCase):
 
     def __init__(self, testname):
@@ -46,6 +45,6 @@ class ComposerTestCase(TestCase):
 
     def assert_asm_from(self, code):
         self.code = code
-        self.cart = pynes_compiler(code)
+        self.cart = compose(code)
         self.asm = self.cart.to_asm()
         return WhatElse(self)

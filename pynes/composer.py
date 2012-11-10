@@ -9,6 +9,7 @@ import pynes.bitbag
 
 from pynes.bitbag import PPU, Joypad, HardSprite
 from pynes.nes_types import NesType, NesRs, NesArray, NesSprite, NesChrFile
+from compiler import compile
 
 class Cartridge:
 
@@ -351,17 +352,6 @@ class PyNesVisitor(ast.NodeVisitor):
 
 cart = None
 
-def pynes_compiler(code, cartridge = cart):
-    global cart
-    if cartridge == None:
-        cart = cartridge = Cartridge()
-
-    python_land = ast.parse(code)
-    turist = PyNesVisitor()
-    turist.visit(python_land)
-    cart = None
-    return cartridge
-
 def compose_file(py_file, output=None, path=None):
     from os.path import dirname, realpath
 
@@ -374,10 +364,7 @@ def compose_file(py_file, output=None, path=None):
 
     cart = compose(code)
     asmcode = cart.to_asm()
-    #TODO: from compiler import compile
-    #TODO: compile(asmcode, 'output.nes', path)
-
-
+    compile(asmcode, 'output.nes', path)
 
 def compose(code, cartridge = cart):
     global cart

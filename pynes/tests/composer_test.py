@@ -4,7 +4,7 @@ import unittest
 
 from pynes.tests import ComposerTestCase
 
-from pynes.composer import pynes_compiler, Cartridge
+from pynes.composer import compose, Cartridge
 
 class ComposerTest(ComposerTestCase):
 
@@ -166,7 +166,7 @@ class ComposerTest(ComposerTestCase):
             #'    px += 1\n'
             )
 
-        cart = pynes_compiler(code)
+        cart = compose(code)
         asm = cart.to_asm()
         #self.assertEquals(1, len(cart.bitpaks))
         self.assertTrue('.bank 0' in asm)
@@ -324,7 +324,7 @@ class ComposerTest(ComposerTestCase):
             'from pynes.bitbag import *\n'
             'x = rs(1)\n'
             'y = rs(1)')
-        cart = pynes_compiler(code)
+        cart = compose(code)
         asm = cart.to_asm()
         self.assertEquals(2, len(cart._vars))
         self.assertEquals(1, cart._vars['x'].size)
@@ -348,7 +348,7 @@ class ComposerTest(ComposerTestCase):
             'sourceLow = rs(1)\n'
             'sourceHigh = rs(1)\n'
             'columnNumber = rs(1)\n')
-        cart = pynes_compiler(code)
+        cart = compose(code)
         asm = cart.to_asm()
         self.assertEquals(7, len(cart._vars))
         self.assertEquals(1, cart._vars['scroll'].size)
@@ -379,7 +379,7 @@ class ComposerTest(ComposerTestCase):
             )
 
         with self.assertRaises(NameError) as nm:
-            pynes_compiler(code)
+            compose(code)
 
         self.assertEquals("name 'undefined_def' is not defined",
             nm.exception.message)
@@ -392,7 +392,7 @@ class ComposerTest(ComposerTestCase):
         )
 
         with self.assertRaises(TypeError) as te:
-            pynes_compiler(code)
+            compose(code)
 
         self.assertEquals(
             'wait_vblank() takes exactly 1 argument (2 given)',
@@ -406,7 +406,7 @@ class ComposerTest(ComposerTestCase):
         )
 
         with self.assertRaises(TypeError) as te:
-            pynes_compiler(code)
+            compose(code)
 
         self.assertEquals(
             'load_palette() takes exactly 2 arguments (1 given)',

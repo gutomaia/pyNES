@@ -7,7 +7,7 @@ import subprocess
 import logging
 import argparse
 
-from pynes.composer import pynes_compiler
+from pynes.composer import compose
 
 import pynes.compiler
 
@@ -16,7 +16,7 @@ def press_start(asm = False):
     pyfile = open(filename)
     code = pyfile.read()
     pyfile.close()
-    cart = pynes_compiler(code)
+    cart = compose(code)
     asmcode = cart.to_asm()
 
     if (asm):
