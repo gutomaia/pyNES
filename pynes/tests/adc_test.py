@@ -40,8 +40,22 @@ class AdcTest(unittest.TestCase):
         self.assertEquals(1 , len(ast))
         self.assertEquals('S_IMMEDIATE', ast[0]['type'])
         code = semantic(ast)
-
         self.assertEquals(code, [0x69, 0x0A])
+
+    def test_adc_imm_with_binary(self):
+        '''
+        Test the arithmetic operation ADC between binary %00000100
+        (Decimal 4) and the content of the accumulator.
+        '''
+        tokens = lexical('ADC #%00000100')
+        self.assertEquals(2 , len(tokens))
+        self.assertEquals('T_INSTRUCTION', tokens[0]['type'])
+        self.assertEquals('T_BINARY_NUMBER', tokens[1]['type'])
+        ast = syntax(tokens)
+        self.assertEquals(1 , len(ast))
+        self.assertEquals('S_IMMEDIATE', ast[0]['type'])
+        code = semantic(ast)
+        self.assertEquals(code, [0x69, 0x04])
 
     def test_adc_zp(self):
         '''

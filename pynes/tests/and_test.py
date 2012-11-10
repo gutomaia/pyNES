@@ -30,7 +30,7 @@ class AndTest(unittest.TestCase):
 
     def test_and_imm_with_decimal(self):
         '''
-        Test the logical operation AND between $10(Decimal 16)
+        Test the logical operation AND between #10(Decimal 10)
         and the content of the Accumulator
         '''
         tokens = lexical('AND #10')
@@ -42,6 +42,21 @@ class AndTest(unittest.TestCase):
         self.assertEquals('S_IMMEDIATE', ast[0]['type'])
         code = semantic(ast)
         self.assertEquals(code, [0x29, 0x0a])
+
+    def test_and_imm_with_binary(self):
+        '''
+        Test the logical operation AND between #%00000100 (Decimal 4)
+        and the content of the Accumulator
+        '''
+        tokens = lexical('AND #%00000100')
+        self.assertEquals(2 , len(tokens))
+        self.assertEquals('T_INSTRUCTION', tokens[0]['type'])
+        self.assertEquals('T_BINARY_NUMBER', tokens[1]['type'])
+        ast = syntax(tokens)
+        self.assertEquals(1 , len(ast))
+        self.assertEquals('S_IMMEDIATE', ast[0]['type'])
+        code = semantic(ast)
+        self.assertEquals(code, [0x29, 0x04])
 
     def test_and_zp(self):
         '''

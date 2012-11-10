@@ -33,6 +33,17 @@ class RolTest(unittest.TestCase):
         code = semantic(ast)
         self.assertEquals(code, [0x2a, 0x0a])
 
+    def test_rol_imm_with_binary(self):
+        tokens = lexical('ROL #%00000100')
+        self.assertEquals(2 , len(tokens))
+        self.assertEquals('T_INSTRUCTION', tokens[0]['type'])
+        self.assertEquals('T_BINARY_NUMBER', tokens[1]['type'])
+        ast = syntax(tokens)
+        self.assertEquals(1 , len(ast))
+        self.assertEquals('S_IMMEDIATE', ast[0]['type'])
+        code = semantic(ast)
+        self.assertEquals(code, [0x2a, 0x04])
+
     def test_rol_zp(self):
         tokens = lexical('ROL $00')
         self.assertEquals(2 , len(tokens))
@@ -69,7 +80,6 @@ class RolTest(unittest.TestCase):
         self.assertEquals('S_ABSOLUTE', ast[0]['type'])
         code = semantic(ast)
         self.assertEquals(code, [0x2e, 0x34, 0x12])
-
 
     def test_rol_absx(self):
         tokens = lexical('ROL $1234,X')

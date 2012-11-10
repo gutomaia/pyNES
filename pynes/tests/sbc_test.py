@@ -31,6 +31,17 @@ class SbcTest(unittest.TestCase):
         code = semantic(ast)
         self.assertEquals(code, [0xe9, 0x0a])
 
+    def test_sbc_imm_with_binary(self):
+        tokens = lexical('SBC #%00000100')
+        self.assertEquals(2 , len(tokens))
+        self.assertEquals('T_INSTRUCTION', tokens[0]['type'])
+        self.assertEquals('T_BINARY_NUMBER', tokens[1]['type'])
+        ast = syntax(tokens)
+        self.assertEquals(1 , len(ast))
+        self.assertEquals('S_IMMEDIATE', ast[0]['type'])
+        code = semantic(ast)
+        self.assertEquals(code, [0xe9, 0x04])
+
     def test_sbc_zp(self):
         tokens = lexical('SBC $00')
         self.assertEquals(2 , len(tokens))
@@ -66,7 +77,6 @@ class SbcTest(unittest.TestCase):
         self.assertEquals('S_ABSOLUTE', ast[0]['type'])
         code = semantic(ast)
         self.assertEquals(code, [0xed, 0x34, 0x12])
-
 
     def test_sbc_absx(self):
         tokens = lexical('SBC $1234,X')

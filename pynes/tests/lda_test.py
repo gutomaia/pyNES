@@ -32,6 +32,17 @@ class LdaTest(unittest.TestCase):
         code = semantic(ast)
         self.assertEquals(code, [0xa9, 0x0a])
 
+    def test_lda_imm_with_binary(self):
+        tokens = lexical('LDA #%00000100')
+        self.assertEquals(2 , len(tokens))
+        self.assertEquals('T_INSTRUCTION', tokens[0]['type'])
+        self.assertEquals('T_BINARY_NUMBER', tokens[1]['type'])
+        ast = syntax(tokens)
+        self.assertEquals(1 , len(ast))
+        self.assertEquals('S_IMMEDIATE', ast[0]['type'])
+        code = semantic(ast)
+        self.assertEquals(code, [0xa9, 0x04])
+
     def test_lda_zp(self):
         tokens = lexical('LDA $00')
         self.assertEquals(2 , len(tokens))

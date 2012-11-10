@@ -34,6 +34,17 @@ class AslTest(unittest.TestCase):
         code = semantic(ast)
         self.assertEquals(code, [0x0a, 0x0a])
 
+    def test_asl_imm_with_binary(self):
+        tokens = lexical('ASL #%00000100')
+        self.assertEquals(2 , len(tokens))
+        self.assertEquals('T_INSTRUCTION', tokens[0]['type'])
+        self.assertEquals('T_BINARY_NUMBER', tokens[1]['type'])
+        ast = syntax(tokens)
+        self.assertEquals(1 , len(ast))
+        self.assertEquals('S_IMMEDIATE', ast[0]['type'])
+        code = semantic(ast)
+        self.assertEquals(code, [0x0a, 0x04])
+
     def test_asl_zp(self):
         tokens = lexical('ASL $00')
         self.assertEquals(2 , len(tokens))
