@@ -304,6 +304,20 @@ class ComposerTest(ComposerTestCase):
             )
         )
 
+    def test_define_sprite_using_an_array(self):
+        (self.assert_asm_from(
+            'from pynes.bitbag import *\n'
+
+            'mario = define_sprite(128, 128, [50,51,52,53], 0)\n'
+            )
+        .has('.bank 1')
+        .and_then('mario:')
+        .and_then('.db $80, $32, $00, $80')
+        .and_then('.db $80, $33, $00, $88')
+        .and_then('.db $88, $34, $00, $80')
+        .and_then('.db $88, $35, $00, $88')
+        )
+
     def test_load_sprite(self):
         (self.assert_asm_from(
             'from pynes.bitbag import *\n'

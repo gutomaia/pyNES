@@ -14,23 +14,41 @@ class NesRs(NesType):
 
 class NesSprite(NesType):
 
-    def __init__(self, x, y, tile, attrib):
+    def __init__(self, x, y, tile, attrib, width = 2):
         NesType.__init__(self)
         self.x = x
         self.y = y
         self.tile = tile
         self.attrib = attrib
+        self.width = width
+
 
     def to_asm(self):
-
-        return (
-            '  .db $%02x, $%02x, $%02x, $%02x' % 
-            (
-                self.y,
-                self.tile,
-                self.attrib,
-                self.x
-            ))
+        if isinstance(self.tile, int):
+            return (
+                '  .db $%02x, $%02x, $%02x, $%02x' %
+                (
+                    self.y,
+                    self.tile,
+                    self.attrib,
+                    self.x
+                ))
+        else:
+            asmcode = ''
+            x = 0
+            #TODO: assert list mod width == 0
+            for t in self.tile.list():
+                i = x % self.width
+                j = x / self.width
+                asmcode += ('  .db $%02x, $%02x, $%02x, $%02x\n' %
+                (
+                    self.y + (j*8),
+                    t,
+                    self.attrib,
+                    self.x + (i*8)
+                ))
+                x += 1
+            return asmcode
 
 
 class NesArray(NesType):

@@ -183,7 +183,7 @@ class define_sprite(BitPak):
     def  __call__(self, x, y, tile, attrib=0x80):
         assert isinstance(x, int)
         assert isinstance(y, int)
-        assert isinstance(tile, int)
+        assert isinstance(tile, int) or isinstance(tile, NesArray)
         return NesSprite(x, y, tile, attrib)
 
 
