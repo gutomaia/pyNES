@@ -16,6 +16,7 @@ class WhatElse():
             self.start = index + len(text)
             self.last = text
         else:
+            print self.testcase.asm
             raise(AssertionError('"%s" was not found in code' % text))
         return self
 
@@ -25,6 +26,7 @@ class WhatElse():
             self.start += index + len(text)
             self.last = text
         else:
+            print self.testcase.asm
             raise(AssertionError('"%s" was not found after "%s" in code' % (text, self.last)))
         return self
 

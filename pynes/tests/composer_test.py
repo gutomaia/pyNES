@@ -122,7 +122,7 @@ class ComposerTest(ComposerTestCase):
         (self.assert_asm_from(
             'from pynes.bitbag import *\n'
 
-            'asset = import_chr("player.chr")\n'
+            'chrfile = import_chr("player.chr")\n'
             )
         .has('.bank 2')
         .and_then('.org $0000')
