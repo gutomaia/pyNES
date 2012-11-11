@@ -129,6 +129,21 @@ class wait_vblank(BitPak):
           '  BPL WAITVBLANK\n'
           '  RTS\n')
 
+class ppu_init(BitPak):
+
+    def __init__(self, cart):
+        BitPak.__init__(self, cart)
+
+    def __call__(self):
+        return None
+
+    def asm(self):
+        return (
+          '  LDA #%10000000\n'
+          '  STA $2000\n'
+          '  LDA #%00010000\n'
+          '  STA $2001\n')
+
 class clearmen(BitPak):
 
     def __init__(self, cart):

@@ -21,6 +21,7 @@ def reset():
     wait_vblank()
     load_palette(palette)
     load_sprite(sprite, 0)
+    ppu_init()
     infinity_loop()
 
 def joypad1_up():

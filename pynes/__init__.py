@@ -43,7 +43,10 @@ def main(argv = None):
         title="subcommands", description="utilities", help="aditional help")
 
     py_cmd = subparsers.add_parser('py') #, aliases=['py'])
-    py_cmd.add_argument('--output', metavar='OUTPUT', help="output NES file")
+    py_cmd.add_argument('-o', '--output', metavar='OUTPUT', help="output NES file")
+    py_cmd.add_argument('-a', '--asm', action='store_true', help="generate ASM file")
+    py_cmd.add_argument('-v', '--verbose', action='store_true', help="verbose output")
+
     py_cmd.add_argument('input', nargs='?', metavar='INPUT', help="input Python file")
     py_cmd.set_defaults(func=exec_py)
 
@@ -58,7 +61,8 @@ def main(argv = None):
     args.func(args)
 
 def exec_py(args):
-    pynes.composer.compose_file(args.input)
+    pynes.composer.compose_file(args.input,
+        output=args.output, asm=args.asm)
 
 def exec_asm(args):
     pynes.compiler.compile_file(args.input)

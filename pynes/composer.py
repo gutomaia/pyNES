@@ -7,7 +7,7 @@ from inspect import getmembers
 
 import pynes.bitbag
 
-from pynes.bitbag import PPU, Joypad, HardSprite
+from pynes.bitbag import Joypad, HardSprite
 from pynes.nes_types import NesType, NesRs, NesArray, NesSprite, NesChrFile
 from compiler import compile
 
@@ -89,7 +89,6 @@ class Cartridge:
 
     def prog(self):
         asm_code = ""
-        ppu = PPU()
         if 'prog' in self._asm_chunks:
             asm_code += self._asm_chunks['prog'] 
         for bp in self.bitpaks:
@@ -99,7 +98,7 @@ class Cartridge:
         if 'reset' in self._asm_chunks:
             asm_code += self._asm_chunks['reset']
         if len(asm_code) > 0:
-            return ("  .bank 0\n  .org $C000\n\n" + asm_code + ppu.init() +'\n\n')
+            return ("  .bank 0\n  .org $C000\n\n" + asm_code +'\n\n')
         return ""
 
     def bank1(self):
@@ -138,7 +137,7 @@ class Cartridge:
                 "  LDA #$02\n"
                 "  STA $4014 ; Write Only; DMA\n"
             )
-            return nmi_code + joypad_code + "\n"
+            return nmi_code + joypad_code + "\n\n" + "  RTI   ;Return NMI\n"
         return ""
 
     def set_var(self, varname, value):
@@ -352,18 +351,22 @@ class PyNesVisitor(ast.NodeVisitor):
 
 cart = None
 
-def compose_file(py_file, output=None, path=None):
+def compose_file(input, output=None, path=None, asm=False):
     from os.path import dirname, realpath
 
-    f = open(py_file)
+    f = open(input)
     code = f.read()
     f.close()
 
     if path == None:
-        path = dirname(realpath(py_file)) + '/'
+        path = dirname(realpath(input)) + '/'
 
     cart = compose(code)
     asmcode = cart.to_asm()
+    if asm:
+        asmfile = open('output.asm', 'w')
+        asmfile.write(asmcode)
+        asmfile.close()
     compile(asmcode, 'output.nes', path)
 
 def compose(code, cartridge = cart):
