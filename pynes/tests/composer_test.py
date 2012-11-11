@@ -128,7 +128,7 @@ class ComposerTest(ComposerTestCase):
         .and_then('my_palette:')
         )
 
-    def test_import_chr(self):
+    def test_import_chr_player(self):
         (self.assert_asm_from(
             'from pynes.bitbag import *\n'
 
@@ -318,6 +318,32 @@ class ComposerTest(ComposerTestCase):
         .and_then('.db $88, $35, $00, $88')
         )
 
+    def test_load_sprite_using_an_array(self):
+        (self.assert_asm_from(
+            'from pynes.bitbag import *\n'
+
+            'mario = define_sprite(128, 128, [50,51,52,53], 0)\n'
+            'load_sprite(mario, 0)'
+            )
+        .has('.bank 0')
+        .and_then('LoadSprites:')
+        .and_then('LDX #$00')
+        .and_then('LoadSpritesIntoPPU:')
+        .and_then('LDA mario, x')
+        .and_then('STA $0200, x')
+        .and_then('INX')
+        .and_then('CPX #16') #TODO it should be 4
+        .and_then('BNE LoadSpritesIntoPPU')
+
+        .has('.bank 1')
+        .and_then('mario:')
+        .and_then('.db $80, $32, $00, $80')
+        .and_then('.db $80, $33, $00, $88')
+        .and_then('.db $88, $34, $00, $80')
+        .and_then('.db $88, $35, $00, $88')
+        )
+
+
     def test_load_sprite(self):
         (self.assert_asm_from(
             'from pynes.bitbag import *\n'
@@ -330,12 +356,11 @@ class ComposerTest(ComposerTestCase):
         .and_then('LoadSprites:')
         .and_then('LDX #$00')
         .and_then('LoadSpritesIntoPPU:')
+        .and_then('LDA sprite, x')
         .and_then('STA $0200, x')
         .and_then('INX')
-        .and_then('CPX #$20') #TODO it should be 4
+        .and_then('CPX #4') #TODO it should be 4
         .and_then('BNE LoadSpritesIntoPPU')
-        #TODO: .and_then('STA $2000')
-        #TODO: .and_then('STA $2001')
         .and_then('.bank 1')
         .and_then(
                 'sprite:\n'

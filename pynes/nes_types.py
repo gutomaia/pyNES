@@ -22,6 +22,11 @@ class NesSprite(NesType):
         self.attrib = attrib
         self.width = width
 
+    def __len__(self):
+        if isinstance(self.tile, int):
+            return 1
+        else:
+            return len(self.tile.list())
 
     def to_asm(self):
         if isinstance(self.tile, int):

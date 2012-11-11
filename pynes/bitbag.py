@@ -229,16 +229,18 @@ class load_sprite(BitPak):
         return None
 
     def  asm(self):
+        size = len(self.sprite)
+
         asmcode = (
           'LoadSprites:\n'
           '  LDX #$00\n'
           'LoadSpritesIntoPPU:\n'
-          '  LDA sprites, x\n'
+          '  LDA %s, x\n'
           '  STA $0200, x\n'
           '  INX\n'
-          '  CPX #$20                  ; Hex 20 = 32 decimal\n'
+          '  CPX #%d\n'
           '  BNE LoadSpritesIntoPPU\n'
-        )
+        ) % (self.sprite.instance_name, size * 4)
         return asmcode
 
 class infinity_loop(BitPak):
