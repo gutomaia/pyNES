@@ -235,13 +235,20 @@ class PyNesVisitor(ast.NodeVisitor):
                 isinstance(self.stack.last()[1], str) and #TODO op
                 isinstance(self.stack.current()[0], HardSprite) and
                 isinstance(self.stack.current()[1], str)): #TODO how to check
+                
+
                 address = getattr(self.stack.current()[0], self.stack.current()[1])
                 self.stack.wipe()
+                operation = self.stack.last()[1]
                 operand = self.stack.resolve()
                 global cart
                 cart += '  LDA $%04x\n' % address
-                cart += '  CLC\n'
-                cart += '  ADC #%d\n' % operand[0]
+                if operation == '+':
+                    cart += '  CLC\n'
+                    cart += '  ADC #%d\n' % operand[0]
+                elif operation == '-':
+                    cart += '  SEC\n'
+                    cart += '  SBC #%d\n' % operand[0]
                 cart += '  STA $%04x\n' % address
 
     def visit_Assign(self, node):

@@ -51,6 +51,16 @@ class ComposerTest(ComposerTestCase):
         .and_then('ADC #5')
         .and_then('STA $0200'))
 
+    def test_sprite_zero_augassign_minus_five(self):
+        (self.assert_asm_from(
+            'from pynes.bitbag import *\n'
+
+            'get_sprite(0).y -= 5')
+        .has('LDA $0200')
+        .and_then('SEC')
+        .and_then('SBC #5')
+        .and_then('STA $0200'))
+
     def test_sprite_zero_augassign_plus_two_inside_a_joystick_up(self):
         (self.assert_asm_from(
             'from pynes.bitbag import *\n'

@@ -25,13 +25,13 @@ def reset():
     infinity_loop()
 
 def joypad1_up():
-    get_sprite(0).y += 1
+    get_sprite(0).y -= 1
 
 def joypad1_down():
-    get_sprite(0).y -= 1
+    get_sprite(0).y += 1
 
 def joypad1_left():
     get_sprite(0).x -=1
 
 def joypad1_right():
-    get_sprite(0).y +=1
+    get_sprite(0).x +=1
