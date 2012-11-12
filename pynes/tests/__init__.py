@@ -73,7 +73,7 @@ class HexTestCase(TestCase):
             while (cursor < len(expected) or cursor < len(actual)):
                 for a in range(16):
                     if cursor < len(expected) and cursor < len(actual):
-                        if expected[cursor] != actual[cursor]:
+                        if expected[cursor] != actual[cursor] and line not in lines:
                             lines.append(line)
                     cursor += 1
                 line += 1
@@ -86,7 +86,7 @@ class HexTestCase(TestCase):
                     cursor = (line * 16)+ a
                     if cursor < len(expected) and cursor < len(actual):
                             if expected[cursor] != actual[cursor]:
-                                exp += '%s%02x%s' % (FAIL, ord(expected[cursor]), ENDC)
+                                exp += '%s%02x%s' % (OKGREEN, ord(expected[cursor]), ENDC)
                                 act += '%s%02x%s' % (FAIL, ord(actual[cursor]), ENDC)
                             else:
                                 exp += '%02x' % ord(expected[cursor])
