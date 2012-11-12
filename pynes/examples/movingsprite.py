@@ -17,7 +17,7 @@ sprite = define_sprite(128, 128, 0, 3)
 def reset():
     global palette, sprite
     wait_vblank()
-    clearmen()
+    clearmem()
     wait_vblank()
     load_palette(palette)
     load_sprite(sprite, 0)

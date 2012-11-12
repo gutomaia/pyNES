@@ -13,20 +13,20 @@ class PPU():
 
     def nmi_enable(self, value):
         if value:
-            self.ctrl = self.ctrl | 0b1000000
+            self.ctrl = self.ctrl | 0b10000000
         else:
-            self.ctrl = self.ctrl & 0b0111111
+            self.ctrl = self.ctrl & 0b01111111
 
     def sprite_enable(self, value):
         if value:
-            self.mask = self.mask | 0b0010000
+            self.mask = self.mask | 0b00010000
         else:
-            self.mask = self.mask & 0b1101111
+            self.mask = self.mask & 0b11101111
 
     def init(self):
-        asm = ('  LDA #$%02X\n' #TODO format binary
-          '  STA $2000\n'
-          '  LDA #$%02X\n'
+        asm = ('  LDA #%d\n' #TODO format binary
+          '  STA $2000\n'    #TODO also put comments about bits
+          '  LDA #%d\n'
           '  STA $2001\n') % (self.ctrl, self.mask)
         return asm
 
@@ -142,7 +142,7 @@ class wait_vblank(BitPak):
           '  BPL WAITVBLANK\n'
           '  RTS\n')
 
-class clearmen(BitPak):
+class clearmem(BitPak):
 
     def __init__(self, cart):
         BitPak.__init__(self, cart)
