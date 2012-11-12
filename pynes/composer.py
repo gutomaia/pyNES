@@ -7,11 +7,13 @@ from inspect import getmembers
 
 import pynes.bitbag
 
-from pynes.bitbag import Joypad, HardSprite
-from pynes.nes_types import NesType, NesRs, NesArray, NesSprite, NesChrFile
+from pynes.bitbag import PPU, Joypad, HardSprite
+from pynes.nes_types import NesType, NesRs, NesArray, NesString, NesSprite, NesChrFile
 from compiler import compile
 
 class Cartridge:
+
+    ppu = PPU()
 
     def __init__(self):
         self._state = 'prog'
@@ -87,6 +89,12 @@ class Cartridge:
             return ("  .rsset $0000\n" + asm_code + '\n\n')
         return ""
 
+    def infinity_loop(self):
+        return (
+          "InfiniteLoop:\n"
+          "  JMP InfiniteLoop\n"
+        )
+
     def prog(self):
         asm_code = ""
         if 'prog' in self._asm_chunks:
@@ -97,6 +105,8 @@ class Cartridge:
                 asm_code += procedure + '\n'
         if 'reset' in self._asm_chunks:
             asm_code += self._asm_chunks['reset']
+            asm_code += self.ppu.init()
+            asm_code += self.infinity_loop()
         if len(asm_code) > 0:
             return ("  .bank 0\n  .org $C000\n\n" + asm_code +'\n\n')
         return ""
@@ -128,7 +138,7 @@ class Cartridge:
         if joypad_1.is_used:
             joypad_code += joypad_1.init()
             joypad_code += joypad_1.to_asm()
-        if len(joypad_code) > 0:
+        if len(joypad_code) > 0 or self.has_nmi:
             self.has_nmi = True
             nmi_code = (
                 "NMI:\n"
@@ -268,7 +278,17 @@ class PyNesVisitor(ast.NodeVisitor):
                 self.generic_visit(node)
                 #TODO: just umpile
                 varname = node.targets[0].id
+                assert isinstance(self.stack.last()[0], NesArray)
+                assert varname == self.stack.current()[0]
                 cart.set_var(varname, NesArray(node.value.elts))
+            elif isinstance(node.value, ast.Str):
+                self.generic_visit(node)
+                varname = node.targets[0].id
+                assert isinstance(self.stack.last()[0], NesString)
+                assert varname == self.stack.current()[0]
+                value = self.stack.resolve()[0]
+                self.stack.wipe()
+                cart.set_var(varname, value)
             elif 'ctx' in dir(node.targets[0]): #TODO fix this please
                 self.generic_visit(node) #TODO: upthis
                 if len(self.stack.last()) == 1 and isinstance(self.stack.last()[0], int):
@@ -344,6 +364,9 @@ class PyNesVisitor(ast.NodeVisitor):
             self.stack(a + b)
         else:
             self.generic_visit(node)
+
+    def visit_Str(self, node):
+        self.stack(NesString(node.s))
 
     def visit_Num(self, node):
         self.stack(node.n)

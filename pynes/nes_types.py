@@ -78,6 +78,12 @@ class NesArray(NesType):
             return asm
         return False
 
+class NesString(NesType): #Make it extends Array
+
+    def __init__(self, string):
+        self.value = string
+
+
 class NesChrFile(NesType):
 
     def __init__(self, filename):

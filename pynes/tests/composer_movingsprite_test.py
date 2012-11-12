@@ -20,6 +20,9 @@ class ComposerMovingSpriteTest(ComposerTestCase):
                 .and_then('CLEARMEM:')
                 .and_then('JSR WAITVBLANK')
                 .and_then('LoadPalettes:')
+                .and_then('LoadSprites:')
+                #TODO:
+                # .and_then('LDA #%10000000')
                 .and_then('NMI:')
                 .and_then('JoyPad1A:')
                 .and_then('JoyPad1B:')

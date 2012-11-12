@@ -6,6 +6,8 @@ from pynes.tests import ComposerTestCase
 
 from pynes.composer import compose, Cartridge
 
+from pynes.nes_types import NesString
+
 class ComposerTest(ComposerTestCase):
 
     def test_sprite_assigned_128_to_x(self):
@@ -138,6 +140,28 @@ class ComposerTest(ComposerTestCase):
         .and_then('.org $0000')
         .and_then('.incbin "player.chr"')
         )
+
+    def test_string_hellow(self):
+        (self.assert_asm_from(
+            'hello = "world"'
+            )
+        )
+        self.assertEquals(1, len(self.cart._vars))
+        self.assertTrue(isinstance(self.cart._vars['hello'],NesString))
+
+    def test_import_chr_mario(self):
+        return
+        (self.assert_asm_from(
+            'from pynes.bitbag import *\n'
+
+            'chrfile = import_chr("mario.chr")\n'
+            )
+        .has('.bank 2')
+        .and_then('.org $0000')
+        .and_then('.incbin "mario.chr"')
+        )
+
+
 
     def test_movingsprite(self):
         code = (

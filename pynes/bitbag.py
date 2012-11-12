@@ -2,20 +2,33 @@
 
 from re import match
 
-from nes_types import NesRs, NesArray, NesSprite, NesChrFile
+from nes_types import NesRs, NesArray, NesSprite, NesString, NesChrFile
 
 class PPU():
 
-    def __init__(self):
-        pass
+    ctrl = 0x0000
+    mask = 0x0000
 
+    _sprite_enabled = False
+
+    def nmi_enable(self, value):
+        if value:
+            self.ctrl = self.ctrl | 0b1000000
+        else:
+            self.ctrl = self.ctrl & 0b0111111
+
+    def sprite_enable(self, value):
+        if value:
+            self.mask = self.mask | 0b0010000
+        else:
+            self.mask = self.mask & 0b1101111
 
     def init(self):
-        return (
-          '  LDA #%10000000\n'
+        asm = ('  LDA #$%02X\n' #TODO format binary
           '  STA $2000\n'
-          '  LDA #%00010000\n'
-          '  STA $2001\n')
+          '  LDA #$%02X\n'
+          '  STA $2001\n') % (self.ctrl, self.mask)
+        return asm
 
 class Joypad():
 
@@ -129,21 +142,6 @@ class wait_vblank(BitPak):
           '  BPL WAITVBLANK\n'
           '  RTS\n')
 
-class ppu_init(BitPak):
-
-    def __init__(self, cart):
-        BitPak.__init__(self, cart)
-
-    def __call__(self):
-        return None
-
-    def asm(self):
-        return (
-          '  LDA #%10000000\n'
-          '  STA $2000\n'
-          '  LDA #%00010000\n'
-          '  STA $2001\n')
-
 class clearmen(BitPak):
 
     def __init__(self, cart):
@@ -172,8 +170,9 @@ class import_chr(BitPak):
     def __init__(self, cart):
         BitPak.__init__(self, cart)
 
-    def __call__(self, filename="player.chr"):
-      return NesChrFile(filename)
+    def __call__(self, string):
+        assert isinstance(string, NesString)
+        return NesChrFile(string.value)
 
 class define_sprite(BitPak):
 
@@ -220,6 +219,9 @@ class load_sprite(BitPak):
 
     def __init__(self, cart):
         BitPak.__init__(self, cart)
+        self.cart.has_nmi = True
+        self.cart.ppu.sprite_enable(True)
+        self.cart.ppu.nmi_enable(True)
 
     def  __call__(self, sprite, ppu_pos):
         assert isinstance(sprite, NesSprite)
@@ -242,18 +244,3 @@ class load_sprite(BitPak):
           '  BNE LoadSpritesIntoPPU\n'
         ) % (self.sprite.instance_name, size * 4)
         return asmcode
-
-class infinity_loop(BitPak):
-
-    def __init__(self, cart):
-        BitPak.__init__(self, cart)
-
-    def  __call__(self):
-        return None
-
-    def asm(self):
-        return (
-          "InfiniteLoop:\n"
-          "  JMP InfiniteLoop\n"
-        )
-
