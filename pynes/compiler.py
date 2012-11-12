@@ -56,7 +56,7 @@ def t_directive (tokens, index):
     return look_ahead(tokens, index, 'T_DIRECTIVE')
 
 def t_directive_argument(tokens, index):
-    return OR([t_decimal_argument, t_address, t_marker, t_string], tokens, index)
+    return OR([t_list, t_address, t_marker, t_address, t_decimal_argument, t_string], tokens, index)
 
 def t_decimal_argument(tokens, index):
     return look_ahead(tokens, index, 'T_DECIMAL_ARGUMENT')
@@ -138,15 +138,18 @@ def t_nesasm_compatible_close(tokens, index):
 
 def t_list(tokens, index):
     if t_address(tokens, index) and t_separator(tokens, index+1):
+        islist = 1
         arg = 0
-        islist = True
-        return True
-        #TODO
-        while not t_endline(tokens, (index + (arg * 2) + 1)):
-            islist = islist & t_address(tokens, index + (arg * 2))
-            islist = islist & t_separator(tokens, index + (arg * 2) + 1)
+        while (islist):
+            islist = islist and t_separator(tokens, index + (arg * 2) + 1)
+            islist = islist and t_address(tokens, index + (arg * 2) + 2)
+            if (t_endline(tokens, index + (arg * 2) + 3) or
+                (index + (arg * 2) + 3) == len(tokens)):
+                break;
             arg += 1
-    return False
+        if islist:
+            return ((arg + 1) * 2) + 1
+    return 0
 
 def get_list_jump(tokens, index):
     keep = True
@@ -162,7 +165,7 @@ def get_list_jump(tokens, index):
 def OR(args, tokens, index):
     for t in args:
         if t(tokens, index):
-            return 1
+            return t(tokens, index)
     return 0
 
 asm65_bnf = [
@@ -211,36 +214,25 @@ def get_value(token, labels = []):
     else:
         raise Exception('could not get value')
 
-def syntax(t):
+def syntax(tokens):
     ast = []
     x = 0 # consumed
     debug = 0
     labels = []
-    while (x < len(t)):
-        if t_directive(t,x) and t_list(t, x+1):
-            leaf = {}
-            leaf['type'] = 'S_DIRECTIVE'
-            leaf['directive'] = t[x]
-            end = get_list_jump(t,x+1)
-            leaf['children'] = t[x: x+end]
-            leaf['args'] = dict(
-                type = 'S_LIST',
-                elements = t[x+1: x+end]
-            ) 
-            ast.append(leaf)
-            x += end
-        elif t_label(t,x):
-            labels.append(get_value(t[x]))
+    move = 0
+    while (x < len(tokens)):
+        if t_label(tokens,x):
+            labels.append(get_value(tokens[x]))
             x += 1
-        elif t_endline(t,x):
+        elif t_endline(tokens,x):
             x += 1
         else:
             for bnf in asm65_bnf:
                 leaf = {}
                 look_ahead = 0
-                move = False
+                move = 0
                 for i in bnf['bnf']:
-                    move = i(t,x + look_ahead)
+                    move = i(tokens,x + look_ahead)
                     if not move:
                         break;
                     look_ahead += 1
@@ -249,56 +241,66 @@ def syntax(t):
                         leaf['labels'] = labels
                         labels = []
                     size = 0;
-                    walk = 0;
+                    look_ahead = 0;
                     for b in bnf['bnf']:
-                        size += b(t,x+walk)
-                        walk += 1
-                    leaf['children'] = t[x: x+size]
+                        size += b(tokens, x+look_ahead)
+                        look_ahead += 1
+                    leaf['children'] = tokens[x: x+size]
                     leaf['type'] = bnf['type']
                     ast.append(leaf)
-                    x += look_ahead
+                    x += size
                     break;
-        debug += 1
-        if debug > 10000:
-            #print t[x]
-            raise Exception('Infinity Loop')
+            if not move:
+                walk = 0
+                print '------------'
+                print tokens[x]
+                print len(tokens)
+                print len(tokens[x:])
+                raise Exception('UNKNOW TOKEN')
     return ast
 
-def semantic(ast, iNES=False, cart=None ):
-    if cart == None:
-        cart = Cartridge()
+
+def get_labels(ast):
     labels = {}
-    #find all labels o the symbol table
-    address = 0
+    address = 0;
     for leaf in ast:
-        if leaf['type'] == 'S_DIRECTIVE':
-            directive = leaf['children'][0]['value']
-            if '.org' == directive:
-                address = int(leaf['children'][1]['value'][1:], 16)
+        if ('S_DIRECTIVE' == leaf['type'] and
+            '.org' == leaf['children'][0]['value']):
+            address = int(leaf['children'][1]['value'][1:], 16)
         if 'labels' in leaf:
             for label in leaf['labels']:
                 labels[label] = address
         if leaf['type'] != 'S_DIRECTIVE' and leaf['type'] != 'S_RS':
             size =  address_mode_def[leaf['type']]['size']
             address += size
+        elif 'S_DIRECTIVE' == leaf['type'] and '.db' == leaf['children'][0]['value']:
+            for i in leaf['children']:
+                if 'T_ADDRESS' == i['type']:
+                    address += 1
+        elif 'S_DIRECTIVE' == leaf['type'] and '.incbin' == leaf['children'][0]['value']:
+            address += 4 * 1024; #TODO check file size;
+    return labels
 
-    labels['palette'] = 0xE000 #TODO stealing on test
-    labels['sprites'] = 0xE000 + 32 #TODO stealing on test
-
+def semantic(ast, iNES=False, cart=None ):
+    if cart == None:
+        cart = Cartridge()
+    labels = get_labels(ast)
+    address = 0
     #translate statments to opcode
     for leaf in ast:
         if leaf['type'] == 'S_RS':
             labels[leaf['children'][0]['value']] = cart.rs;
             cart.rs += get_value(leaf['children'][2]);
         elif leaf['type'] == 'S_DIRECTIVE':
-            if len(leaf['children']) > 5:
-                directive = leaf['children'][0]['value']
-                elements = leaf['args']['elements']
-                directive_list[directive](elements, cart)
-            else:
-                directive = leaf['children'][0]['value']
+            directive = leaf['children'][0]['value']
+            if len(leaf['children']) == 2:
                 argument = get_value(leaf['children'][1], labels)
+            else:
+                argument = leaf['children'][1:]
+            if directive in directive_list:
                 directive_list[directive](argument, cart)
+            else:
+                raise Exception('UNKNOW DIRECTIVE')
         else:
             if leaf['type'] in ['S_IMPLIED', 'S_ACCUMULATOR']:
                 instruction = leaf['children'][0]['value']

@@ -2,7 +2,7 @@
 
 import pynes
 from pynes.tests import HexTestCase
-from pynes.compiler import lexical, syntax, semantic
+from pynes.compiler import lexical, syntax, semantic, get_labels
 from pynes.cartridge import Cartridge
 
 #TODO: from pynes.asm import get_var
@@ -92,10 +92,20 @@ class MovingSpriteTest(HexTestCase):
         #self.assertEquals(1, get_var('ineschr'))
         #self.assertEquals(0, get_var('inesmap'))
         #self.assertEquals(1, get_var('inesmir'))
+
         self.assertIsNotNone(opcodes)
         bin = ''.join([chr(opcode) for opcode in opcodes])
         f = open('fixtures/movingsprite/movingsprite.nes', 'rb')
         content = f.read()
         f.close()
         self.assertHexEquals(content,bin)
-        self.assertEquals(content, bin) #TODO test to remove this
+
+    def test_get_labels(self):
+        expected = {}
+        expected['WAITVBLANK'] = 0xC000
+        expected['palette'] = 0xE000
+        expected['sprites'] = 0xE000 + 32
+        actual = get_labels(self.ast)
+        self.assertEquals(expected['WAITVBLANK'], actual['WAITVBLANK'])
+        self.assertEquals(expected['palette'], actual['palette'])
+        self.assertEquals(expected['sprites'], actual['sprites'])
