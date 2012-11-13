@@ -98,7 +98,6 @@ class ComposerTest(ComposerTestCase):
         .and_then('STA $0200')
         .and_then('EndUp:')
         .and_then('.dw NMI')
-
         )
 
     def test_hardsprite_with_1(self):
@@ -171,7 +170,6 @@ class ComposerTest(ComposerTestCase):
         self.assertTrue(isinstance(self.cart._vars['hello'],NesString))
 
     def test_import_chr_mario(self):
-        return
         (self.assert_asm_from(
             'from pynes.bitbag import *\n'
 
@@ -181,7 +179,6 @@ class ComposerTest(ComposerTestCase):
         .and_then('.org $0000')
         .and_then('.incbin "mario.chr"')
         )
-
 
 
     def test_movingsprite(self):
