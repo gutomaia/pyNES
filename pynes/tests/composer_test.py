@@ -241,11 +241,13 @@ class ComposerTest(ComposerTestCase):
 
             'def reset():\n'
             '    wait_vblank()')
-        #TODO: self.assertEquals(1, len(cart.bitpaks))
         .has('.bank 0')
         .and_then('.org $C000'))
-        #TODO: .and_then('.bank 1' not in asm)
-        #.and_then('.org $E000' not in asm)
+
+        self.assertTrue('.bank 1' not in self.asm)
+        self.assertTrue('.org $E000' not in self.asm)
+        self.assertEquals(1, len(self.cart.bitpaks))
+
 
     def test_wait_vblank_called_twice(self):
         (self.assert_asm_from(
@@ -254,71 +256,76 @@ class ComposerTest(ComposerTestCase):
             'def reset():\n'
             '    wait_vblank()\n'
             '    wait_vblank()')
-        #self.assertEquals(1, len(cart.bitpaks))
         .has('.bank 0')
         .and_then('.org $C000' ))
-        #.and_then('.bank 1' not in asm)
-        #.and_then('.org $E000' not in asm)
+        
+        self.assertEquals(1, len(self.cart.bitpaks))
+        self.assertTrue('.bank 1' not in self.asm)
+        self.assertTrue('.org $E000' not in self.asm)
 
     def test_palette_list_definition_from_00_to_04(self):
         (self.assert_asm_from(
             'palette = [0,1,2,3]')
 
-        #self.assertEquals(1, len(cart._vars))
-        #self.assertEquals([0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15], cart.get_var('palette').list())
         .has('.bank 1')
         .and_then('.org $E000')
         .and_then(
             'palette:\n'
             '  .db $00,$01,$02,$03')
-        #self.assertTrue('.bank 0' not in asm)
-        #self.assertTrue('.org $C000' not in asm)
         )
+
+        self.assertEquals(1, len(self.cart._vars))
+        self.assertEquals([0,1,2,3],
+                self.cart.get_var('palette').list())
+        self.assertTrue('.bank 0' not in self.asm)
+        self.assertTrue('.org $C000' not in self.asm)
 
 
     def test_palette_list_definition_from_00_to_0F(self):
         (self.assert_asm_from(
             'palette = [0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15]')
 
-        #self.assertEquals(1, len(cart._vars))
-        #self.assertEquals([0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15], cart.get_var('palette').list())
         .has('.bank 1')
         .and_then('.org $E000')
         .and_then(
             'palette:\n'
             '  .db $00,$01,$02,$03,$04,$05,$06,$07,$08,$09,$0A,$0B,$0C,$0D,$0E,$0F')
-        #self.assertTrue('.bank 0' not in asm)
-        #self.assertTrue('.org $C000' not in asm)
         )
+        self.assertEquals(1, len(self.cart._vars))
+        self.assertEquals([0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15],
+            self.cart.get_var('palette').list())
+        self.assertTrue('.bank 0' not in self.asm)
+        self.assertTrue('.org $C000' not in self.asm)
 
     def test_palette_list_definition_from_0F_to_00(self):
         (self.assert_asm_from(
             'palette = [15,14,13,12,11,10,9,8,7,6,5,4,3,2,1,0]')
-        #self.assertEquals(1, len(cart._vars))
-        #self.assertEquals([15,14,13,12,11,10,9,8,7,6,5,4,3,2,1,0], cart.get_var('palette').list())
         .has('.bank 1')
         .and_then('.org $E000')
         .and_then(
             'palette:\n'
             '  .db $0F,$0E,$0D,$0C,$0B,$0A,$09,$08,$07,$06,$05,$04,$03,$02,$01,$00')
-        #self.assertTrue('.bank 0' not in asm)
-        #self.assertTrue('.org $C000' not in asm)
         )
+        self.assertEquals(1, len(self.cart._vars))
+        self.assertEquals([15,14,13,12,11,10,9,8,7,6,5,4,3,2,1,0],
+            self.cart.get_var('palette').list())
+        self.assertTrue('.bank 0' not in self.asm)
+        self.assertTrue('.org $C000' not in self.asm)
 
     def test_palette_list_definition_from_00_to_1F(self):
         (self.assert_asm_from('palette = [0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,'
             '16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31]')
-        #self.assertEquals(1, len(cart._vars))
-        #self.assertEquals(range(32), cart.get_var('palette').list())
         .has('.bank 1')
         .and_then('.org $E000')
         .and_then(
             'palette:\n'
             '  .db $00,$01,$02,$03,$04,$05,$06,$07,$08,$09,$0A,$0B,$0C,$0D,$0E,$0F\n'
             '  .db $10,$11,$12,$13,$14,$15,$16,$17,$18,$19,$1A,$1B,$1C,$1D,$1E,$1F')
-        #self.assertTrue('.bank 0' not in asm)
-        #self.assertTrue('.org $C000' not in asm)
         )
+        self.assertEquals(1, len(self.cart._vars))
+        self.assertEquals(range(32), self.cart.get_var('palette').list())
+        self.assertTrue('.bank 0' not in self.asm)
+        self.assertTrue('.org $C000' not in self.asm)
 
     def test_define_sprite_with_x_128_y_64_and_tile_0(self):
         (self.assert_asm_from(
@@ -374,7 +381,7 @@ class ComposerTest(ComposerTestCase):
         .and_then('LDA mario, x')
         .and_then('STA $0200, x')
         .and_then('INX')
-        .and_then('CPX #16') #TODO it should be 4
+        .and_then('CPX #16')
         .and_then('BNE LoadSpritesIntoPPU')
 
         .has('.bank 1')

@@ -43,27 +43,18 @@ class Cartridge:
         self.prog = value + ':\n' 
 
     def headers(self):
-        asm_code = ""
-        for h in ['.inesprg', '.ineschr', '.inesmap', '.inesmir']:
-            asm_code += h + ' ' + str(self._header[h]) + '\n'
-        asm_code += '\n'
-        return asm_code
+        return '\n'.join(['%s %d\n' % (h, self._header[h])
+            for h in ['.inesprg', '.ineschr', '.inesmap', '.inesmir']])
 
     def boot(self):
-        asm_code = "  .org $FFFA\n"
-
-        if self.has_nmi:
-            asm_code += '  .dw NMI\n'
-        else:
-            asm_code += '  .dw 0\n'
-        
-        if 'reset' in self._asm_chunks:
-            asm_code += '  .dw RESET\n'
-        else:
-            asm_code += '  .dw 0\n'
-        
-        asm_code += '  .dw 0\n\n'
-
+        asm_code =("  .org $FFFA\n"
+             "  .dw %s\n"
+             "  .dw %s\n"
+             "  .dw 0\n"
+            ) % (
+            'NMI' if self.has_nmi else '0',
+            'RESET' if 'reset' in self._asm_chunks else '0'
+            )
         return asm_code
 
     def init(self):
@@ -81,12 +72,13 @@ class Cartridge:
         )
 
     def rsset(self):
-        asm_code = ""
-        for v in self._vars:
-            if isinstance(self._vars[v], NesRs):
-                asm_code += v + ' .rs ' + str(self._vars[v].size) + '\n'
-        if len(asm_code) > 0:
-            return ("  .rsset $0000\n" + asm_code + '\n\n')
+        asm_code = '\n'.join([
+                '%s .rs %d' % (varname, var.size)
+                for varname, var in self._vars.items()
+                if isinstance(var, NesRs)
+            ])
+        if asm_code:
+            return ("  .rsset $0000\n%s\n\n" % asm_code)
         return ""
 
     def infinity_loop(self):
@@ -112,22 +104,22 @@ class Cartridge:
         return ""
 
     def bank1(self):
-        asm_code = ""
-        for v in self._vars:
-            if (isinstance(self._vars[v], NesArray) or
-                isinstance(self._vars[v], NesSprite)):
-                asm_code += v + ':\n' +self._vars[v].to_asm()
-        if len(asm_code) > 0:
+        asm_code = ''. join(
+            ['%s:\n%s' % (varname, var.to_asm())
+            for varname, var in self._vars.items()
+            if (isinstance (var,NesArray) or isinstance(var, NesSprite))])
+        if asm_code:
             return ("  .bank 1\n  .org $E000\n\n" + asm_code + '\n\n')
         return ""
 
     def bank2(self):
-        asm_code = ""
-        for v in self._vars:
-            if isinstance(self._vars[v], NesChrFile):
-                asm_code += '  .incbin "%s"' % self._vars[v].filename
+        asm_code = '\n'.join(
+            ['  .incbin "%s"' % var.filename
+            for varname, var in self._vars.items()
+            if isinstance(var, NesChrFile)
+            ])
 
-        if len(asm_code) > 0:
+        if asm_code:
             return ("  .bank 2\n  .org $0000\n\n" + asm_code + '\n\n')
         return ""
 
