@@ -32,14 +32,14 @@ class PPU():
 
 class Joypad():
 
-    def __init__(self, player_num, cart):
+    def __init__(self, player_num, game):
         assert player_num == 1 or player_num == 2
         self.num = player_num
         if player_num == 1:
             self.port = '$4016'
         else:
             self.port = '$4017'
-        self.cart = cart
+        self.game = game
         self.actions = ['a', 'b', 'select', 'start', 
           'up', 'down', 'left', 'right']
 
@@ -53,8 +53,8 @@ class Joypad():
                 "  BEQ End" + tag +"\n"
             )
             index = 'joypad' + str(self.num) + '_' + action
-            if index in self.cart._asm_chunks:
-                asm_code += self.cart._asm_chunks[index]
+            if index in self.game._asm_chunks:
+                asm_code += self.game._asm_chunks[index]
             asm_code += "End" + tag + ":\n"
             yield asm_code
 
@@ -67,7 +67,7 @@ class Joypad():
 
     @property
     def is_used(self):
-        for status in self.cart._asm_chunks:
+        for status in self.game._asm_chunks:
             if match('^joypad[12]_(a|b|select|start|up|down|left|right)', status):
                 return True
         return False
@@ -79,8 +79,8 @@ class Joypad():
 
 class BitPak:
 
-    def __init__(self, cart):
-        self.cart = cart
+    def __init__(self, game):
+        self.game = game
         self.assigned = None
 
 
@@ -101,8 +101,8 @@ class BitPak:
 
 class rs(BitPak):
 
-    def __init__(self, cart):
-        BitPak.__init__(self, cart)
+    def __init__(self, game):
+        BitPak.__init__(self, game)
 
     def __call__(self, size):
         return NesRs(size)
@@ -118,8 +118,8 @@ class HardSprite:
 
 class get_sprite(BitPak):
 
-    def __init__(self, cart):
-        BitPak.__init__(self, cart)
+    def __init__(self, game):
+        BitPak.__init__(self, game)
 
     def __call__(self, position):
         return HardSprite(position)
@@ -127,8 +127,8 @@ class get_sprite(BitPak):
 
 class wait_vblank(BitPak):
 
-    def __init__(self, cart):
-        BitPak.__init__(self, cart)
+    def __init__(self, game):
+        BitPak.__init__(self, game)
 
     def __call__(self):
         return None
@@ -144,8 +144,8 @@ class wait_vblank(BitPak):
 
 class clearmem(BitPak):
 
-    def __init__(self, cart):
-        BitPak.__init__(self, cart)
+    def __init__(self, game):
+        BitPak.__init__(self, game)
 
     def asm(self):
         return (
@@ -167,8 +167,8 @@ class clearmem(BitPak):
 
 class import_chr(BitPak):
 
-    def __init__(self, cart):
-        BitPak.__init__(self, cart)
+    def __init__(self, game):
+        BitPak.__init__(self, game)
 
     def __call__(self, string):
         assert isinstance(string, NesString)
@@ -176,8 +176,8 @@ class import_chr(BitPak):
 
 class define_sprite(BitPak):
 
-    def __init__(self, cart):
-        BitPak.__init__(self, cart)
+    def __init__(self, game):
+        BitPak.__init__(self, game)
 
     def  __call__(self, x, y, tile, attrib=0x80):
         assert isinstance(x, int)
@@ -188,8 +188,8 @@ class define_sprite(BitPak):
 
 class load_palette(BitPak):
 
-    def __init__(self, cart):
-        BitPak.__init__(self, cart)
+    def __init__(self, game):
+        BitPak.__init__(self, game)
 
     def  __call__(self, palette):
         assert isinstance(palette, NesArray)
@@ -219,9 +219,9 @@ class load_sprite(BitPak):
 
     def __init__(self, cart):
         BitPak.__init__(self, cart)
-        self.cart.has_nmi = True
-        self.cart.ppu.sprite_enable(True)
-        self.cart.ppu.nmi_enable(True)
+        self.game.has_nmi = True
+        self.game.ppu.sprite_enable(True)
+        self.game.ppu.nmi_enable(True)
 
     def  __call__(self, sprite, ppu_pos):
         assert isinstance(sprite, NesSprite)

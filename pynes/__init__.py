@@ -16,8 +16,8 @@ def press_start(asm = False):
     pyfile = open(filename)
     code = pyfile.read()
     pyfile.close()
-    cart = compose(code)
-    asmcode = cart.to_asm()
+    game = compose(code)
+    asmcode = game.to_asm()
 
     if (asm):
         asm_filename = filename + '.asm'

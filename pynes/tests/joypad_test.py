@@ -11,21 +11,19 @@ class JoypadTest(unittest.TestCase):
 
 
     def test_joypad1(self):
-        cart = Cartridge()
-        joypad_1 = Joypad(1, Cartridge())
+        joypad_1 = Joypad(1, Game())
         self.assertFalse(joypad_1.is_used)
         self.assertEquals('', joypad_1.to_asm())
 
     def test_joypad2(self):
-        cart = Cartridge()
-        joypad_2 = Joypad(2, Cartridge())
+        joypad_2 = Joypad(2, Game())
         self.assertFalse(joypad_2.is_used)
         self.assertEquals('', joypad_2.to_asm())
 
     def test_joypad1_with_up_event(self):
-        cart = Cartridge()
-        joypad_1 = Joypad(1, cart)
-        cart._asm_chunks['joypad1_up'] = '  LDA $0200\n'
+        game = Game()
+        joypad_1 = Joypad(1, game)
+        game._asm_chunks['joypad1_up'] = '  LDA $0200\n'
         self.assertTrue(joypad_1.is_used)
         asm = joypad_1.to_asm()
         self.assertTrue('LDA $0200' in asm)

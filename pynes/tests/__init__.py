@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 from unittest import TestCase
-from pynes.composer import compose, Cartridge
+from pynes.composer import compose, Game
 
 class WhatElse():
 
@@ -37,18 +37,18 @@ class ComposerTestCase(TestCase):
 
     def setUp(self):
         self.code = None
-        self.cart = None
+        self.game = None
         self.asm = None
 
     def tearDown(self):
         self.code = None
-        self.cart = None
+        self.game = None
         self.asm = None
 
     def assert_asm_from(self, code):
         self.code = code
-        self.cart = compose(code)
-        self.asm = self.cart.to_asm()
+        self.game = compose(code)
+        self.asm = self.game.to_asm()
         return WhatElse(self)
 
 class HexTestCase(TestCase):

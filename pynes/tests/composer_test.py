@@ -4,7 +4,7 @@ import unittest
 
 from pynes.tests import ComposerTestCase
 
-from pynes.composer import compose, Cartridge
+from pynes.composer import compose, Game
 
 from pynes.nes_types import NesString
 
@@ -166,8 +166,8 @@ class ComposerTest(ComposerTestCase):
             'hello = "world"'
             )
         )
-        self.assertEquals(1, len(self.cart._vars))
-        self.assertTrue(isinstance(self.cart._vars['hello'],NesString))
+        self.assertEquals(1, len(self.game._vars))
+        self.assertTrue(isinstance(self.game._vars['hello'],NesString))
 
     def test_import_chr_mario(self):
         (self.assert_asm_from(
@@ -218,9 +218,9 @@ class ComposerTest(ComposerTestCase):
             #'    px += 1\n'
             )
 
-        cart = compose(code)
-        asm = cart.to_asm()
-        #self.assertEquals(1, len(cart.bitpaks))
+        game = compose(code)
+        asm = game.to_asm()
+        #self.assertEquals(1, len(game.bitpaks))
         self.assertTrue('.bank 0' in asm)
         self.assertTrue('.org $C000' in asm)
         self.assertTrue('.bank 1' in asm)
@@ -246,7 +246,7 @@ class ComposerTest(ComposerTestCase):
 
         self.assertTrue('.bank 1' not in self.asm)
         self.assertTrue('.org $E000' not in self.asm)
-        self.assertEquals(1, len(self.cart.bitpaks))
+        self.assertEquals(1, len(self.game.bitpaks))
 
 
     def test_wait_vblank_called_twice(self):
@@ -259,7 +259,7 @@ class ComposerTest(ComposerTestCase):
         .has('.bank 0')
         .and_then('.org $C000' ))
         
-        self.assertEquals(1, len(self.cart.bitpaks))
+        self.assertEquals(1, len(self.game.bitpaks))
         self.assertTrue('.bank 1' not in self.asm)
         self.assertTrue('.org $E000' not in self.asm)
 
@@ -274,9 +274,9 @@ class ComposerTest(ComposerTestCase):
             '  .db $00,$01,$02,$03')
         )
 
-        self.assertEquals(1, len(self.cart._vars))
+        self.assertEquals(1, len(self.game._vars))
         self.assertEquals([0,1,2,3],
-                self.cart.get_var('palette').list())
+                self.game.get_var('palette').list())
         self.assertTrue('.bank 0' not in self.asm)
         self.assertTrue('.org $C000' not in self.asm)
 
@@ -291,9 +291,9 @@ class ComposerTest(ComposerTestCase):
             'palette:\n'
             '  .db $00,$01,$02,$03,$04,$05,$06,$07,$08,$09,$0A,$0B,$0C,$0D,$0E,$0F')
         )
-        self.assertEquals(1, len(self.cart._vars))
+        self.assertEquals(1, len(self.game._vars))
         self.assertEquals([0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15],
-            self.cart.get_var('palette').list())
+            self.game.get_var('palette').list())
         self.assertTrue('.bank 0' not in self.asm)
         self.assertTrue('.org $C000' not in self.asm)
 
@@ -306,9 +306,9 @@ class ComposerTest(ComposerTestCase):
             'palette:\n'
             '  .db $0F,$0E,$0D,$0C,$0B,$0A,$09,$08,$07,$06,$05,$04,$03,$02,$01,$00')
         )
-        self.assertEquals(1, len(self.cart._vars))
+        self.assertEquals(1, len(self.game._vars))
         self.assertEquals([15,14,13,12,11,10,9,8,7,6,5,4,3,2,1,0],
-            self.cart.get_var('palette').list())
+            self.game.get_var('palette').list())
         self.assertTrue('.bank 0' not in self.asm)
         self.assertTrue('.org $C000' not in self.asm)
 
@@ -322,8 +322,8 @@ class ComposerTest(ComposerTestCase):
             '  .db $00,$01,$02,$03,$04,$05,$06,$07,$08,$09,$0A,$0B,$0C,$0D,$0E,$0F\n'
             '  .db $10,$11,$12,$13,$14,$15,$16,$17,$18,$19,$1A,$1B,$1C,$1D,$1E,$1F')
         )
-        self.assertEquals(1, len(self.cart._vars))
-        self.assertEquals(range(32), self.cart.get_var('palette').list())
+        self.assertEquals(1, len(self.game._vars))
+        self.assertEquals(range(32), self.game.get_var('palette').list())
         self.assertTrue('.bank 0' not in self.asm)
         self.assertTrue('.org $C000' not in self.asm)
 
@@ -422,11 +422,11 @@ class ComposerTest(ComposerTestCase):
             'from pynes.bitbag import *\n'
             'x = rs(1)\n'
             'y = rs(1)')
-        cart = compose(code)
-        asm = cart.to_asm()
-        self.assertEquals(2, len(cart._vars))
-        self.assertEquals(1, cart._vars['x'].size)
-        self.assertEquals(1, cart._vars['y'].size)
+        game = compose(code)
+        asm = game.to_asm()
+        self.assertEquals(2, len(game._vars))
+        self.assertEquals(1, game._vars['x'].size)
+        self.assertEquals(1, game._vars['y'].size)
         self.assertTrue('.bank 0' not in asm)
         self.assertTrue('.org $C000' not in asm)
         self.assertTrue('.bank 1' not in asm)
@@ -446,16 +446,16 @@ class ComposerTest(ComposerTestCase):
             'sourceLow = rs(1)\n'
             'sourceHigh = rs(1)\n'
             'columnNumber = rs(1)\n')
-        cart = compose(code)
-        asm = cart.to_asm()
-        self.assertEquals(7, len(cart._vars))
-        self.assertEquals(1, cart._vars['scroll'].size)
-        self.assertEquals(1, cart._vars['nametable'].size)
-        self.assertEquals(1, cart._vars['columnLow'].size)
-        self.assertEquals(1, cart._vars['columnHigh'].size)
-        self.assertEquals(1, cart._vars['sourceLow'].size)
-        self.assertEquals(1, cart._vars['sourceHigh'].size)
-        self.assertEquals(1, cart._vars['columnNumber'].size)
+        game = compose(code)
+        asm = game.to_asm()
+        self.assertEquals(7, len(game._vars))
+        self.assertEquals(1, game._vars['scroll'].size)
+        self.assertEquals(1, game._vars['nametable'].size)
+        self.assertEquals(1, game._vars['columnLow'].size)
+        self.assertEquals(1, game._vars['columnHigh'].size)
+        self.assertEquals(1, game._vars['sourceLow'].size)
+        self.assertEquals(1, game._vars['sourceHigh'].size)
+        self.assertEquals(1, game._vars['columnNumber'].size)
         self.assertTrue('.bank 0' not in asm)
         self.assertTrue('.org $C000' not in asm)
         self.assertTrue('.bank 1' not in asm)
