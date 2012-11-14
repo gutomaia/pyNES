@@ -4,78 +4,7 @@ from re import match
 
 from nes_types import NesRs, NesArray, NesSprite, NesString, NesChrFile
 
-class PPU():
-
-    ctrl = 0x0000
-    mask = 0x0000
-
-    _sprite_enabled = False
-
-    def nmi_enable(self, value):
-        if value:
-            self.ctrl = self.ctrl | 0b10000000
-        else:
-            self.ctrl = self.ctrl & 0b01111111
-
-    def sprite_enable(self, value):
-        if value:
-            self.mask = self.mask | 0b00010000
-        else:
-            self.mask = self.mask & 0b11101111
-
-    def init(self):
-        asm = ('  LDA #%d\n' #TODO format binary
-          '  STA $2000\n'    #TODO also put comments about bits
-          '  LDA #%d\n'
-          '  STA $2001\n') % (self.ctrl, self.mask)
-        return asm
-
-class Joypad():
-
-    def __init__(self, player_num, game):
-        assert player_num == 1 or player_num == 2
-        self.num = player_num
-        if player_num == 1:
-            self.port = '$4016'
-        else:
-            self.port = '$4017'
-        self.game = game
-        self.actions = ['a', 'b', 'select', 'start', 
-          'up', 'down', 'left', 'right']
-
-    def __iter__(self):
-        for action in self.actions:
-            tag = action.capitalize()
-            asm_code = (
-                "JoyPad" + str(self.num) + tag + ":\n"
-                "  LDA " + self.port + "\n"
-                "  AND #%00000001\n"
-                "  BEQ End" + tag +"\n"
-            )
-            index = 'joypad' + str(self.num) + '_' + action
-            if index in self.game._asm_chunks:
-                asm_code += self.game._asm_chunks[index]
-            asm_code += "End" + tag + ":\n"
-            yield asm_code
-
-    def init(self):
-        return ('StartInput:\n' 
-            '  LDA #$01\n'
-            '  STA $4016\n'
-            '  LDA #$00\n'
-            '  STA $4016\n')
-
-    @property
-    def is_used(self):
-        for status in self.game._asm_chunks:
-            if match('^joypad[12]_(a|b|select|start|up|down|left|right)', status):
-                return True
-        return False
-
-    def to_asm(self):
-        if self.is_used:
-            return '\n'.join(self)
-        return ''
+from game import PPUSprite
 
 class BitPak:
 
@@ -107,22 +36,13 @@ class rs(BitPak):
     def __call__(self, size):
         return NesRs(size)
 
-#Change to PPUSprite
-class HardSprite:
-
-    def __init__(self, pos):
-      address = 0x0200 + (4 * pos)
-      self.y = address
-      self.x = address + 3
-
-
 class get_sprite(BitPak):
 
     def __init__(self, game):
         BitPak.__init__(self, game)
 
     def __call__(self, position):
-        return HardSprite(position)
+        return PPUSprite(position)
 
 
 class wait_vblank(BitPak):

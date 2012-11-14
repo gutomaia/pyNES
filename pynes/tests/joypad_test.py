@@ -2,9 +2,9 @@
 
 import unittest
 
-from pynes.composer import *
+from re import match
 
-from pynes.bitbag import *
+from pynes.game import Game, Joypad
 
 
 class JoypadTest(unittest.TestCase):

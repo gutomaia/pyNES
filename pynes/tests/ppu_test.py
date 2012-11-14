@@ -1,6 +1,6 @@
 import unittest
 
-from pynes.bitbag import PPU
+from pynes.game import PPU
 
 class PPUTest(unittest.TestCase):
 

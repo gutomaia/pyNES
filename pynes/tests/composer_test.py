@@ -4,7 +4,9 @@ import unittest
 
 from pynes.tests import ComposerTestCase
 
-from pynes.composer import compose, Game
+from pynes.game import Game, PPUSprite
+
+from pynes.composer import compose
 
 from pynes.nes_types import NesString
 
@@ -100,10 +102,15 @@ class ComposerTest(ComposerTestCase):
         .and_then('.dw NMI')
         )
 
-    def test_hardsprite_with_1(self):
-        from pynes.bitbag import HardSprite
-        hs = HardSprite(1)
-        self.assertTrue(0x0204, hs.y)
+    def test_ppusprite_with_0(self):
+        s = PPUSprite(0)
+        self.assertEquals(0x0200, s.y)
+        self.assertEquals(0x0203, s.x)
+
+    def test_ppusprite_with_1(self):
+        s = PPUSprite(1)
+        self.assertEquals(0x0204, s.y)
+        self.assertEquals(0x0207, s.x)
 
     def test_sprite_one_assign_100(self):
         (self.assert_asm_from(
