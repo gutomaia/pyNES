@@ -137,8 +137,8 @@ class load_palette(BitPak):
 
 class load_sprite(BitPak):
 
-    def __init__(self, cart):
-        BitPak.__init__(self, cart)
+    def __init__(self, game):
+        BitPak.__init__(self, game)
         self.game.has_nmi = True
         self.game.ppu.sprite_enable(True)
         self.game.ppu.nmi_enable(True)
@@ -146,21 +146,26 @@ class load_sprite(BitPak):
     def  __call__(self, sprite, ppu_pos):
         assert isinstance(sprite, NesSprite)
         self.sprite = sprite
-        self.pos = ppu_pos
-        #TODO return an HardwareSprite
+        self.start_address = 0x0200 + (ppu_pos * 4)
         return None
 
     def  asm(self):
         size = len(self.sprite)
-
+        load_sprites = self.game.get_label_for('LoadSprites')
+        load_sprites_into_PPU = self.game.get_label_for('LoadSpritesIntoPPU')
         asmcode = (
-          'LoadSprites:\n'
+          '%s:\n'
           '  LDX #$00\n'
-          'LoadSpritesIntoPPU:\n'
+          '%s:\n'
           '  LDA %s, x\n'
-          '  STA $0200, x\n'
+          '  STA $%04X, x\n'
           '  INX\n'
           '  CPX #%d\n'
-          '  BNE LoadSpritesIntoPPU\n'
-        ) % (self.sprite.instance_name, size * 4)
+          '  BNE %s\n'
+        ) % (load_sprites,
+            load_sprites_into_PPU,
+            self.sprite.instance_name,
+            self.start_address,
+            size * 4,
+            load_sprites_into_PPU)
         return asmcode

@@ -30,6 +30,14 @@ class WhatElse():
             raise(AssertionError('"%s" was not found after "%s" in code' % (text, self.last)))
         return self
 
+    def and_not_from_then(self, text):
+        index = self.testcase.asm[self.start:].find(text)
+        if index > 0:
+            print self.testcase.asm
+            raise(AssertionError('"%s" was found after "%s" in code' % (text, self.last)))
+        return self
+
+
 class ComposerTestCase(TestCase):
 
     def __init__(self, testname):

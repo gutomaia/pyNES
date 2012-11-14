@@ -31,7 +31,7 @@ class NesSprite(NesType):
     def to_asm(self):
         if isinstance(self.tile, int):
             return (
-                '  .db $%02x, $%02x, $%02x, $%02x' %
+                '  .db $%02X, $%02X, $%02X, $%02X' %
                 (
                     self.y,
                     self.tile,
@@ -45,7 +45,7 @@ class NesSprite(NesType):
             for t in self.tile.list():
                 i = x % self.width
                 j = x / self.width
-                asmcode += ('  .db $%02x, $%02x, $%02x, $%02x\n' %
+                asmcode += ('  .db $%02X, $%02X, $%02X, $%02X\n' %
                 (
                     self.y + (j*8),
                     t,
