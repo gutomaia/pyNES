@@ -327,7 +327,7 @@ def semantic(ast, iNES=False, cart=None ):
 
             address_mode = address_mode_def[leaf['type']]['short']
             opcode = opcodes[instruction][address_mode]
-            if address_mode != 'sngl':
+            if address_mode != 'sngl' and address_mode != 'acc':
                 if 'rel' == address_mode:
                     address = 126 + (address - cart.pc)
                     if address == 128:

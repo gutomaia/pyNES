@@ -10,6 +10,17 @@ import unittest
 from pynes.compiler import lexical, syntax, semantic
 class LsrTest(unittest.TestCase):
 
+    def test_lsr_acc(self):
+        tokens = lexical('LSR A');
+        self.assertEquals(2 , len(tokens))
+        self.assertEquals('T_INSTRUCTION', tokens[0]['type'])
+        self.assertEquals('T_ACCUMULATOR', tokens[1]['type'])
+        ast = syntax(tokens)
+        self.assertEquals(1 , len(ast))
+        self.assertEquals('S_ACCUMULATOR', ast[0]['type'])
+        code = semantic(ast)
+        self.assertEquals(code, [0x4a])
+
     def test_lsr_imm(self):
         tokens = lexical('LSR #$10')
         self.assertEquals(2 , len(tokens))

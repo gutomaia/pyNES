@@ -3,55 +3,44 @@
 import unittest
 
 import pynes
+
+from pynes.tests import HexTestCase
 from pynes.compiler import lexical, syntax, semantic
 from pynes.cartridge import Cartridge
 
-class ScrollingTest(unittest.TestCase):
+class ScrollingTest(HexTestCase):
 
-    def test_asm_compiler_scrolling_5(self):
-        cart = Cartridge()
-        cart.path = 'fixtures/nesasm/scrolling/'
-        f = open ('fixtures/nesasm/scrolling/scrolling5.asm')
+    def __init__(self, testname):
+        HexTestCase.__init__(self, testname)
+
+    def assertAsmResults(self, source_file, bin_file):
+        path = 'fixtures/nesasm/scrolling/'
+        f = open (path + source_file)
         code = f.read()
         f.close()
         tokens = lexical(code)
         ast = syntax(tokens)
-        opcodes = semantic(ast, cart = cart)
 
-    def test_partial_block(self):
-        example = '''
-                SEI          ; disable IRQs
-                CLD          ; disable decimal mode
-                LDX #$40
-                STX $4017    ; disable APU frame IRQ
-                LDX #$FF
-                TXS          ; Set up stack
-                INX          ; now X = 0
-                STX $2000    ; disable NMI
-                STX $2001    ; disable rendering
-                STX $4010    ; disable DMC IRQs'''
-        tokens = lexical(example)
-        ast = syntax(tokens)
-        opcodes = semantic(ast)
+        cart = Cartridge()
+        cart.path = 'fixtures/nesasm/scrolling/'
+
+        opcodes = semantic(ast, True, cart=cart)
+
+        self.assertIsNotNone(opcodes)
         bin = ''.join([chr(opcode) for opcode in opcodes])
-        f = open('fixtures/nesasm/scrolling/scrolling5.nes', 'rb')
+        f = open(path + bin_file, 'rb')
         content = f.read()
-        self.assertTrue(bin in content)
+        f.close()
+        self.assertHexEquals(content,bin)
 
-    def test_ines_functions(self):
-        example = '''
-            .inesprg 1   ; 1x 16KB PRG code
-            .ineschr 1   ; 1x  8KB CHR data
-            .inesmap 0   ; mapper 0 = NROM, no bank swapping
-            .inesmir 1   ; VERT mirroring for HORIZ scrolling
-            '''
-        tokens = lexical(example)
+    def test_asm_compiler_scrolling_1(self):
+        self.assertAsmResults('scrolling1.asm', 'scrolling1.nes')
 
-    def test_bank_functions(self):
-        example = '''
-            .bank 1
-            .org $E000
-            palette:
-            .db $22,$29,$1A,$0F,  $22,$36,$17,$0F,  $22,$30,$21,$0F,  $22,$27,$17,$0F   ;;background palette
-            .db $22,$16,$27,$18,  $22,$1A,$30,$27,  $22,$16,$30,$27,  $22,$0F,$36,$17   ;;sprite palette
-            '''
+    def test_asm_compiler_scrolling_2(self):
+        self.assertAsmResults('scrolling2.asm', 'scrolling2.nes')
+
+    def test_asm_compiler_scrolling_3(self):
+        self.assertAsmResults('scrolling3.asm', 'scrolling3.nes')
+
+    def test_asm_compiler_scrolling_4(self):
+        self.assertAsmResults('scrolling4.asm', 'scrolling4.nes')
