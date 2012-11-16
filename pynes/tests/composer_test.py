@@ -283,7 +283,7 @@ class ComposerTest(ComposerTestCase):
 
         self.assertEquals(1, len(self.game._vars))
         self.assertEquals([0,1,2,3],
-                self.game.get_var('palette').list())
+                self.game.get_var('palette'))
         #self.assertTrue('.bank 0' not in self.asm)
         #self.assertTrue('.org $C000' not in self.asm)
 
@@ -300,7 +300,7 @@ class ComposerTest(ComposerTestCase):
         )
         self.assertEquals(1, len(self.game._vars))
         self.assertEquals([0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15],
-            self.game.get_var('palette').list())
+            self.game.get_var('palette'))
         self.assertTrue('.bank 0' not in self.asm)
         self.assertTrue('.org $C000' not in self.asm)
 
@@ -315,7 +315,7 @@ class ComposerTest(ComposerTestCase):
         )
         self.assertEquals(1, len(self.game._vars))
         self.assertEquals([15,14,13,12,11,10,9,8,7,6,5,4,3,2,1,0],
-            self.game.get_var('palette').list())
+            self.game.get_var('palette'))
         self.assertTrue('.bank 0' not in self.asm)
         self.assertTrue('.org $C000' not in self.asm)
 
@@ -330,7 +330,7 @@ class ComposerTest(ComposerTestCase):
             '  .db $10,$11,$12,$13,$14,$15,$16,$17,$18,$19,$1A,$1B,$1C,$1D,$1E,$1F')
         )
         self.assertEquals(1, len(self.game._vars))
-        self.assertEquals(range(32), self.game.get_var('palette').list())
+        self.assertEquals(range(32), self.game.get_var('palette'))
         #self.assertTrue('.bank 0' not in self.asm)
         #self.assertTrue('.org $C000' not in self.asm)
 

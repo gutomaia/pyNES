@@ -26,7 +26,7 @@ class NesSprite(NesType):
         if isinstance(self.tile, int):
             return 1
         else:
-            return len(self.tile.list())
+            return len(self.tile)
 
     def to_asm(self):
         if isinstance(self.tile, int):
@@ -42,7 +42,7 @@ class NesSprite(NesType):
             asmcode = ''
             x = 0
             #TODO: assert list mod width == 0
-            for t in self.tile.list():
+            for t in self.tile:
                 i = x % self.width
                 j = x / self.width
                 asmcode += ('  .db $%02X, $%02X, $%02X, $%02X\n' %
@@ -56,18 +56,14 @@ class NesSprite(NesType):
             return asmcode
 
 
-class NesArray(NesType):
+class NesArray(NesType, list):
 
     def __init__(self, lst):
-        self.value = []
-        for l in lst:
-            self.value.append(l.n)
-
-    def list(self):
-        return self.value
+        list.__init__(self, [l.n for l in lst])
+        self.locked = False
 
     def to_asm(self):
-        hexes = ["$%02X" % v for v in self.value]
+        hexes = ["$%02X" % v for v in self]
         asm = ''
         length = (len(hexes) / 16)
         if len(hexes) % 16:

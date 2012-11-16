@@ -130,7 +130,7 @@ class load_palette(BitPak):
           '  LDA %s, x\n'
           '  STA $2007\n'
           '  INX\n' ) % self.palette.instance_name
-        asmcode += '  CPX #$%02x\n' % len(self.palette.list())
+        asmcode += '  CPX #$%02x\n' % len(self.palette)
         asmcode += '  BNE LoadPalettesIntoPPU\n'
         return asmcode
 
