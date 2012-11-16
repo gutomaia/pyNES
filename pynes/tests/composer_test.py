@@ -175,6 +175,8 @@ class ComposerTest(ComposerTestCase):
         )
         self.assertEquals(1, len(self.game._vars))
         self.assertTrue(isinstance(self.game._vars['hello'],NesString))
+        self.assertEquals("world", self.game._vars['hello'])
+
 
     def test_import_chr_mario(self):
         (self.assert_asm_from(

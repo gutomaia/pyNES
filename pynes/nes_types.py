@@ -74,10 +74,10 @@ class NesArray(NesType, list):
             return asm
         return False
 
-class NesString(NesType): #Make it extends Array
+class NesString(NesType, str):
 
     def __init__(self, string):
-        self.value = string
+        str.__init__(self, string)
 
 
 class NesChrFile(NesType):

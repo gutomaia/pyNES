@@ -92,7 +92,7 @@ class import_chr(BitPak):
 
     def __call__(self, string):
         assert isinstance(string, NesString)
-        return NesChrFile(string.value)
+        return NesChrFile(string)
 
 class define_sprite(BitPak):
 
