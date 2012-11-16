@@ -11,9 +11,7 @@ class SpriteTest(unittest.TestCase):
         unittest.TestCase.__init__(self, testcase_name)
         f = open('fixtures/nesasm/scrolling/mario.chr', 'rb')
         content = f.read()
-        self.bin = []
-        for c in content:
-            self.bin.append(ord(c))
+        self.bin = [ord(c) for c in content]
 
         self.mario1 = [
             [0,0,0,0,0,0,1,1],

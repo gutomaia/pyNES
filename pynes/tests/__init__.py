@@ -106,3 +106,51 @@ class HexTestCase(TestCase):
                 out += '%s- %d \n' % (act, line + 1)
             print out
             raise AssertionError('Hex are not equal')
+
+class SpriteTestCase(TestCase):
+
+    def __init__(self, testname):
+        TestCase.__init__(self, testname)
+
+    def get_printable_sprite(self, spr):
+        ALPHA = '\033[0m'
+        R = '\033[91m'
+        G = '\033[92m'
+        B = '\033[94m'
+        ENDC = '\033[0m'
+        palette = [ALPHA, R, G, B]
+        pixel = u"\u25a0"
+        pixel = '#' #TODO find a way to print square
+        lines = []
+        previous = None
+        for i in range(8):
+            line = ''
+            for j in range(8):
+                color = spr[i][j]
+                if previous != color:
+                    line += palette[color]
+                line += pixel
+            lines.append(line)
+        return lines
+        output = '\n'.join(lines) + ENDC
+        print output
+
+    def show_sprite(self, spr):
+        ENDC = '\033[0m'
+        return '\n'.join(self.get_printable_sprite(spr)) + ENDC
+
+    def assertSpriteEquals(self, expected, actual):
+        try:
+            self.assertEquals(expected, actual)
+        except:
+            ENDC = '\033[0m'
+            e = self.get_printable_sprite(expected)
+            a = self.get_printable_sprite(actual)
+            out = ''
+            for i in range(8):
+                if i == 4:
+                    out += e[i] + ENDC + ' != ' + a[i] + ENDC + '\n'
+                else:
+                    out += e[i] + ENDC + '    ' + a[i] + ENDC + '\n'
+            print out
+            raise AssertionError('Sprites are not equal')

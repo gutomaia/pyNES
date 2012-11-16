@@ -1,5 +1,7 @@
 # -*- coding: utf-8 -*-
 
+from collections import OrderedDict
+
 palette = [
     0x788084, 0x0000fc, 0x0000c4, 0x4028c4,
     0x94008c, 0xac0028, 0xac1000, 0x8c1800,
@@ -25,10 +27,21 @@ palette = [
 def load_sprites(src):
     f = open(src, 'rb')
     content = f.read()
-    bin = []
-    for c in content:
-        bin.append(ord(c))
+    assert len(content) % 16 == 0
+    bin = [ord(c) for c in content]
+    assert len(bin) % 16 == 0
     return bin
+
+def load_indexed_sprites(src):
+    f = open(src, 'rb')
+    content = f.read()
+    assert len(content) % 16 == 0
+    bin = [ord(c) for c in content]
+    assert len(bin) % 16 == 0
+    indexes = OrderedDict()
+    for i in range(len(content) / 16):
+        indexes[content[i * 16: i * 16 + 16]] = i
+    return bin, indexes
 
 def decode_sprite(channelA, channelB):
     s = []
@@ -53,6 +66,7 @@ def decode_sprite(channelA, channelB):
     return s;
 
 def get_sprite(index, sprites):
+    assert len(sprites) > index
     iA = index * 16;
     iB = iA + 8;
     iC = iB + 8;
@@ -97,3 +111,27 @@ def find_sprite(sprites, spr, start=0):
         if spr == get_sprite(index, sprites):
             return index - start
     return -1
+
+class SpriteSet():
+
+    def __init__(self, sprite_file):
+        self.sprs, self.indexes = load_indexed_sprites(sprite_file)
+
+    def __len__(self):
+        return length(self.sprs)
+
+    def get(self, index):
+        return get_sprite(index, self.sprs)
+
+    def put(self, index, spr):
+        return put_sprite(index, spr, self.sprs)
+
+    def has_sprite(self, spr):
+        if isinstance(spr, list):
+            spr = encode_sprite(spr)
+            spr = ''.join(chr(c) for c in spr)
+        if spr in self.indexes:
+            return self.indexes[spr]
+        return False
+
+
