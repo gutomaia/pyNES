@@ -42,7 +42,7 @@ class get_sprite(BitPak):
         BitPak.__init__(self, game)
 
     def __call__(self, position):
-        return PPUSprite(position)
+        return PPUSprite(position, self.game)
 
 
 class wait_vblank(BitPak):

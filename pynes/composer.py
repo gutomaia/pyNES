@@ -166,7 +166,7 @@ class PyNesVisitor(ast.NodeVisitor):
 
     def visit_Call(self, node):
         global game
-        if node.func.id:
+        if 'id' in dir(node.func):
             self.stack.store()
             if len(node.args) > 0:
                 self.generic_visit(node.args)
@@ -191,6 +191,13 @@ class PyNesVisitor(ast.NodeVisitor):
                 bp = game.bitpaks[node.func.id]
                 self.stack(bp(*args))
                 game += bp.asm()
+        else:
+            self.generic_visit(node)
+            attrib = getattr(self.stack.current()[0], self.stack.current()[1], None)
+            self.stack.wipe()
+            if callable(attrib):
+                attrib()
+
 
     def visit_Add(self, node):
         self.stack('+')

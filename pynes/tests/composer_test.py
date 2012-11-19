@@ -103,12 +103,12 @@ class ComposerTest(ComposerTestCase):
         )
 
     def test_ppusprite_with_0(self):
-        s = PPUSprite(0)
+        s = PPUSprite(0, Game())
         self.assertEquals(0x0200, s.y)
         self.assertEquals(0x0203, s.x)
 
     def test_ppusprite_with_1(self):
-        s = PPUSprite(1)
+        s = PPUSprite(1, Game())
         self.assertEquals(0x0204, s.y)
         self.assertEquals(0x0207, s.x)
 
@@ -334,7 +334,7 @@ class ComposerTest(ComposerTestCase):
         self.assertEquals(1, len(self.game._vars))
         self.assertEquals(range(32), self.game.get_var('palette'))
         #self.assertTrue('.bank 0' not in self.asm)
-        #self.assertTrue('.org $C000' not in self.asm)
+        self.assertTrue('.org $C000' not in self.asm)
 
     def test_define_sprite_with_x_128_y_64_and_tile_0(self):
         (self.assert_asm_from(
@@ -476,6 +476,55 @@ class ComposerTest(ComposerTestCase):
                 '  .db $40, $00, $03, $80'
             )
         )
+
+    def test_flip_horizontal_sprite_zero(self):
+        (self.assert_asm_from(
+            'from pynes.bitbag import *\n'
+
+            'get_sprite(0).flip_horizontal()\n'
+            )
+        .has('.bank 0')
+        .and_then('LDA $0202')
+        .and_then('EOR #64')
+        .and_then('STA $0202')
+        )
+
+    def test_flip_vertical_sprite_zero(self):
+        (self.assert_asm_from(
+            'from pynes.bitbag import *\n'
+
+            'get_sprite(0).flip_vertical()\n'
+            )
+        .has('.bank 0')
+        .and_then('LDA $0202')
+        .and_then('EOR #128')
+        .and_then('STA $0202')
+        )
+
+    def test_flip_horizontal_sprite_one(self):
+        (self.assert_asm_from(
+            'from pynes.bitbag import *\n'
+
+            'get_sprite(1).flip_horizontal()\n'
+            )
+        .has('.bank 0')
+        .and_then('LDA $0206')
+        .and_then('EOR #64')
+        .and_then('STA $0206')
+        )
+
+    def test_flip_vertical_sprite_one(self):
+        (self.assert_asm_from(
+            'from pynes.bitbag import *\n'
+
+            'get_sprite(1).flip_vertical()\n'
+            )
+        .has('.bank 0')
+        .and_then('LDA $0206')
+        .and_then('EOR #128')
+        .and_then('STA $0206')
+        )
+
 
     def test_rs_with_x_and_y_with_size_1(self):
         code = (

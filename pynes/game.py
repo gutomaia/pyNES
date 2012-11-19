@@ -28,24 +28,40 @@ class PPU():
           '  STA $2001\n') % (self.ctrl, self.mask)
         return asm
 
-class SpriteOperation:
-
-    def __add__(self):
-        return self
-
-    def __sub__(self):
-        return self
-
-
-class SpriteAddress:
-    pass
-
 class PPUSprite:
 
-    def __init__(self, pos):
-      address = 0x0200 + (4 * pos)
-      self.y = address
-      self.x = address + 3
+    def __init__(self, pos, game):
+        address = 0x0200 + (4 * pos)
+        self.y = address
+        self.attrib = address + 2
+        self.x = address + 3
+        self.game = game
+
+
+
+    def flip_vertical(self):
+        asm = (
+            '  LDA $%04X\n'
+            '  EOR #%d\n'
+            '  STA $%04X\n'
+        ) % (
+            self.attrib,
+            128,
+            self.attrib
+        )
+        self.game += asm
+
+    def flip_horizontal(self):
+        asm = (
+            '  LDA $%04X\n'
+            '  EOR #%d\n'
+            '  STA $%04X\n'
+        ) % (
+            self.attrib,
+            64,
+            self.attrib
+        )
+        self.game += asm
 
 class Joypad():
 
