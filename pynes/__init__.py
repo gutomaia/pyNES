@@ -3,7 +3,6 @@
 import os
 import sys
 import re
-import subprocess
 import logging
 import argparse
 
@@ -24,7 +23,7 @@ def press_start(asm = False):
         asm_file = open(asm_filename, 'w')
         asm_file.write(asmcode)
         asm_file.close()
-        print asm_filename
+        print(asm_filename)
 
 
 def write_bin_code(code, file):

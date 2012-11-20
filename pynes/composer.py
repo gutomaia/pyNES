@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-import compiler
+import pynes.compiler
 import ast
 from re import match
 from inspect import getmembers
@@ -9,7 +9,7 @@ import pynes.bitbag #TODO fix import to be able to remove this
 
 from pynes.game import Game, PPU, PPUSprite, Joypad
 from pynes.nes_types import NesType, NesRs, NesArray, NesString, NesSprite, NesChrFile
-from compiler import compile
+from pynes.compiler import compile
 
 class OperationStack:
 
@@ -53,17 +53,17 @@ class PyNesVisitor(ast.NodeVisitor):
         if isinstance(node, list):
             for n in node:
                 if debug:
-                    print n
+                    print(n)
                 self.visit(n)
         else:
             for field, value in reversed(list(ast.iter_fields(node))):
                 if debug:
-                    print value
+                    print(value)
                 if isinstance(value, list):
                     for item in value:
                         if isinstance(item, ast.AST):
                             if debug:
-                                print item
+                                print(item)
                             self.stack.store()
                             self.visit(item)
                 elif isinstance(value, ast.AST):
@@ -76,9 +76,9 @@ class PyNesVisitor(ast.NodeVisitor):
         if node.test.comparators[0].s == '__main__':
             pass
         else:
-            print 'IF'
-            print dir(node.test.comparators[0])
-            print node.test.comparators[0].s
+            print('IF')
+            #print dir(node.test.comparators[0])
+            #print node.test.comparators[0].s
 
     def visit_AugAssign(self, node):
         self.generic_visit(node)
@@ -182,8 +182,8 @@ class PyNesVisitor(ast.NodeVisitor):
                         game.bitpaks[node.func.id] = bp
                         self.stack(bp(*args))
                         game += bp.asm()
-                    except TypeError, e:
-                        msg = e.message.replace('__call__', node.func.id, 1)
+                    except TypeError as ex:
+                        msg = ex.message.replace('__call__', node.func.id, 1)
                         raise(TypeError(msg))
                 else:
                     raise(NameError("name '%s' is not defined" % node.func.id))

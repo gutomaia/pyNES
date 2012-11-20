@@ -1,15 +1,15 @@
 # -*- coding: utf-8 -*-
 
-from analyzer import analyse
-from c6502 import opcodes, address_mode_def
+from pynes.analyzer import analyse
+from pynes.c6502 import opcodes, address_mode_def
 from re import match
 
 import inspect
 from binascii import hexlify
 
-from directives import directive_list
+from pynes.directives import directive_list
 
-from cartridge import Cartridge
+from pynes.cartridge import Cartridge
 
 import pynes
 
@@ -252,11 +252,11 @@ def syntax(tokens):
                     break;
             if not move:
                 walk = 0
-                print '------------'
-                print tokens[x]
-                print len(tokens)
-                print len(tokens[x:])
-                raise Exception('UNKNOW TOKEN')
+                print('------------')
+                print(tokens[x])
+                print(len(tokens))
+                print(len(tokens[x:]))
+                raise(Exception('UNKNOW TOKEN'))
     return ast
 
 

@@ -2,9 +2,9 @@
 
 from re import match
 
-from nes_types import NesRs, NesArray, NesSprite, NesString, NesChrFile
+from pynes.nes_types import NesRs, NesArray, NesSprite, NesString, NesChrFile
 
-from game import PPUSprite
+from pynes.game import PPUSprite
 
 class BitPak:
 
