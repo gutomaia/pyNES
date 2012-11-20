@@ -12,7 +12,6 @@ class BitPak:
         self.game = game
         self.assigned = None
 
-
     def __call__(self):
         return None
 

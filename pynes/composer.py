@@ -87,21 +87,16 @@ class PyNesVisitor(ast.NodeVisitor):
                 isinstance(self.stack.last()[1], str) and #TODO op
                 isinstance(self.stack.current()[0], PPUSprite) and
                 isinstance(self.stack.current()[1], str)): #TODO how to check
-                
-
                 address = getattr(self.stack.current()[0], self.stack.current()[1])
                 self.stack.wipe()
                 operation = self.stack.last()[1]
                 operand = self.stack.resolve()
                 global game
-                game += '  LDA $%04x\n' % address
                 if operation == '+':
-                    game += '  CLC\n'
-                    game += '  ADC #%d\n' % operand[0]
+                    address += operand[0]
                 elif operation == '-':
-                    game += '  SEC\n'
-                    game += '  SBC #%d\n' % operand[0]
-                game += '  STA $%04x\n' % address
+                    address -= operand[0]
+                game += address.to_asm()
 
     def visit_Assign(self, node):
         global game
@@ -149,20 +144,18 @@ class PyNesVisitor(ast.NodeVisitor):
 
     def visit_FunctionDef(self, node):
         global game
-        game._state = node.name
         if 'reset' == node.name:
-            game += node.name.upper() + ':\n'
+            game.state = node.name.upper()
             game += game.init()
             self.generic_visit(node)
         elif 'nmi' == node.name:
-            game += node.name.upper() + ':\n'
+            game.state = node.name.upper()
             self.generic_visit(node)
         elif  match('^joypad[12]_(a|b|select|start|up|down|left|right)', node.name):
-            game._state = node.name
+            game.state = node.name
             self.generic_visit(node)
         else:
-            game += node.name.upper() + ':\n'
-            game._state = node.name
+            game.state = node.name
 
     def visit_Call(self, node):
         global game
