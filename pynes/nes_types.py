@@ -5,7 +5,6 @@ class NesType:
     def __init__(self):
         self.instance_name = None
 
-
 class NesRs(NesType):
 
     def __init__(self, size):
@@ -59,10 +58,11 @@ class NesSprite(NesType):
 class NesArray(NesType, list):
 
     def __init__(self, lst):
-        list.__init__(self, [l.n for l in lst])
+        list.__init__(self, lst)
         self.locked = False
 
     def to_asm(self):
+        self.locked = True
         hexes = ["$%02X" % v for v in self]
         asm = ''
         length = (len(hexes) / 16)
@@ -74,11 +74,22 @@ class NesArray(NesType, list):
             return asm
         return False
 
+class NesInt(int, NesType):
+
+    def __new__(cls, val, **kwargs):
+        inst = super(NesInt, cls).__new__(cls, val)
+        return inst
+
+    def __init__(self, number):
+        NesType.__init__(self)
+        int.__init__(self, number)
+
 class NesString(NesType, str):
 
     def __init__(self, string):
         str.__init__(self, string)
-
+        NesType.__init__(self)
+        self.locked = False
 
 class NesChrFile(NesType):
 

@@ -40,8 +40,8 @@ class get_sprite(BitPak):
     def __init__(self, game):
         BitPak.__init__(self, game)
 
-    def __call__(self, position):
-        return PPUSprite(position, self.game)
+    def __call__(self, sprite):
+        return PPUSprite(sprite, self.game)
 
 
 class wait_vblank(BitPak):
@@ -144,8 +144,10 @@ class load_sprite(BitPak):
 
     def  __call__(self, sprite, ppu_pos):
         assert isinstance(sprite, NesSprite)
+        assert ppu_pos < 64
         self.sprite = sprite
         self.start_address = 0x0200 + (ppu_pos * 4)
+        self.sprite.ppu_address = ppu_pos
         return None
 
     def  asm(self):

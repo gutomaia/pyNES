@@ -117,7 +117,8 @@ class PyNesVisitor(ast.NodeVisitor):
                 varname = node.targets[0].id
                 assert isinstance(self.stack.last()[0], NesArray)
                 assert varname == self.stack.current()[0]
-                game.set_var(varname, NesArray(node.value.elts))
+                lst = [l.n for l in node.value.elts]
+                game.set_var(varname, NesArray(lst))
             elif isinstance(node.value, ast.Str):
                 self.generic_visit(node)
                 varname = node.targets[0].id
@@ -135,7 +136,8 @@ class PyNesVisitor(ast.NodeVisitor):
                     game += '  STA $%04x\n' % address
 
     def visit_List(self, node):
-        self.stack(NesArray(node.elts))
+        lst = [l.n for l in node.elts]
+        self.stack(NesArray(lst))
 
     def visit_Attribute(self, node):
         self.generic_visit(node)

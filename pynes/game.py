@@ -28,15 +28,64 @@ class PPU():
           '  STA $2001\n') % (self.ctrl, self.mask)
         return asm
 
+class NesAddressSet(NesType):
+
+    def __init__ (self, addresses):
+        NesType.__init__(self)
+        self.addresses = addresses
+        self.stk = ''
+
+    def __add__(self, operand):
+        self.stk += (
+            '  LDA $%04X\n'
+            '  CLC\n'
+            '  ADC #%d\n') % (self.addresses[0], operand)
+        cols = len(self.addresses) / 2 #width
+        lines = len(self.addresses) / cols
+        moves = {}
+        for c in range(cols):
+            line_move = ''
+            for l in range(lines):
+                i = (2 * c) + l
+                if l in moves:
+                    moves[l] += '  STA $%04X\n' % self.addresses[i]
+                else:
+                    moves[l] = '  STA $%04X\n' % self.addresses[i]
+        self.stk += '  CLC\n  ADC #8\n'.join(moves.values())
+        return self
+
+    def __sub__(self, operand):
+        self.stk += (
+            '  LDA $%04X\n'
+            '  CLC\n'
+            '  ADC #%d\n') % (self.addresses[0], operand)
+        cols = len(self.addresses) / 2 #width
+        lines = len(self.addresses) / cols
+        moves = {}
+        for c in range(cols):
+            line_move = ''
+            for l in range(lines):
+                i = (2 * c) + l
+                if l in moves:
+                    moves[l] += '  STA $%04X\n' % self.addresses[i]
+                else:
+                    moves[l] = '  STA $%04X\n' % self.addresses[i]
+        print moves
+        self.stk += '  ADC #1\n'.join(moves.values())
+        return self
+
+    def to_asm(self):
+        return self.stk
+
 class NesAddress(int, NesType):
 
     def __new__(cls, val, **kwargs):
         inst = super(NesAddress, cls).__new__(cls, val)
         return inst
 
-    def __init__(self, address):
+    def __init__(self, number):
         NesType.__init__(self)
-        int.__init__(self, address)
+        int.__init__(self, number)
         self.game = ''
 
     def __add__(self, operand):
@@ -67,11 +116,19 @@ class Address(object):
 
     def __get__(self, instance, owner):
         if hasattr(instance, 'base_address'):
-            address =  (
-                getattr(instance, 'base_address') +
-                getattr(instance, self.target)
-            )
-            return NesAddress(address)
+            base_address = getattr(instance, 'base_address')
+            pos = getattr(instance, self.target)
+            address = base_address + pos
+            if hasattr(instance, 'sprite'):
+                sprite = getattr(instance, 'sprite')
+                addresses = []
+                i = 0
+                for t in sprite.tile:
+                    addresses.append(address + i * 4)
+                    i += 1
+                return NesAddressSet(addresses)
+            else:
+                return NesAddress(address)
         return NesAddress(getattr(instance, self.target))
 
     def __set__(self, instance, value):
@@ -83,7 +140,15 @@ class PPUSprite(object):
     attrib = Address()
     x = Address()
 
-    def __init__(self, pos, game):
+    def __init__(self, sprite, game):
+        assert isinstance(sprite, (int, NesSprite))
+
+        if isinstance(sprite, int):
+            pos = sprite
+        elif isinstance(sprite, NesSprite):
+            pos = sprite.ppu_address
+            self.sprite = sprite
+
         self.base_address = 0x0200 + (4 * pos)
         self.y = 0
         self.tile = 1
@@ -212,7 +277,7 @@ class Game(object):
              "  .dw 0\n"
             ) % (
             'NMI' if self.has_nmi else '0',
-            'RESET' if 'reset' in self._asm_chunks else '0'
+            'RESET' if 'RESET' in self._asm_chunks else '0'
             )
         return asm_code
 

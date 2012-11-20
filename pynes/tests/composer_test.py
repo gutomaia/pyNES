@@ -58,13 +58,11 @@ class ComposerTest(ComposerTestCase):
     def test_sprite_zero_augassign_x_plus_five(self):
         (self.assert_asm_from(
             'from pynes.bitbag import *\n'
-
             'get_sprite(0).x += 5')
         .has('LDA $0203')
         .and_then('CLC')
         .and_then('ADC #5')
         .and_then('STA $0203'))
-
 
     def test_sprite_zero_augassign_y_minus_five(self):
         (self.assert_asm_from(
@@ -251,10 +249,17 @@ class ComposerTest(ComposerTestCase):
             'def reset():\n'
             '    wait_vblank()')
         .has('.bank 0')
-        .and_then('.org $C000'))
-
-        #self.assertTrue('.bank 1' not in self.asm)
+        .and_then('.org $C000')
+        .and_then('WAITVBLANK:')
+        .and_then('RTS')
+        .and_then('RESET:')
+        .and_then('.bank 1')
+        .and_then('.dw 0')
+        .and_then('.dw RESET')
+        .and_then('.dw 0')
+        )
         self.assertTrue('.org $E000' not in self.asm)
+        self.assertTrue('NMI:' not in self.asm)
         self.assertEquals(1, len(self.game.bitpaks))
 
 
@@ -401,6 +406,44 @@ class ComposerTest(ComposerTestCase):
         .and_then('.db $88, $35, $00, $88')
         )
 
+    def test_move_sprite_on_x_with_four_files(self):
+        (self.assert_asm_from(
+            'from pynes.bitbag import *\n'
+
+            'mario = define_sprite(128, 128, [50,51,52,53], 0)\n'
+            'load_sprite(mario, 0)\n'
+
+            'get_sprite(mario).x += 5'
+            )
+        .has('.bank 0')
+        .and_then('LoadSprites:')
+        .and_then('LDX #$00')
+        .and_then('LoadSpritesIntoPPU:')
+        .and_then('LDA mario, x')
+        .and_then('STA $0200, x')
+        .and_then('INX')
+        .and_then('CPX #16')
+        .and_then('BNE LoadSpritesIntoPPU')
+
+        .and_then('LDA $0203')
+        .and_then('CLC')
+        .and_then('ADC #5')
+        .and_then('STA $0203')
+        .and_then('STA $020B')
+        .and_then('CLC')
+        .and_then('ADC #8')
+        .and_then('STA $0207')
+        .and_then('STA $020F')
+
+        .has('.bank 1')
+        .and_then('mario:')
+        .and_then('.db $80, $32, $00, $80')
+        .and_then('.db $80, $33, $00, $88')
+        .and_then('.db $88, $34, $00, $80')
+        .and_then('.db $88, $35, $00, $88')
+        )
+
+
     def test_load_sprite_using_an_array_in_slot_1(self):
         (self.assert_asm_from(
             'from pynes.bitbag import *\n'
@@ -438,6 +481,7 @@ class ComposerTest(ComposerTestCase):
             '  load_sprite(mario, 4)\n'
             )
         .has('.bank 0')
+        .and_then('RESET:')
         .and_then('LoadSprites:') #change to LoadMarioSprite
         .and_not_from_then('LoadSprites:')
         .and_then('LDX #$00')
@@ -450,6 +494,15 @@ class ComposerTest(ComposerTestCase):
         .and_then('LoadSprites1:') #change to #LoadTinyMarioSprite
         .and_then('LoadSpritesIntoPPU1:')
         .and_then('BNE LoadSpritesIntoPPU1')
+        .and_then('InfiniteLoop:')
+
+        .and_then('.bank 1')
+        .and_then('.org $E000')
+        .and_then('mario:')
+        .and_then('tinymario:')
+        .and_then('.org $FFFA')
+        .and_then('.dw NMI')
+        .and_then('.dw RESET')
         )
 
 
