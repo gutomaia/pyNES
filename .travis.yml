@@ -6,4 +6,5 @@ before_install:
   - sudo ln -s /usr/lib/`uname -i`-linux-gnu/libz.so ~/virtualenv/python2.7/lib/
 python:
   - "2.7"
+install: "pip install -q -r requirements.txt --use-mirrors"
 script: nosetests
