@@ -645,7 +645,7 @@ class ComposerTest(ComposerTestCase):
         .and_then('CPX #32')
         .and_then('BNE LoadSpritesIntoPPU')
 
-        .and_then('LDA $0217') #TODO $0207
+        .and_then('LDA $0207')
         .and_then('SEC')
         .and_then('SBC #5')
         .and_then('STA $021F')
