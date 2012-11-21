@@ -626,6 +626,81 @@ class ComposerTest(ComposerTestCase):
         .and_then('.db $88, $35, $00, $88')
         )
 
+    def test_move_sprite_minus_five_on_x_with_eight_tiles(self):
+        (self.assert_asm_from(
+            'from pynes.bitbag import *\n'
+
+            'mario = define_sprite(128, 128, [0,1,2,3,4,5,6,7], 0)\n'
+            'load_sprite(mario, 0)\n'
+
+            'get_sprite(mario).x -= 5'
+            )
+        .has('.bank 0')
+        .and_then('LoadSprites:')
+        .and_then('LDX #$00')
+        .and_then('LoadSpritesIntoPPU:')
+        .and_then('LDA mario, x')
+        .and_then('STA $0200, x')
+        .and_then('INX')
+        .and_then('CPX #32')
+        .and_then('BNE LoadSpritesIntoPPU')
+
+        .and_then('LDA $0217') #TODO $0207
+        .and_then('SEC')
+        .and_then('SBC #5')
+        .and_then('STA $021F')
+        .and_then('STA $0217')
+        .and_then('STA $020F')
+        .and_then('STA $0207')
+        .and_then('SEC')
+        .and_then('SBC #8')
+        .and_then('STA $021B')
+        .and_then('STA $0213')
+        .and_then('STA $020B')
+        .and_then('STA $0203')
+        #TODO has not (CLC)
+        .has('.bank 1')
+        .and_then('mario:')
+        )
+
+    def test_move_sprite_minus_five_on_y_with_eight_tiles(self):
+        (self.assert_asm_from(
+            'from pynes.bitbag import *\n'
+
+            'mario = define_sprite(128, 128, [0,1,2,3,4,5,6,7], 0)\n'
+            'load_sprite(mario, 0)\n'
+
+            'get_sprite(mario).x += 5'
+            )
+        .has('.bank 0')
+        .and_then('LoadSprites:')
+        .and_then('LDX #$00')
+        .and_then('LoadSpritesIntoPPU:')
+        .and_then('LDA mario, x')
+        .and_then('STA $0200, x')
+        .and_then('INX')
+        .and_then('CPX #32')
+        .and_then('BNE LoadSpritesIntoPPU')
+
+        .and_then('LDA $0203') #TODO $0207
+        .and_then('CLC')
+        .and_then('ADC #5')
+        .and_then('STA $0203')
+        .and_then('STA $020B')
+        .and_then('STA $0213')
+        .and_then('STA $021B')
+        .and_then('CLC')
+        .and_then('ADC #8')
+        .and_then('STA $0207')
+        .and_then('STA $020F')
+        .and_then('STA $0217')
+        .and_then('STA $021F')
+        #TODO has not (CLC)
+        .has('.bank 1')
+        .and_then('mario:')
+        )
+
+
     def test_load_sprite_using_an_array_in_slot_1(self):
         (self.assert_asm_from(
             'from pynes.bitbag import *\n'

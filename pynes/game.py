@@ -119,8 +119,9 @@ class Byte(object):
                 if self.target == '__PPUSprite_y':
                     for i in range(len(sprite.tile)):
                         addresses.append(address + i * 4)
+                    width = sprite.width
                 elif self.target == '__PPUSprite_x':
-                    cols = len(sprite.tile) / 2 #width
+                    cols = len(sprite.tile) / sprite.width
                     lines = len(sprite.tile) / cols
                     swap = {}
                     for c in range(cols):
@@ -131,7 +132,8 @@ class Byte(object):
                             swap[l].append(address + i * 4)
                     for v in swap.values():
                         addresses += v
-                return NesAddressSet(addresses, 2)
+                    width = cols
+                return NesAddressSet(addresses, width)
             else:
                 return NesAddress(address)
         return NesAddress(getattr(instance, self.target))
