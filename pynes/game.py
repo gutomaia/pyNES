@@ -28,11 +28,13 @@ class PPU():
           '  STA $2001\n') % (self.ctrl, self.mask)
         return asm
 
+#change to SpriteSwarmOperation
 class NesAddressSet(NesType):
 
-    def __init__ (self, addresses):
+    def __init__ (self, addresses, width):
         NesType.__init__(self)
         self.addresses = addresses
+        self.width = width
         self.stk = ''
 
     def __add__(self, operand):
@@ -42,41 +44,32 @@ class NesAddressSet(NesType):
             '  ADC #%d\n') % (self.addresses[0], operand)
         cols = len(self.addresses) / 2 #width
         lines = len(self.addresses) / cols
-        moves = {}
-        for c in range(cols):
-            line_move = ''
-            for l in range(lines):
-                i = (2 * c) + l
-                if l in moves:
-                    moves[l] += '  STA $%04X\n' % self.addresses[i]
-                else:
-                    moves[l] = '  STA $%04X\n' % self.addresses[i]
-        self.stk += '  CLC\n  ADC #8\n'.join(moves.values())
+        for i in range(len(self.addresses)):
+            self.stk += '  STA $%04X\n' % self.addresses[i]
+            if ((i + 1) % self.width) == 0 and i < len(self.addresses) - 1:
+                self.stk += '  CLC\n  ADC #8\n'
         return self
 
     def __sub__(self, operand):
+        self.addresses.reverse()
         self.stk += (
             '  LDA $%04X\n'
-            '  CLC\n'
-            '  ADC #%d\n') % (self.addresses[0], operand)
+            '  SEC\n'
+            '  SBC #%d\n') % (self.addresses[1], operand) #TODO index is based on width
         cols = len(self.addresses) / 2 #width
         lines = len(self.addresses) / cols
-        moves = {}
-        for c in range(cols):
-            line_move = ''
-            for l in range(lines):
-                i = (2 * c) + l
-                if l in moves:
-                    moves[l] += '  STA $%04X\n' % self.addresses[i]
-                else:
-                    moves[l] = '  STA $%04X\n' % self.addresses[i]
-        print moves
-        self.stk += '  ADC #1\n'.join(moves.values())
+        for i in range(len(self.addresses)):
+            self.stk += '  STA $%04X\n' % self.addresses[i]
+            if ((i + 1) % self.width) == 0 and i < len(self.addresses) - 1:
+                self.stk += '  SEC\n  SBC #8\n'
+        self.addresses.reverse()
         return self
+
 
     def to_asm(self):
         return self.stk
 
+#change to SpriteOperation
 class NesAddress(int, NesType):
 
     def __new__(cls, val, **kwargs):
@@ -107,11 +100,12 @@ class NesAddress(int, NesType):
     def to_asm(self):
         return self.game
 
-class Address(object):
+class Byte(object):
 
     def __init__(self, address=0):
-        prefix = self.__class__.__name__
-        key = id(self)
+        self.set_name(self.__class__.__name__, id(self))
+
+    def set_name(self, prefix, key):
         self.target = '%s_%s' % (prefix, key)
 
     def __get__(self, instance, owner):
@@ -122,11 +116,22 @@ class Address(object):
             if hasattr(instance, 'sprite'):
                 sprite = getattr(instance, 'sprite')
                 addresses = []
-                i = 0
-                for t in sprite.tile:
-                    addresses.append(address + i * 4)
-                    i += 1
-                return NesAddressSet(addresses)
+                if self.target == '__PPUSprite_y':
+                    for i in range(len(sprite.tile)):
+                        addresses.append(address + i * 4)
+                elif self.target == '__PPUSprite_x':
+                    cols = len(sprite.tile) / 2 #width
+                    lines = len(sprite.tile) / cols
+                    swap = {}
+                    for c in range(cols):
+                        for l in range(lines):
+                            i = (2 * c) + l
+                            if l not in swap:
+                                swap[l] = []
+                            swap[l].append(address + i * 4)
+                    for v in swap.values():
+                        addresses += v
+                return NesAddressSet(addresses, 2)
             else:
                 return NesAddress(address)
         return NesAddress(getattr(instance, self.target))
@@ -135,10 +140,16 @@ class Address(object):
         setattr(instance, self.target, value)
 
 class PPUSprite(object):
-    y = Address()
-    tile = Address()
-    attrib = Address()
-    x = Address()
+    y = Byte() #TODO: should be be Bit(0)
+    tile = Byte()
+    attrib = Byte()
+    x = Byte()
+
+    def __new__(cls, *args, **kwargs):
+        for key, atr in cls.__dict__.items():
+            if hasattr(atr, 'set_name'):
+                atr.set_name('__' + cls.__name__, key)
+        return super(PPUSprite, cls).__new__(cls, *args, **kwargs)
 
     def __init__(self, sprite, game):
         assert isinstance(sprite, (int, NesSprite))
