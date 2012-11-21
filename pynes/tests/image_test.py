@@ -43,19 +43,25 @@ class ImageTest(SpriteTestCase):
         self.assertEquals((0x00, 0x00, 0xfc), palette[1])
         self.assertEquals((0x00, 0x00, 0xc4), palette[2])
 
+
+    '''Test if a portion of a image when fetched is equal
+    to the same sprite'''
     def test_fetch_chr_0(self):
         pixels = Image.open('fixtures/mario.png').load()
         spr = image.fetch_chr(pixels, 0, 0)
         self.assertSpriteEquals(self.mario1, spr)
 
+    '''Test if a portion of a image when fetched is equal
+    to the same sprite'''
     def test_fetch_chr_1(self):
         pixels = Image.open('fixtures/mario.png').load()
         spr = image.fetch_chr(pixels, 1, 0)
         self.assertSpriteEquals(self.mario2, spr)
 
-    def test_convert_chr(self):
+    '''Test the acquisition of a image file into a CHR'''
+    def test_acquire_chr(self):
         img = Image.open('fixtures/mario.png')
-        sprs, indexes = image.convert_chr(img)
+        sprs, indexes = image.acquire_chr(img)
         self.assertEquals(8192, len(sprs))
         self.assertSpriteEquals(self.mario1, sprite.get_sprite(0, sprs))
         self.assertSpriteEquals(self.mario2, sprite.get_sprite(1, sprs))
@@ -65,17 +71,12 @@ class ImageTest(SpriteTestCase):
             os.remove('/tmp/mario.chr')
         except:
             pass
-        #TODO assertFileNotExists
-        self.assertFalse(os.path.exists('/tmp/mario.chr'))
+        self.assertFileNotExists('/tmp/mario.chr')
         image.import_chr('fixtures/mario.png', '/tmp/mario.chr')
-        #TODO assertFileExists
-        self.assertTrue(os.path.exists('/tmp/mario.chr'))
-
-        #TODO assertCHREquals
-        expected = open('fixtures/nesasm/scrolling/mario.chr', 'rb').read()
-        actual = open('/tmp/mario.chr', 'rb').read()
-        self.assertEquals(expected, actual)
-
+        self.assertFileExists('/tmp/mario.chr')
+        self.assertCHRFileEquals(
+            'fixtures/nesasm/scrolling/mario.chr',
+            '/tmp/mario.chr')
         os.remove('/tmp/mario.chr')
 
     def test_export_chr(self):
@@ -116,7 +117,7 @@ class ImageTest(SpriteTestCase):
         self.assertTrue(os.path.exists('/tmp/level.png'))
         
         img = Image.open('/tmp/level.png')
-        sprs, indexes = image.convert_chr(img, optimize_repeated=False)
+        sprs, indexes = image.acquire_chr(img, optimize_repeated=False)
         sprite.length(sprs)
         self.assertEquals(1024,sprite.length(sprs))
 
@@ -180,3 +181,17 @@ class ImageTest(SpriteTestCase):
         return
         (nt, sprs) = image.convert_to_nametable('fixtures/pythonbrasil8.png')
         #self.assertEquals(sprite.length(sprs), 15)
+
+    def test_convert_to_nametable_pythonbrasil(self):
+        return
+        nt, sprs = image.convert_to_nametable('fixtures/pythonbrasil8.png')
+        image.export_chr('sprite.chr', 'pythonbrasil8.png')
+        image.export_nametable('nametable.bin','sprite.chr', 'pythonbrasil8.png')
+        import os
+        os.rename('nametable.bin', 'pythonbrasil8.bin')
+        image.export_nametable(
+            'fixtures/nesasm/scrolling/garoa.bin',
+            'fixtures/nesasm/scrolling/sprite.chr',
+            'garoa.png')
+
+

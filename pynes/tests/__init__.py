@@ -2,6 +2,7 @@
 
 from unittest import TestCase
 from pynes.composer import compose, Game
+import os
 
 class WhatElse():
 
@@ -73,7 +74,7 @@ class HexTestCase(TestCase):
         ENDC = '\033[0m'
         try:
             self.assertEquals(expected, actual)
-        except:
+        except AssertionError as ae:
             line = 0
             cursor = 0
             lines = []
@@ -137,6 +138,26 @@ class SpriteTestCase(TestCase):
     def show_sprite(self, spr):
         ENDC = '\033[0m'
         return '\n'.join(self.get_printable_sprite(spr)) + ENDC
+
+    def assertFileExists(self, filename):
+        try:
+            self.assertTrue(os.path.exists(filename))
+        except AssertionError as ae:
+            raise AssertionError('File %s should exist' % filename)
+
+    def assertFileNotExists(self, filename):
+        try:
+            self.assertFalse(os.path.exists(filename))
+        except AssertionError as ae:
+            raise AssertionError('File %s should not exist' % filename)
+
+    def assertCHRFileEquals(self, expected, actual):
+        expected_bin = open(expected, 'rb').read()
+        actual_bin = open(actual, 'rb').read()
+        try:
+            self.assertEquals(expected_bin, actual_bin)
+        except AssertionError as ae:
+            raise AssertionError('CHR files are not equals')
 
     def assertSpriteEquals(self, expected, actual):
         try:

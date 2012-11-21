@@ -15,6 +15,7 @@ palette = [
     (0,0,255)
 ]
 
+'''create a whole palette based on RGB colos'''
 def create_palette():
     palette = []
     for p in sprite.palette:
@@ -24,9 +25,10 @@ def create_palette():
         palette.append((r,g,b))
     return palette
 
+'''Create a palette to be used in pil'''
 def create_pil_palette():
     pps = create_palette()
-    pps = [pps[15], pps[2], pps[32], pps[41]]
+    pps = [pps[15], pps[2], pps[32], pps[41]] #TODO hack
     palette = []
     for p in pps:
         palette.extend(p)
@@ -34,17 +36,27 @@ def create_pil_palette():
         palette.extend(pps[3])
     return palette
 
-def convert_chr(image, nes_palette=palette, optimize_repeated = False):
-    assert image.size[0] % 8 == 0
-    assert image.size[1] % 8 == 0
-    pixels = image.load()
+def get_colors(image):
     colors = []
+    pixels = image.load()
     for i in range(image.size[0]):
         for j in range(image.size[1]):
             if pixels[i,j] not in colors:
                 colors.append(pixels[i,j])
+    return colors
 
-    assert len(colors) == 4, "Image has %i colors, it can only have 4" % len(colors)
+'''
+Acquire a regular image to a CHR file,
+That could be used to import a whole sprite table,
+or also to create a tile set for a nametable
+if optimize is False
+'''
+def acquire_chr(image, nes_palette=palette, optimize_repeated = False):
+    assert image.size[0] % 8 == 0
+    assert image.size[1] % 8 == 0
+    colors = get_colors(image)
+
+    assert len(colors) <= 4, "Image has %i colors, it can only have at most 4" % len(colors)
     default =  (
         (0,0,0) in colors and
         (255,0,0) in colors and
@@ -58,6 +70,7 @@ def convert_chr(image, nes_palette=palette, optimize_repeated = False):
 
     sprs = []
     index = 0
+    pixels = image.load()
     for y in range(image.size[1] / 8 ):
         for x in range(image.size[0] / 8 ):
             spr = fetch_chr(pixels, x, y, nes_palette)
@@ -72,6 +85,9 @@ def convert_chr(image, nes_palette=palette, optimize_repeated = False):
                 #print index
     return sprs, sprite_keys
 
+'''
+fetch part of the image
+'''
 def fetch_chr(pixels, x, y, palette = palette):
     dx = x * 8
     dy = y * 8
@@ -88,12 +104,18 @@ def fetch_chr(pixels, x, y, palette = palette):
         spr.append(line)
     return spr
 
+''' function that wrap the acquisition(acquire_chr),
+with the input and output file'''
+
 def import_chr(img_file, chr_file):
     img = Image.open(img_file)
-    sprs, indexes = convert_chr(img)
+    sprs, indexes = acquire_chr(img)
     write_bin_code(sprs, chr_file)
 
-def export_chr(chr_file, png_file, palette=palette, width=8, show=False):
+'''
+Transform a chr file into a image file
+'''
+def export_chr(chr_file, image_file, palette=palette, width=8):
     sprs = SpriteSet(chr_file)
     spr_len = len(sprs)
     height = spr_len / width
@@ -110,14 +132,22 @@ def export_chr(chr_file, png_file, palette=palette, width=8, show=False):
             for x in range(8):
                 color = spr[y][x]
                 draw.point((x+(8*dx),y+(8*dy)), palette[color])
-    img.save(png_file, 'PNG')
+    img.save(image_file, 'PNG')
 
+'''
+Thats the oposite of fetch_chr,
+it draws a sprite into a PIL image.
+'''
 def draw_sprite(spr, dx, dy, draw, palette):
     for y in range(8):
         for x in range(8):
             color = spr[y][x]
             draw.point((x+(8*dx),y+(8*dy)), palette[color])
 
+'''
+Export a nametable to a image
+using a chr_file
+'''
 def export_nametable(nametable_file, chr_file, png_file, palette=palette):
     nts = nametable.load_nametable(nametable_file)
     sprs = SpriteSet(chr_file)
@@ -147,15 +177,10 @@ def export_nametable(nametable_file, chr_file, png_file, palette=palette):
 
     img.save(png_file, 'PNG')
 
-
 def convert_nametable(image, sprs, palette = palette):
     pixels = image.load()
-    colors = []
-    for i in range(image.size[0]):
-        for j in range(image.size[1]):
-            if pixels[i,j] not in colors:
-                colors.append(pixels[i,j])
-    assert len(colors) == 4, "Image has %i colors, it can only have 4" % len(colors)
+    colors = get_colors(image)
+    assert len(colors) <= 4, "Image has %i colors, it can only have at most 4" % len(colors)
     assert image.size[0] % 8 == 0
     assert image.size[1] % 8 == 0
 
@@ -186,7 +211,10 @@ def convert_nametable(image, sprs, palette = palette):
             encoded = sprite.encode_sprite(spr)
             key = ''.join([chr(e) for e in encoded])
             if key in sprs:
-                print sprs[key]
+                if key > 256:
+                    pass
+                    #print sprs[key]
+                #print sprs[key]
                 nametable.append(sprs[key])
             #else:
             #    raise Exception('Sprite not found')
