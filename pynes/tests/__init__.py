@@ -113,14 +113,13 @@ class SpriteTestCase(TestCase):
         TestCase.__init__(self, testname)
 
     def get_printable_sprite(self, spr):
-        ALPHA = '\033[0m'
-        R = '\033[91m'
-        G = '\033[92m'
-        B = '\033[94m'
+        ALPHA = '\033[01;40m'
+        R = '\033[01;41m'
+        G = '\033[01;42m'
+        B = '\033[01;44m'
         ENDC = '\033[0m'
         palette = [ALPHA, R, G, B]
-        pixel = u"\u25a0"
-        pixel = '#' #TODO find a way to print square
+        pixel = '  '
         lines = []
         previous = None
         for i in range(8):
@@ -152,5 +151,4 @@ class SpriteTestCase(TestCase):
                     out += e[i] + ENDC + ' != ' + a[i] + ENDC + '\n'
                 else:
                     out += e[i] + ENDC + '    ' + a[i] + ENDC + '\n'
-            print out
-            raise AssertionError('Sprites are not equal')
+            raise AssertionError('Sprites are not equal\n\n' + out)
