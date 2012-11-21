@@ -27,9 +27,9 @@ palette = [
 def load_sprites(src):
     f = open(src, 'rb')
     content = f.read()
+    f.close()
     assert len(content) % 16 == 0
     bin = [ord(c) for c in content]
-    assert len(bin) % 16 == 0
     return bin
 
 def load_indexed_sprites(src):
