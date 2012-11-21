@@ -55,8 +55,8 @@ class NesAddressSet(NesType):
         self.stk += (
             '  LDA $%04X\n'
             '  SEC\n'
-            '  SBC #%d\n') % (self.addresses[1], operand) #TODO index is based on width
-        cols = len(self.addresses) / 2 #width
+            '  SBC #%d\n') % (self.addresses[self.width - 1], operand)
+        cols = len(self.addresses) / self.width
         lines = len(self.addresses) / cols
         for i in range(len(self.addresses)):
             self.stk += '  STA $%04X\n' % self.addresses[i]
