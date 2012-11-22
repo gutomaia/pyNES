@@ -19,4 +19,4 @@ def reset():
     clearmem()
     wait_vblank()
     load_palette(palette)
-    show(helloworld, 20, 20)
+    show(helloworld, 15, 10)
