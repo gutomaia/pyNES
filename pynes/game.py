@@ -3,34 +3,40 @@ from re import match
 from collections import OrderedDict
 from pynes.nes_types import NesType, NesRs, NesArray, NesString, NesSprite, NesChrFile
 
+class Bit(object):
+
+    def __init__(self, varname, bit):
+        self.varname = varname
+        assert bit >=0 and bit <8
+        self.bit = bit
+
+    def __get__(self, instance, owner):
+        assert hasattr(instance, self.varname)
+        flag = pow(2, self.bit)
+        return getattr(instance, self.varname) & flag == flag
+
+    def __set__(self, instance, value):
+        assert isinstance(value, bool)
+        flag = pow(2, self.bit)
+        if not value:
+            flag = (~flag & 0xFF)
+        byte = getattr(instance, self.varname) | flag
+        setattr(instance, self.varname, byte)
+
 class PPU(object):
+
+    nmi_enable = Bit('ctrl', 7)
+
+    sprite_enable = Bit('mask', 4)
+    background_enable = Bit('mask', 3)
 
     def __init__(self):
         self.ctrl = 0x0000
         self.mask = 0x0000
 
-    def set_bit(self, varname, bit, value):
-        assert isinstance(value, bool)
-        assert bit >=0 and bit <8
-        flag = pow(2, bit)
-        if not value:
-            flag = (~flag & 0xFF)
-        byte = getattr(self, varname) | flag
-        setattr(self, varname, byte)
-
-
-    def nmi_enable(self, value):
-        self.set_bit('ctrl', 7, value)
-
-    def sprite_enable(self, value):
-        self.set_bit('mask', 4, value)
-
-    def background_enable(self, value):
-        self.set_bit('mask', 3, value)
-
     def init(self):
-        asm = ('  LDA #%{ctrl:08b}\n' #TODO format binary
-          '  STA $2000\n'    #TODO also put comments about bits
+        asm = ('  LDA #%{ctrl:08b}\n'
+          '  STA $2000\n'
           '  LDA #%{mask:08b}\n'
           '  STA $2001\n').format(
             ctrl=self.ctrl,
