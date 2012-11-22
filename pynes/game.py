@@ -5,10 +5,12 @@ from pynes.nes_types import NesType, NesRs, NesArray, NesString, NesSprite, NesC
 
 class Bit(object):
 
-    def __init__(self, varname, bit):
-        self.varname = varname
+    def __init__(self, varname, bit, size=1, options=False):
+        assert size > 0 and size <8
         assert bit >=0 and bit <8
+        self.varname = varname
         self.bit = bit
+        self.size = size
 
     def __get__(self, instance, owner):
         assert hasattr(instance, self.varname)
@@ -16,19 +18,26 @@ class Bit(object):
         return getattr(instance, self.varname) & flag == flag
 
     def __set__(self, instance, value):
-        assert isinstance(value, bool)
-        flag = pow(2, self.bit)
-        if not value:
-            flag = (~flag & 0xFF)
-        byte = getattr(instance, self.varname) | flag
-        setattr(instance, self.varname, byte)
+        if self.size == 1:
+            assert isinstance(value, (bool,int))
+            assert value == 0 or value == 1
+            flag = pow(2, self.bit)
+            if not value:
+                flag = (~flag & 0xFF)
+            byte = getattr(instance, self.varname) | flag
+            setattr(instance, self.varname, byte)
 
 class PPU(object):
 
+    #TODO base_nametable = Bit('ctrl', 1, 2) #suports 0-3
+    sprite_pattern_table = Bit('ctrl', 3)
+    background_pattern_table = Bit('ctrl', 4)
+    #TODO sprite_size = Bit('ctrl', 5, options=['8x8', '8x16'])
     nmi_enable = Bit('ctrl', 7)
 
-    sprite_enable = Bit('mask', 4)
+    grayscale_enable = Bit('mask', 0)
     background_enable = Bit('mask', 3)
+    sprite_enable = Bit('mask', 4)
 
     def __init__(self):
         self.ctrl = 0x0000
@@ -80,7 +89,6 @@ class NesAddressSet(NesType):
         self.addresses.reverse()
         return self
 
-
     def to_asm(self):
         return self.stk
 
@@ -115,6 +123,8 @@ class NesAddress(int, NesType):
     def to_asm(self):
         return self.game
 
+
+#TODO: very ugly, make it better
 class Byte(object):
 
     def __init__(self, address=0):

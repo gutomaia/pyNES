@@ -109,6 +109,7 @@ class show(BitPak):
     def __init__(self, game):
         BitPak.__init__(self, game)
         self.game.ppu.background_enable = True
+        self.game.ppu.background_pattern_table = 1
 
         addressLow = game.get_param('addressLow', 1)
         addressHigh = game.get_param('addressHigh', 1)
