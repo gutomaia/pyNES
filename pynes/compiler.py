@@ -251,6 +251,7 @@ def syntax(tokens):
                     x += size
                     break;
             if not move:
+                #TODO: deal with erros like on nodeNES
                 walk = 0
                 print('------------')
                 print(tokens[x])
@@ -361,9 +362,10 @@ def compile_file(asmfile, output=None, path=None):
     if path == None:
         path = dirname(realpath(asmfile)) + '/'
 
-    compile(code, 'output.nes', path)
+    opcodes = compile(code, path)
+    pynes.write_bin_code(opcodes, 'output.nes')
 
-def compile(code, output, path):
+def compile(code, path):
 
     cart = Cartridge()
     cart.path = path
@@ -372,6 +374,6 @@ def compile(code, output, path):
     ast = syntax(tokens)
     opcodes = semantic(ast, True, cart)
 
-    pynes.write_bin_code(opcodes, 'output.nes')
+    return opcodes
 
 

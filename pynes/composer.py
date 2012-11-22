@@ -241,7 +241,8 @@ def compose_file(input, output=None, path=None, asm=False):
         asmfile = open('output.asm', 'w')
         asmfile.write(asmcode)
         asmfile.close()
-    compile(asmcode, 'output.nes', path)
+    opcodes = compile(asmcode, path)
+    pynes.write_bin_code(opcodes, 'output.nes')
 
 def compose(code, game_program = game):
     global game

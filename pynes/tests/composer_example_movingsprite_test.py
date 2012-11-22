@@ -3,11 +3,11 @@
 import unittest
 
 from pynes.tests import ComposerTestCase
+from pynes.compiler import compile
 
+class ComposerExampleMovingSpriteTest(ComposerTestCase):
 
-class ComposerMovingSpriteTest(ComposerTestCase):
-
-    def test_moving_sprite(self):
+    def test_compile_moving_sprite(self):
         f = open('pynes/examples/movingsprite.py')
         code = f.read()
         f.close()
@@ -34,3 +34,5 @@ class ComposerMovingSpriteTest(ComposerTestCase):
                 .and_then('JoyPad1Right:')
                 .and_then('sprite:')
         )
+        #compile the asm file
+        compile(self.asm, 'pynes/examples/')
