@@ -162,6 +162,11 @@ class ComposerTest(ComposerTestCase):
         .and_then('STA posLow')
         .and_then('JSR Show')
 
+        .and_then('LDA #%10000000')
+        .and_then('STA $2000')
+        .and_then('LDA #%00011000')
+        .and_then('STA $2001')
+
         .and_then('gutomaia:')
         .and_then('.db $10,$1E,$1D,$18,$24,$16,$0A,$12,$0A,$25')
         )
