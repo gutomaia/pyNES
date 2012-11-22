@@ -167,6 +167,13 @@ class ComposerTest(ComposerTestCase):
         .and_then('LDA #%00011000')
         .and_then('STA $2001')
 
+        .and_then('NMI:')
+
+        .and_then('LDA #00')
+        .and_then('STA $2005')
+        .and_then('STA $2005')
+
+        .and_then('.bank 1')
         .and_then('gutomaia:')
         .and_then('.db $10,$1E,$1D,$18,$24,$16,$0A,$12,$0A,$25')
         )

@@ -42,15 +42,26 @@ class PPU(object):
     def __init__(self):
         self.ctrl = 0x0000
         self.mask = 0x0000
+        self.scrolling = True
 
-    def init(self):
-        asm = ('  LDA #%{ctrl:08b}\n'
+    def on_reset(self):
+        asm = (
+          '  LDA #%{ctrl:08b}\n'
           '  STA $2000\n'
           '  LDA #%{mask:08b}\n'
           '  STA $2001\n').format(
             ctrl=self.ctrl,
             mask=self.mask)
         return asm
+
+    def on_nmi(self):
+        if self.nmi_enable:
+            asm = (
+                '  LDA #00\n'
+                '  STA $2005\n'
+                '  STA $2005\n')
+            return asm
+        return ''
 
 #change to SpriteSwarmOperation
 class NesAddressSet(NesType):
@@ -369,7 +380,7 @@ class Game(object):
         if 'RESET' in self._asm_chunks:
             asm_code += 'RESET:\n'
             asm_code += self._asm_chunks['RESET']
-            asm_code += self.ppu.init()
+            asm_code += self.ppu.on_reset()
             asm_code += self.infinity_loop()
         if len(asm_code) > 0:
             return ( "  .bank 0\n  .org $C000\n\n" + asm_code +'\n\n')
@@ -412,6 +423,8 @@ class Game(object):
                 "  LDA #$02\n"
                 "  STA $4014 ; Write Only; DMA\n"
             )
+            nmi_code += self.ppu.on_nmi()
+
             return nmi_code + joypad_code + "\n\n" + "  RTI   ;Return NMI\n"
         return ""
 
