@@ -3,30 +3,38 @@ from re import match
 from collections import OrderedDict
 from pynes.nes_types import NesType, NesRs, NesArray, NesString, NesSprite, NesChrFile
 
-class PPU():
+class PPU(object):
 
-    ctrl = 0x0000
-    mask = 0x0000
+    def __init__(self):
+        self.ctrl = 0x0000
+        self.mask = 0x0000
 
-    _sprite_enabled = False
+    def set_bit(self, varname, bit, value):
+        assert isinstance(value, bool)
+        assert bit >=0 and bit <8
+        flag = pow(2, bit)
+        if not value:
+            flag = (~flag & 0xFF)
+        byte = getattr(self, varname) | flag
+        setattr(self, varname, byte)
+
 
     def nmi_enable(self, value):
-        if value:
-            self.ctrl = self.ctrl | 0b10000000
-        else:
-            self.ctrl = self.ctrl & 0b01111111
+        self.set_bit('ctrl', 7, value)
 
     def sprite_enable(self, value):
-        if value:
-            self.mask = self.mask | 0b00010000
-        else:
-            self.mask = self.mask & 0b11101111
+        self.set_bit('mask', 4, value)
+
+    def background_enable(self, value):
+        self.set_bit('mask', 3, value)
 
     def init(self):
-        asm = ('  LDA #%d\n' #TODO format binary
+        asm = ('  LDA #%{ctrl:08b}\n' #TODO format binary
           '  STA $2000\n'    #TODO also put comments about bits
-          '  LDA #%d\n'
-          '  STA $2001\n') % (self.ctrl, self.mask)
+          '  LDA #%{mask:08b}\n'
+          '  STA $2001\n').format(
+            ctrl=self.ctrl,
+            mask=self.mask)
         return asm
 
 #change to SpriteSwarmOperation
@@ -143,7 +151,7 @@ class Byte(object):
         setattr(instance, self.target, value)
 
 class PPUSprite(object):
-    y = Byte() #TODO: should be be Bit(0)
+    y = Byte() #TODO: should be be Byte(0)
     tile = Byte()
     attrib = Byte()
     x = Byte()
