@@ -10,10 +10,27 @@ import shutil
 
 class CommandLineTest(FileTestCase):
 
-    @patch('pynes.compiler.compile')
+    @patch('pynes.compiler.compile_file')
     def test_asm(self, compiler):
         main("pynes asm fixtures/movingsprite/movingsprite.asm".split())
-        self.assertTrue(compiler.called)
+        compiler.assert_called_once_with(
+            'fixtures/movingsprite/movingsprite.asm',
+            output=None, path=None)
+
+    @patch('pynes.compiler.compile_file')
+    def test_asm_with_output(self, compiler):
+        main("pynes asm fixtures/movingsprite/movingsprite.asm --output /tmp/movingsprite.nes".split())
+        compiler.assert_called_once_with(
+            'fixtures/movingsprite/movingsprite.asm',
+            output='/tmp/movingsprite.nes', path=None)
+
+    @patch('pynes.compiler.compile_file')
+    def test_asm_with_path(self, compiler):
+        main("pynes asm fixtures/movingsprite/movingsprite.asm --path fixtures/movingsprite".split())
+        compiler.assert_called_once_with(
+            'fixtures/movingsprite/movingsprite.asm',
+            output=None, path='fixtures/movingsprite')
+
 
     @patch('pynes.composer.compose_file')
     def test_py(self, composer):
@@ -66,4 +83,3 @@ class CommandLineTest(FileTestCase):
             "--output pynes/examples/helloworld.nes"
             ).split()
         main(args)
-
