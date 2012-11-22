@@ -1,5 +1,6 @@
 from re import match
 
+from collections import OrderedDict
 from pynes.nes_types import NesType, NesRs, NesArray, NesString, NesSprite, NesChrFile
 
 class PPU():
@@ -251,9 +252,12 @@ class Game(object):
 
         self._header = {'.inesprg':1, '.ineschr':1,
             '.inesmap':0, '.inesmir':1}
-        self._vars = {}
+        self._vars = OrderedDict() #game nes vars
         self.bitpaks = {}
         self.labels = []
+
+        #TODO: self.local_scope = {}
+        #TODO: self.global_scope = {}
 
     def __add__(self, other):
         if other and isinstance(other, str):
@@ -262,6 +266,12 @@ class Game(object):
             else:
                 self._asm_chunks[self.state] += other
         return self
+
+    def get_param(self, name, size):
+        while name in self._vars:
+            name = name + '1'
+        self._vars[name] = NesRs(size)
+        return name
 
     def get_label_for(self, label):
         while label in self.labels:

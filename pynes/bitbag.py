@@ -108,27 +108,42 @@ class show(BitPak):
 
     def __init__(self, game):
         BitPak.__init__(self, game)
+        addressLow = game.get_param('addressLow', 1)
+        addressHigh = game.get_param('addressHigh', 1)
+        posLow = game.get_param('posLow', 1)
+        posHigh = game.get_param('posHigh', 1)
 
-    def  __call__(self, string, x, y):
+    def  __call__(self, string, y, x, nametable=0):
+        assert isinstance(string, NesString)
         string.is_used = True
+        self.string = string
+        base_adress = 0x2000
+        pos = base_adress + y * 32 + x
+        self.posHigh = (pos & 0xff00) >> 8
+        self.posLow = (pos & 0x00ff)
 
     def asm(self):
         asmcode = (
-            "  LDA #LOW(gutomaia)\n"
+            "  LDA #LOW(%s)\n"
             "  STA addressLow\n"
-            "  LDA #HIGH(gutomaia)\n"
+            "  LDA #HIGH(%s)\n"
             "  STA addressHigh\n"
-            "  LDA #$20\n"
+            "  LDA #$%02X\n"
             "  STA posHigh\n"
-            "  LDA #$40\n"
+            "  LDA #$%02X\n"
             "  STA posLow\n"
-            "  JSR Print\n"
+            "  JSR Show\n"
+          ) % (
+            self.string.instance_name,
+            self.string.instance_name,
+            self.posHigh,
+            self.posLow
           )
         return asmcode
 
     def procedure(self):
         asmcode = (
-          "Print:\n"
+          "Show:\n"
           "  LDA $2002\n"
           "  LDA posHigh\n"
           "  STA $2006\n"

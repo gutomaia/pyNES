@@ -120,15 +120,144 @@ class ComposerTest(ComposerTestCase):
         .and_then('ADC #100')
         .and_then('STA $0204'))
 
-    def test_show(self):
+    def test_show_gutomaia(self):
         (self.assert_asm_from(
             'from pynes.bitbag import *\n'
             'gutomaia = "Guto Maia"\n'
 
-            'show(gutomaia, 0, 0)\n'
+            'def reset():'
+            '  show(gutomaia, 0, 0)\n'
             )
-        .has('gutomaia:')
+        .has('.rsset $0000')
+        .and_then('addressLow .rs 1')
+        .and_then('addressHigh .rs 1')
+        .and_then('posLow .rs 1')
+        .and_then('posHigh .rs 1')
+        .and_then('Show:')
+        .and_then('LDA $2002')
+        .and_then('LDA posHigh')
+        .and_then('STA $2006')
+        .and_then('LDA posLow')
+        .and_then('STA $2006')
+        .and_then('LDY #$00')
+        .and_then('PrintLoop:')
+        .and_then('LDA (addressLow), y')
+        .and_then('CMP #$25')
+        .and_then('BEQ PrintEnd')
+        .and_then('STA $2007')
+        .and_then('INY')
+        .and_then('JMP PrintLoop')
+        .and_then('PrintEnd:')
+        .and_then('RTS')
+
+        .and_then('RESET:')
+        .and_then('LDA #LOW(gutomaia)')
+        .and_then('STA addressLow')
+        .and_then('LDA #HIGH(gutomaia)')
+        .and_then('STA addressHigh')
+
+        .and_then('LDA #$20')
+        .and_then('STA posHigh')
+        .and_then('LDA #$00')
+        .and_then('STA posLow')
+        .and_then('JSR Show')
+
+        .and_then('gutomaia:')
         .and_then('.db $10,$1E,$1D,$18,$24,$16,$0A,$12,$0A,$25')
+        )
+
+    def test_show_guto(self):
+        (self.assert_asm_from(
+            'from pynes.bitbag import *\n'
+            'guto = "Guto"\n'
+
+            'def reset():'
+            '  show(guto, 0, 2)\n'
+            )
+        .has('.rsset $0000')
+        .and_then('addressLow .rs 1')
+        .and_then('addressHigh .rs 1')
+        .and_then('posLow .rs 1')
+        .and_then('posHigh .rs 1')
+        .and_then('Show:')
+        .and_then('LDA $2002')
+        .and_then('LDA posHigh')
+        .and_then('STA $2006')
+        .and_then('LDA posLow')
+        .and_then('STA $2006')
+        .and_then('LDY #$00')
+        .and_then('PrintLoop:')
+        .and_then('LDA (addressLow), y')
+        .and_then('CMP #$25')
+        .and_then('BEQ PrintEnd')
+        .and_then('STA $2007')
+        .and_then('INY')
+        .and_then('JMP PrintLoop')
+        .and_then('PrintEnd:')
+        .and_then('RTS')
+
+        .and_then('RESET:')
+        .and_then('LDA #LOW(guto)')
+        .and_then('STA addressLow')
+        .and_then('LDA #HIGH(guto)')
+        .and_then('STA addressHigh')
+
+        .and_then('LDA #$20')
+        .and_then('STA posHigh')
+        .and_then('LDA #$02')
+        .and_then('STA posLow')
+        .and_then('JSR Show')
+
+        .and_then('guto:')
+        .and_then('.db $10,$1E,$1D,$18,$25')
+        )
+
+    def test_show_guto_at_line_1_col_0(self):
+        (self.assert_asm_from(
+            'from pynes.bitbag import *\n'
+            'guto = "Guto"\n'
+
+            'def reset():'
+            '  show(guto, 1, 0)\n'
+            )
+        .and_then('RESET:')
+        .and_then('LDA #LOW(guto)')
+        .and_then('STA addressLow')
+        .and_then('LDA #HIGH(guto)')
+        .and_then('STA addressHigh')
+
+        .and_then('LDA #$20')
+        .and_then('STA posHigh')
+        .and_then('LDA #$20')
+        .and_then('STA posLow')
+        .and_then('JSR Show')
+
+        .and_then('guto:')
+        .and_then('.db $10,$1E,$1D,$18,$25')
+        )
+
+    def test_show_guto_at_line_1_col_1(self):
+        (self.assert_asm_from(
+            'from pynes.bitbag import *\n'
+            'guto = "Guto"\n'
+
+            'def reset():'
+            '  show(guto, 1, 1)\n'
+            )
+        .and_then('RESET:')
+        .and_then('LDA #LOW(guto)')
+        .and_then('STA addressLow')
+        .and_then('LDA #HIGH(guto)')
+        .and_then('STA addressHigh')
+
+        .and_then('LDA #$20')
+        .and_then('STA posHigh')
+        .and_then('LDA #$21')
+        .and_then('STA posLow')
+        .and_then('JSR Show')
+
+        .and_then('guto:')
+        .and_then('.db $10,$1E,$1D,$18,$25')
         )
 
 
@@ -767,8 +896,8 @@ class ComposerTest(ComposerTestCase):
 
         .and_then('.bank 1')
         .and_then('.org $E000')
-        .and_then('mario:')
         .and_then('tinymario:')
+        .and_then('mario:')
         .and_then('.org $FFFA')
         .and_then('.dw NMI')
         .and_then('.dw RESET')
