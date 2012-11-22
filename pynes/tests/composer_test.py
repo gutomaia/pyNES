@@ -287,21 +287,22 @@ class ComposerTest(ComposerTestCase):
     def test_load_palette_with_nes_array_2(self):
         (self.assert_asm_from(
             'from pynes.bitbag import *\n'
-            'my_palette = [0,1,2,3,4,5,6,7]\n'
+            'mypalette = [0,1,2,3,4,5,6,7]\n'
 
-            'load_palette(my_palette)\n'
+            'load_palette(mypalette)\n'
             )
         .has('.bank 0')
         .and_then('LoadPalettes:')
         .and_then('LoadPalettesIntoPPU:')
-        .and_then('LDA my_palette, x')
+        .and_then('LDA mypalette, x')
         .and_then('STA $2007')
         .and_then('INX')
         .and_then('CPX #$08')
-        .and_then('my_palette:')
+        .and_then('mypalette:')
         )
 
     def test_import_chr_player(self):
+        self.path = 'fixtures/movingsprite/'
         (self.assert_asm_from(
             'from pynes.bitbag import *\n'
 
@@ -321,8 +322,8 @@ class ComposerTest(ComposerTestCase):
         self.assertTrue(isinstance(self.game._vars['hello'],NesString))
         self.assertEquals("world", self.game._vars['hello'])
 
-
     def test_import_chr_mario(self):
+        self.path = 'fixtures/nesasm/scrolling/'
         (self.assert_asm_from(
             'from pynes.bitbag import *\n'
 

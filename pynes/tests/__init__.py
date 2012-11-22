@@ -2,6 +2,7 @@
 
 from unittest import TestCase
 from pynes.composer import compose, Game
+from pynes.compiler import compile
 from pynes import sprite 
 import os
 
@@ -49,16 +50,19 @@ class ComposerTestCase(TestCase):
         self.code = None
         self.game = None
         self.asm = None
+        self.path = ''
 
     def tearDown(self):
         self.code = None
         self.game = None
         self.asm = None
+        self.path = ''
 
     def assert_asm_from(self, code):
         self.code = code
         self.game = compose(code)
         self.asm = self.game.to_asm()
+        compile(self.asm, self.path)
         return WhatElse(self)
 
 class HexTestCase(TestCase):
@@ -150,9 +154,6 @@ def show_sprites(sprs):
                 out += '\n'
             tiles = []
             print out
-
-
-
 
 class SpriteTestCase(TestCase):
 
