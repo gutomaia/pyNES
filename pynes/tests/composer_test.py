@@ -120,6 +120,18 @@ class ComposerTest(ComposerTestCase):
         .and_then('ADC #100')
         .and_then('STA $0204'))
 
+    def test_show(self):
+        (self.assert_asm_from(
+            'from pynes.bitbag import *\n'
+            'gutomaia = "Guto Maia"\n'
+
+            'show(gutomaia, 0, 0)\n'
+            )
+        .has('gutomaia:')
+        .and_then('.db $10,$1E,$1D,$18,$24,$16,$0A,$12,$0A,$25')
+        )
+
+
     def test_load_palette_with_nes_array(self):
         (self.assert_asm_from(
             'from pynes.bitbag import *\n'

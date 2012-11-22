@@ -4,6 +4,7 @@ class NesType:
 
     def __init__(self):
         self.instance_name = None
+        self.is_used = False
 
 class NesRs(NesType):
 
@@ -15,6 +16,7 @@ class NesSprite(NesType):
 
     def __init__(self, x, y, tile, attrib, width = 2):
         NesType.__init__(self)
+        self.is_used = True
         self.x = x
         self.y = y
         self.tile = tile
@@ -59,6 +61,7 @@ class NesArray(NesType, list):
 
     def __init__(self, lst):
         list.__init__(self, lst)
+        self.is_used = True
         self.locked = False
 
     def to_asm(self):
@@ -90,6 +93,24 @@ class NesString(NesType, str):
         str.__init__(self, string)
         NesType.__init__(self)
         self.locked = False
+
+
+    def to_asm(self):
+        s = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ "
+        start = 0
+        bytes = [(s.index(c) + start) for c in self.upper()]
+        bytes.append(0x25) #TODO: EndString
+        hexes = ["$%02X" % v for v in bytes]
+        asm = ''
+        length = (len(hexes) / 16)
+        if len(hexes) % 16:
+            length += 1
+        for i in range(length):
+            asm += '  .db ' + ','.join(hexes[i*16:i*16+16]) + '\n'
+        if len(asm) > 0:
+            return asm
+        return False
+
 
 class NesChrFile(NesType):
 

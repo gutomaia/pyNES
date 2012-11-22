@@ -104,6 +104,49 @@ class define_sprite(BitPak):
         assert isinstance(tile, int) or isinstance(tile, NesArray)
         return NesSprite(x, y, tile, attrib)
 
+class show(BitPak):
+
+    def __init__(self, game):
+        BitPak.__init__(self, game)
+
+    def  __call__(self, string, x, y):
+        string.is_used = True
+
+    def asm(self):
+        asmcode = (
+            "  LDA #LOW(gutomaia)\n"
+            "  STA addressLow\n"
+            "  LDA #HIGH(gutomaia)\n"
+            "  STA addressHigh\n"
+            "  LDA #$20\n"
+            "  STA posHigh\n"
+            "  LDA #$40\n"
+            "  STA posLow\n"
+            "  JSR Print\n"
+          )
+        return asmcode
+
+    def procedure(self):
+        asmcode = (
+          "Print:\n"
+          "  LDA $2002\n"
+          "  LDA posHigh\n"
+          "  STA $2006\n"
+          "  LDA posLow\n"
+          "  STA $2006\n"
+          "  LDY #$00\n"
+          "PrintLoop:\n"
+          "  LDA (addressLow), y\n"
+          "  CMP #$25\n"
+          "  BEQ PrintEnd\n"
+          "  STA $2007\n"
+          "  INY\n"
+          "  JMP PrintLoop\n"
+          "PrintEnd:\n"
+          "  RTS\n"
+          )
+        return asmcode
+
 
 class load_palette(BitPak):
 
@@ -133,7 +176,6 @@ class load_palette(BitPak):
         asmcode += '  BNE LoadPalettesIntoPPU\n'
         return asmcode
 
-
 class load_sprite(BitPak):
 
     def __init__(self, game):
@@ -154,6 +196,17 @@ class load_sprite(BitPak):
         size = len(self.sprite)
         load_sprites = self.game.get_label_for('LoadSprites')
         load_sprites_into_PPU = self.game.get_label_for('LoadSpritesIntoPPU')
+        '''
+        Proposal
+        with asm(self.game) as a:
+            a.label('LoadSprites')
+            a.ldx = 0
+            a.lda = ('LoadSpritesIntoPPU', a.x)
+            a.sta = (self.start_address, a.x)
+            a.inx()
+            a.cpx(size * 4)
+            bne('LoadSpritesIntoPPU')
+        '''
         asmcode = (
           '%s:\n'
           '  LDX #$00\n'

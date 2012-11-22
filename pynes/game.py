@@ -345,7 +345,8 @@ class Game(object):
         asm_code = ''. join(
             ['%s:\n%s' % (varname, var.to_asm())
             for varname, var in self._vars.items()
-            if isinstance (var,(NesArray,NesSprite))])
+            if isinstance (var,(NesArray, NesSprite, NesString)) and 
+                var.is_used])
         if asm_code:
             return ("  .bank 1\n  .org $E000\n\n" + asm_code + '\n\n')
         return "  .bank 1\n"
