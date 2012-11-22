@@ -35,6 +35,17 @@ class SpriteTest(unittest.TestCase):
             [2,2,3,2,2,2,2,0]
         ]
 
+        self.blank = [
+            [0,0,0,0,0,0,0,0],
+            [0,0,0,0,0,0,0,0],
+            [0,0,0,0,0,0,0,0],
+            [0,0,0,0,0,0,0,0],
+            [0,0,0,0,0,0,0,0],
+            [0,0,0,0,0,0,0,0],
+            [0,0,0,0,0,0,0,0],
+            [0,0,0,0,0,0,0,0]
+        ]
+
     def test_load_sprites(self):
         sprites = sprite.load_sprites('fixtures/nesasm/scrolling/mario.chr')
         self.assertEquals(self.bin, sprites)
@@ -111,3 +122,7 @@ class SpriteTest(unittest.TestCase):
     def test_find_sprite_2(self):
         index = sprite.find_sprite(self.bin, self.mario2)
         self.assertEquals(1, index)
+
+    def test_find_sprite_2(self):
+        index = sprite.find_sprite(self.bin, self.blank, 256)
+        self.assertEquals(292 - 256, index)

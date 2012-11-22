@@ -114,8 +114,11 @@ def find_sprite(sprites, spr, start=0):
 
 class SpriteSet():
 
-    def __init__(self, sprite_file):
-        self.sprs, self.indexes = load_indexed_sprites(sprite_file)
+    def __init__(self, sprite_data=None):
+        if isinstance(sprite_data, str):
+            self.sprs, self.indexes = load_indexed_sprites(sprite_data)
+        else:
+            (self.sprs, self.indexes) = sprite_data
 
     def __len__(self):
         return length(self.sprs)
