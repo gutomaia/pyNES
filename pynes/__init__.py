@@ -54,6 +54,8 @@ def main(argv = None):
 
     asm_cmd = subparsers.add_parser('asm') #TODO, aliases=['asm'])
     asm_cmd.add_argument('input', nargs='?', metavar='INPUT', help="input c6502 asm file")
+    asm_cmd.add_argument('-o', '--output', metavar='OUTPUT', help="output NES file")
+    asm_cmd.add_argument('-p', '--path', metavar='PATH', help="path for assets")
     asm_cmd.set_defaults(func=exec_asm)
 
     nt_cmd = subparsers.add_parser('nt') #TODO aliases=['nametable']
@@ -72,7 +74,8 @@ def exec_py(args):
         output=args.output, asm=args.asm, path=args.path)
 
 def exec_asm(args):
-    pynes.compiler.compile_file(args.input)
+    pynes.compiler.compile_file(args.input,
+        output=args.output, path=args.path)
 
 def exec_chr(args):
     pass

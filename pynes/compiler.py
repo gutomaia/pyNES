@@ -362,8 +362,11 @@ def compile_file(asmfile, output=None, path=None):
     if path == None:
         path = dirname(realpath(asmfile)) + '/'
 
+    if output == None:
+        output = 'output.nes'
+
     opcodes = compile(code, path)
-    pynes.write_bin_code(opcodes, 'output.nes')
+    pynes.write_bin_code(opcodes, output)
 
 def compile(code, path):
 
