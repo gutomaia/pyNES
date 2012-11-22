@@ -25,7 +25,6 @@ def press_start(asm = False):
         asm_file.close()
         print(asm_filename)
 
-
 def write_bin_code(code, file):
     target = open(file, 'wb')
     for opcode in code:
@@ -45,6 +44,7 @@ def main(argv = None):
     py_cmd.add_argument('-o', '--output', metavar='OUTPUT', help="output NES file")
     py_cmd.add_argument('-a', '--asm', action='store_true', help="generate ASM file")
     py_cmd.add_argument('-v', '--verbose', action='store_true', help="verbose output")
+    py_cmd.add_argument('-p', '--path', metavar='PATH', help="path for assets")
 
     py_cmd.add_argument('input', nargs='?', metavar='INPUT', help="input Python file")
     py_cmd.set_defaults(func=exec_py)
@@ -56,15 +56,29 @@ def main(argv = None):
     asm_cmd.add_argument('input', nargs='?', metavar='INPUT', help="input c6502 asm file")
     asm_cmd.set_defaults(func=exec_asm)
 
+    nt_cmd = subparsers.add_parser('nt') #TODO aliases=['nametable']
+    nt_cmd.add_argument('input', nargs='?', metavar='INPUT', help="input c6502 asm file")
+    nt_cmd.set_defaults(func=exec_nametable)
+
+    img_cmd = subparsers.add_parser('img') #TODO aliases=['image']
+    img_cmd.add_argument('input', nargs='?', metavar='INPUT', help="input nametable")
+    img_cmd.set_defaults(func=exec_nametable)
+
     args = parser.parse_args(argv[1:])
     args.func(args)
 
 def exec_py(args):
     pynes.composer.compose_file(args.input,
-        output=args.output, asm=args.asm)
+        output=args.output, asm=args.asm, path=args.path)
 
 def exec_asm(args):
     pynes.compiler.compile_file(args.input)
 
 def exec_chr(args):
+    pass
+
+def exec_nametable(args):
+    pass
+
+def exec_image(args):
     pass

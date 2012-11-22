@@ -6,6 +6,23 @@ from pynes.compiler import compile
 from pynes import sprite 
 import os
 
+class FileTestCase(TestCase):
+
+    def __init__(self, testname):
+        TestCase.__init__(self, testname)
+
+    def assertFileExists(self, filename):
+        try:
+            self.assertTrue(os.path.exists(filename))
+        except AssertionError as ae:
+            raise AssertionError('File %s should exist' % filename)
+
+    def assertFileNotExists(self, filename):
+        try:
+            self.assertFalse(os.path.exists(filename))
+        except AssertionError as ae:
+            raise AssertionError('File %s should not exist' % filename)
+
 class WhatElse():
 
     def __init__(self, testcase):
@@ -155,22 +172,10 @@ def show_sprites(sprs):
             tiles = []
             print out
 
-class SpriteTestCase(TestCase):
+class SpriteTestCase(FileTestCase):
 
     def __init__(self, testname):
-        TestCase.__init__(self, testname)
-
-    def assertFileExists(self, filename):
-        try:
-            self.assertTrue(os.path.exists(filename))
-        except AssertionError as ae:
-            raise AssertionError('File %s should exist' % filename)
-
-    def assertFileNotExists(self, filename):
-        try:
-            self.assertFalse(os.path.exists(filename))
-        except AssertionError as ae:
-            raise AssertionError('File %s should not exist' % filename)
+        FileTestCase.__init__(self, testname)
 
     def assertCHRFileEquals(self, expected, actual):
         expected_file = open(expected, 'rb')

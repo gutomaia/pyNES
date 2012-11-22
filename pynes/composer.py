@@ -69,16 +69,15 @@ class PyNesVisitor(ast.NodeVisitor):
                 elif isinstance(value, ast.AST):
                     self.visit(value)
 
+    def visit_ImportFrom(self, node):
+        pass #TODO fix imports
+
     def visit_Import(self, node):
-        pass
+        pass #TODO fix imports
 
     def visit_If(self, node):
         if node.test.comparators[0].s == '__main__':
             pass
-        else:
-            print('IF')
-            #print dir(node.test.comparators[0])
-            #print node.test.comparators[0].s
 
     def visit_AugAssign(self, node):
         self.generic_visit(node)
@@ -169,7 +168,7 @@ class PyNesVisitor(ast.NodeVisitor):
                 self.stack.wipe()
             else:
                 args = []
-            if node.func.id not in game.bitpaks:
+            if node.func.id not in game.bitpaks: #check this condition, seens strange
                 obj = getattr(pynes.bitbag, node.func.id, None)
                 if (obj):
                     try:
@@ -234,6 +233,12 @@ def compose_file(input, output=None, path=None, asm=False):
 
     if path == None:
         path = dirname(realpath(input)) + '/'
+    elif path[-1] != '/':
+        path += '/'
+
+    if output == None:
+        output = 'output.nes'
+
 
     game = compose(code)
     asmcode = game.to_asm()
@@ -242,7 +247,7 @@ def compose_file(input, output=None, path=None, asm=False):
         asmfile.write(asmcode)
         asmfile.close()
     opcodes = compile(asmcode, path)
-    pynes.write_bin_code(opcodes, 'output.nes')
+    pynes.write_bin_code(opcodes, output)
 
 def compose(code, game_program = game):
     global game
