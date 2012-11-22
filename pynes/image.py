@@ -8,6 +8,8 @@ import sprite, nametable
 
 from sprite import SpriteSet
 
+from pynes.tests import show_sprite, show_sprites
+
 palette = [
     (0,0,0),
     (255,0,0),
@@ -37,12 +39,15 @@ def create_pil_palette():
     return palette
 
 def get_colors(image):
+    assert image.size[0] % 8 == 0
+    assert image.size[1] % 8 == 0
     colors = []
     pixels = image.load()
     for i in range(image.size[0]):
         for j in range(image.size[1]):
             if pixels[i,j] not in colors:
                 colors.append(pixels[i,j])
+    assert len(colors) <= 4, "Image has %i colors, it can only have at most 4" % len(colors)
     return colors
 
 '''
@@ -55,7 +60,6 @@ def acquire_chr(image, nes_palette=palette, optimize_repeated = False):
     assert image.size[0] % 8 == 0
     assert image.size[1] % 8 == 0
     colors = get_colors(image)
-
     assert len(colors) <= 4, "Image has %i colors, it can only have at most 4" % len(colors)
     default =  (
         (0,0,0) in colors and
@@ -65,6 +69,8 @@ def acquire_chr(image, nes_palette=palette, optimize_repeated = False):
     )
     if default:
         nes_palette = palette
+    else:
+        nes_palette = colors
 
     sprite_keys = OrderedDict()
 
@@ -115,8 +121,11 @@ def import_chr(img_file, chr_file):
 '''
 Transform a chr file into a image file
 '''
-def export_chr(chr_file, image_file, palette=palette, width=8):
-    sprs = SpriteSet(chr_file)
+def export_chr(chr_data, image_file, palette=palette, width=8):
+    if isinstance(chr_data, str):
+        sprs = SpriteSet(chr_data)
+    else:
+        sprs = SpriteSet(chr_data)
     spr_len = len(sprs)
     height = spr_len / width
     size = (width * 8, height * 8)
@@ -148,9 +157,17 @@ def draw_sprite(spr, dx, dy, draw, palette):
 Export a nametable to a image
 using a chr_file
 '''
-def export_nametable(nametable_file, chr_file, png_file, palette=palette):
-    nts = nametable.load_nametable(nametable_file)
-    sprs = SpriteSet(chr_file)
+def export_nametable(nametable_data, chr_data, png_file, palette=palette):
+    print nametable_data
+    if isinstance(nametable_data, str):
+        nts = nametable.load_nametable(nametable_data)
+    else:
+        nts = nametable_data
+
+    if isinstance(chr_data, str):
+        sprs = SpriteSet(chr_data)
+    else:
+        sprs = SpriteSet(chr_data)
 
     nt = nametable.get_nametable(0, nts)
     size = (256, 256)
@@ -177,12 +194,13 @@ def export_nametable(nametable_file, chr_file, png_file, palette=palette):
 
     img.save(png_file, 'PNG')
 
-def convert_nametable(image, sprs, palette = palette):
+'''
+The function call is read, 'cause the processe is like reading
+a text with 64 cols x 64 lines on witch, caracter is a sprite
+'''
+def read_nametable(image, sprs, palette = palette):
     pixels = image.load()
     colors = get_colors(image)
-    assert len(colors) <= 4, "Image has %i colors, it can only have at most 4" % len(colors)
-    assert image.size[0] % 8 == 0
-    assert image.size[1] % 8 == 0
 
     default =  (
         (0,0,0) in colors and
@@ -192,38 +210,58 @@ def convert_nametable(image, sprs, palette = palette):
     )
     if default:
         nes_palette = palette
-    #todo
-    nes_palette = palette
+    else:
+        nes_palette = colors
 
     nametable = []
+
+    #TODO huge stealing here
     if sprite.length(sprs) == 512:
         start = 256
     else:
         start = 0
 
+    if isinstance(sprs, tuple):
+        sprs = sprs[0]
+
     for y in range(image.size[0] / 8 ):
         for x in range(image.size[1] / 8 ):
             spr = fetch_chr(pixels, y, x, nes_palette)
-            #print sprs
-            #index = sprite.find_sprite(sprs, spr, start)
-            #nametable.append(index)
+            index = sprite.find_sprite(sprs, spr, start)
+            if index != -1:
+                nametable.append(index)
+            else:
+                show_sprite(spr)
+                raise Exception('Sprite not found')
+
             #TODO: 
-            encoded = sprite.encode_sprite(spr)
-            key = ''.join([chr(e) for e in encoded])
-            if key in sprs:
-                if key > 256:
-                    pass
-                    #print sprs[key]
-                #print sprs[key]
-                nametable.append(sprs[key])
+            #encoded = sprite.encode_sprite(spr)
+            #key = ''.join([chr(e) for e in encoded])
+            #if key in sprs:
+            #    if key > 256:
+            #        show_sprite(spr)
+            #        pass
+            #        #print sprs[key]
+            #    #print sprs[key]
+            #    nametable.append(sprs[key])
             #else:
-            #    raise Exception('Sprite not found')
+            #   show_sprite(spr)
+            #   print x
+            #   print y
+            #   print '===' + key + '===='
+            #   raise Exception('Sprite not found')
     return nametable
+
+def acquire_nametable(image_file, palette=palette):
+    image = Image.open(image_file)
+    sprs = acquire_chr(image, optimize_repeated = True)
+    nametable = read_nametable(image, sprs, palette)
+    return nametable, sprs
 
 def import_nametable(png_file, chr_file, nametable_file, palette=palette):
     image = Image.open(png_file)
     sprs = sprite.load_sprites(chr_file)
-    nametable = convert_nametable(image, sprs, palette)
+    nametable = read_nametable(image, sprs, palette)
     write_bin_code(nametable, nametable_file)
 
 def convert_to_nametable(image_file):

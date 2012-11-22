@@ -2,6 +2,7 @@
 
 from unittest import TestCase
 from pynes.composer import compose, Game
+from pynes import sprite 
 import os
 
 class WhatElse():
@@ -108,36 +109,55 @@ class HexTestCase(TestCase):
             print out
             raise AssertionError('Hex are not equal')
 
+def get_printable_sprite(spr):
+    ALPHA = '\033[01;40m'
+    R = '\033[01;41m'
+    G = '\033[01;42m'
+    B = '\033[01;44m'
+    ENDC = '\033[0m'
+    palette = [ALPHA, R, G, B]
+    pixel = '  '
+    lines = []
+    previous = None
+    for i in range(8):
+        line = ''
+        for j in range(8):
+            color = spr[i][j]
+            if previous != color:
+                line += palette[color]
+            line += pixel
+        lines.append(line)
+    return lines
+    output = '\n'.join(lines) + ENDC
+    print output
+
+def show_sprite(spr):
+    ENDC = '\033[0m'
+    print '\n'.join(get_printable_sprite(spr)) + ENDC + '\n'
+
+def show_sprites(sprs):
+    ENDC = '\033[0m'
+    length = sprite.length(sprs)
+    tiles = []
+    for i in range(length):
+        spr = get_printable_sprite(sprite.get_sprite(i, sprs))
+        tiles.append(spr)
+        if len(tiles) % 8 == 0:
+            out = ''
+            for t in tiles:
+                for l in t:
+                    out += l + ENDC
+                out += '\n'
+            tiles = []
+            print out
+
+
+
+
 class SpriteTestCase(TestCase):
 
     def __init__(self, testname):
         TestCase.__init__(self, testname)
-
-    def get_printable_sprite(self, spr):
-        ALPHA = '\033[01;40m'
-        R = '\033[01;41m'
-        G = '\033[01;42m'
-        B = '\033[01;44m'
-        ENDC = '\033[0m'
-        palette = [ALPHA, R, G, B]
-        pixel = '  '
-        lines = []
-        previous = None
-        for i in range(8):
-            line = ''
-            for j in range(8):
-                color = spr[i][j]
-                if previous != color:
-                    line += palette[color]
-                line += pixel
-            lines.append(line)
-        return lines
-        output = '\n'.join(lines) + ENDC
-        print output
-
-    def show_sprite(self, spr):
-        ENDC = '\033[0m'
-        return '\n'.join(self.get_printable_sprite(spr)) + ENDC
 
     def assertFileExists(self, filename):
         try:
@@ -152,20 +172,36 @@ class SpriteTestCase(TestCase):
             raise AssertionError('File %s should not exist' % filename)
 
     def assertCHRFileEquals(self, expected, actual):
-        expected_bin = open(expected, 'rb').read()
-        actual_bin = open(actual, 'rb').read()
+        expected_file = open(expected, 'rb')
+        expected_bin = expected_file.read()
+        expected_file.close()
+        actual_file = open(actual, 'rb')
+        actual_bin = actual_file.read()
+        actual_file.close()
         try:
             self.assertEquals(expected_bin, actual_bin)
         except AssertionError as ae:
             raise AssertionError('CHR files are not equals')
+
+    def assertPNGFileEquals(self, expected, actual):
+        expected_file = open(expected, 'rb')
+        expected_bin = expected_file.read()
+        expected_file.close()
+        actual_file = open(actual, 'rb')
+        actual_bin = actual_file.read()
+        actual_file.close()
+        try:
+            self.assertEquals(expected_bin, actual_bin)
+        except AssertionError as ae:
+            raise AssertionError('PNG files are not equals')
 
     def assertSpriteEquals(self, expected, actual):
         try:
             self.assertEquals(expected, actual)
         except:
             ENDC = '\033[0m'
-            e = self.get_printable_sprite(expected)
-            a = self.get_printable_sprite(actual)
+            e = get_printable_sprite(expected)
+            a = get_printable_sprite(actual)
             out = ''
             for i in range(8):
                 if i == 4:
