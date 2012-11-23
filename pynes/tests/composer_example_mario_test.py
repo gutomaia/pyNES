@@ -20,9 +20,9 @@ class ComposerMarioTest(ComposerTestCase):
                 .and_then('CLEARMEM:')
                 .and_then('JSR WAITVBLANK')
                 .and_then('LoadPalettes:')
-                #TODO: why? .and_then('LDA #%10000000') #just nmi
+                .and_then('LDA #%10000000')
                 .and_then('STA $2000')
-                #TODO: why? .and_then('LDA #%00010000') #just sprite
+                .and_then('LDA #%00010000')
                 .and_then('STA $2001')
 
                 .and_then('NMI:')

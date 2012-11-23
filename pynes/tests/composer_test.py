@@ -164,7 +164,7 @@ class ComposerTest(ComposerTestCase):
 
         .and_then('LDA #%10010000')
         .and_then('STA $2000')
-        .and_then('LDA #%00011000')
+        .and_then('LDA #%00001000')
         .and_then('STA $2001')
 
         .and_then('NMI:')

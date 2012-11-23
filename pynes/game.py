@@ -5,12 +5,10 @@ from pynes.nes_types import NesType, NesRs, NesArray, NesString, NesSprite, NesC
 
 class Bit(object):
 
-    def __init__(self, varname, bit, size=1, options=False):
-        assert size > 0 and size <8
+    def __init__(self, varname, bit, options=False):
         assert bit >=0 and bit <8
         self.varname = varname
         self.bit = bit
-        self.size = size
 
     def __get__(self, instance, owner):
         assert hasattr(instance, self.varname)
@@ -18,20 +16,20 @@ class Bit(object):
         return getattr(instance, self.varname) & flag == flag
 
     def __set__(self, instance, value):
-        if self.size == 1:
-            assert isinstance(value, (bool,int))
-            assert value == 0 or value == 1
-            flag = pow(2, self.bit)
-            if not value:
-                flag = (~flag & 0xFF)
-                byte = getattr(instance, self.varname) & flag
-            else:
-                byte = getattr(instance, self.varname) | flag
-            setattr(instance, self.varname, byte)
+        assert isinstance(value, (bool,int))
+        assert value == 0 or value == 1
+        assert hasattr(instance, self.varname)
+        flag = pow(2, self.bit)
+        if not value:
+            flag = (~flag & 0xFF)
+            byte = getattr(instance, self.varname) & flag
+        else:
+            byte = getattr(instance, self.varname) | flag
+        setattr(instance, self.varname, byte)
 
 class PPU(object):
 
-    #TODO base_nametable = Bit('ctrl', 1, 2) #suports 0-3
+    #TODO base_nametable = Bit('ctrl', 1, options=[0,1,2,3]) #suports 0-3
     sprite_pattern_table = Bit('ctrl', 3)
     background_pattern_table = Bit('ctrl', 4)
     #TODO sprite_size = Bit('ctrl', 5, options=['8x8', '8x16'])
@@ -42,8 +40,8 @@ class PPU(object):
     sprite_enable = Bit('mask', 4)
 
     def __init__(self):
-        self.ctrl = 0x0000
-        self.mask = 0x0000
+        self.ctrl = 0
+        self.mask = 0
         self.scrolling = True
 
     def on_reset(self):
@@ -280,9 +278,10 @@ class Joypad():
 
 class Game(object):
 
-    ppu = PPU()
 
     def __init__(self):
+        self.ppu = PPU()
+
         self._asm_chunks = {}
         self.has_nmi = False
         self.state = 'prog'
