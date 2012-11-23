@@ -24,7 +24,9 @@ class Bit(object):
             flag = pow(2, self.bit)
             if not value:
                 flag = (~flag & 0xFF)
-            byte = getattr(instance, self.varname) | flag
+                byte = getattr(instance, self.varname) & flag
+            else:
+                byte = getattr(instance, self.varname) | flag
             setattr(instance, self.varname, byte)
 
 class PPU(object):
@@ -55,7 +57,7 @@ class PPU(object):
         return asm
 
     def on_nmi(self):
-        if self.nmi_enable:
+        if self.nmi_enable and self.scrolling:
             asm = (
                 '  LDA #00\n'
                 '  STA $2005\n'
