@@ -8,7 +8,6 @@ class ComposerMarioTest(ComposerTestCase):
 
     def test_mario(self):
         self.path = 'fixtures/nesasm/scrolling/'
-
         f = open('pynes/examples/mario.py')
         code = f.read()
         f.close()
@@ -21,6 +20,11 @@ class ComposerMarioTest(ComposerTestCase):
                 .and_then('CLEARMEM:')
                 .and_then('JSR WAITVBLANK')
                 .and_then('LoadPalettes:')
+                #TODO: why? .and_then('LDA #%10000000') #just nmi
+                .and_then('STA $2000')
+                #TODO: why? .and_then('LDA #%00010000') #just sprite
+                .and_then('STA $2001')
+
                 .and_then('NMI:')
                 .and_then('.bank 1')
                 .and_then('palette:')

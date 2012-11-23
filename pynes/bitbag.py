@@ -200,7 +200,7 @@ class load_sprite(BitPak):
 
     def __init__(self, game):
         BitPak.__init__(self, game)
-        self.game.has_nmi = True
+        self.game.has_nmi = True #TODO remove this
         self.game.ppu.sprite_enable = True
         self.game.ppu.nmi_enable = True
 

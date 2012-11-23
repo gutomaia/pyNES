@@ -417,7 +417,7 @@ class Game(object):
             joypad_code += joypad_1.init()
             joypad_code += joypad_1.to_asm()
         if len(joypad_code) > 0 or self.has_nmi:
-            self.has_nmi = True
+            self.has_nmi = True #TODO remove this, use ppu.enable_nmi insted
             nmi_code = (
                 "NMI:\n"
                 "  LDA #$00\n"
