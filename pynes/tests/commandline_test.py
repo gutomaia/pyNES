@@ -83,3 +83,11 @@ class CommandLineTest(FileTestCase):
             "--output pynes/examples/helloworld.nes"
             ).split()
         main(args)
+
+    def test_py_real_build_slides(self):
+        args = (
+            "pynes py pynes/examples/slides.py "
+            "--path fixtures/nesasm/scrolling "
+            "--output pynes/examples/slides.nes --asm"
+            ).split()
+        main(args)

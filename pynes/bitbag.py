@@ -118,11 +118,16 @@ class show(BitPak):
         posLow = game.get_param('posLow', 1)
         posHigh = game.get_param('posHigh', 1)
 
-    def  __call__(self, string, y, x, nametable=0):
+    def  __call__(self, string, y = None, x = None, nametable=0):
         assert isinstance(string, NesString)
         string.is_used = True
         self.string = string
         base_adress = 0x2000
+
+        if y == None:
+            y = 15
+        if x == None:
+            x = 16  - len(string) / 2
         pos = base_adress + y * 32 + x
         self.posHigh = (pos & 0xff00) >> 8
         self.posLow = (pos & 0x00ff)
@@ -163,6 +168,9 @@ class show(BitPak):
           "  INY\n"
           "  JMP PrintLoop\n"
           "PrintEnd:\n"
+          "  LDA #00\n"
+          "  STA $2005\n"
+          "  STA $2005\n"
           "  RTS\n"
           )
         return asmcode

@@ -425,8 +425,10 @@ class Game(object):
                 "  STA $4014 ; Write Only; DMA\n"
             )
             nmi_code += self.ppu.on_nmi()
-
-            return nmi_code + joypad_code + "\n\n" + "  RTI   ;Return NMI\n"
+            nmi_code += joypad_code
+            if 'NMI' in self._asm_chunks:
+                nmi_code += self._asm_chunks['NMI']
+            return nmi_code + "\n\n" + "  RTI   ;Return NMI\n"
         return ""
 
     def set_var(self, varname, value):

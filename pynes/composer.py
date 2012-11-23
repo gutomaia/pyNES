@@ -76,11 +76,33 @@ class PyNesVisitor(ast.NodeVisitor):
         pass #TODO fix imports
 
     def visit_If(self, node):
-        if node.test.comparators[0].s == '__main__':
+        if (len(node.test.comparators) == 1
+            and isinstance(node.test.comparators[0], ast.Str)
+            and node.test.comparators[0].s == '__main__'):
             pass
+        elif(len(node.test.comparators) == 1):
+            #TODO: fix this hack, using just piles
+            global game
+            label = node.test.left.id
+            index = node.test.comparators[0].n
+            end = game.get_label_for('EndIf')
+            elseif = game.get_label_for('ElseIf')
+            game += '  LDA %s\n' % label
+            game += '  CMP #%d\n' % index
+            game += '  BNE %s\n' % elseif
+            self.generic_visit(node.body)
+            game += '  JMP %s\n' % end
+            game +=  '%s:\n' % elseif
+            self.generic_visit(node.orelse)
+            game +=  '%s:\n' % end
+
+    def visit_Expr(self, node):
+        #TODO: perfect place to unpile list
+        self.generic_visit(node, True)
 
     def visit_AugAssign(self, node):
         self.generic_visit(node)
+        global game
         if len(self.stack.current()) == 2 and len(self.stack.last()) == 2:
             if (isinstance(self.stack.last()[0], int) and
                 isinstance(self.stack.last()[1], str) and #TODO op
@@ -90,12 +112,28 @@ class PyNesVisitor(ast.NodeVisitor):
                 self.stack.wipe()
                 operation = self.stack.last()[1]
                 operand = self.stack.resolve()
-                global game
                 if operation == '+':
                     address += operand[0]
                 elif operation == '-':
                     address -= operand[0]
                 game += address.to_asm()
+        elif (len(self.stack.current()) == 3 and 
+            isinstance(self.stack.current()[0], int) and
+                isinstance(self.stack.current()[1], str) and #TODO op
+                isinstance(self.stack.current()[2], NesRs)): #TODO how to check
+            operand = self.stack.current()[0]
+            operation = self.stack.current()[1]
+            rs = self.stack.current()[2]
+            game += '  LDA %s\n' % rs.instance_name
+            if operation == '+':
+                game +=    (
+                '  CLC\n'
+                '  ADC #%02d\n') % operand
+            elif operation == '-':
+                game +=    (
+                '  SEC\n'
+                '  SBC #%02d\n') % operand
+            game += '  STA %s\n' % rs.instance_name
 
     def visit_Assign(self, node):
         global game
@@ -129,10 +167,16 @@ class PyNesVisitor(ast.NodeVisitor):
             elif 'ctx' in dir(node.targets[0]): #TODO fix this please
                 self.generic_visit(node) #TODO: upthis
                 if len(self.stack.last()) == 1 and isinstance(self.stack.last()[0], int):
-                    game += '  LDA #%d\n' % self.stack.resolve()[0]
+                    game += '  LDA #%02d\n' % self.stack.resolve()[0]
                 if len(self.stack.current()) == 2:
                     address = getattr(self.stack.current()[0], self.stack.current()[1])
                     game += '  STA $%04x\n' % address
+                elif (len(self.stack.current()) == 1 and 
+                    isinstance(self.stack.current()[0], NesRs)):
+                    rs = self.stack.current()[0]
+                    self.stack.wipe()
+                    name = rs.instance_name
+                    game += ' STA %s\n' % name
 
     def visit_List(self, node):
         lst = [l.n for l in node.elts]
