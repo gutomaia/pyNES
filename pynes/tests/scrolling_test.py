@@ -14,7 +14,7 @@ class ScrollingTest(HexTestCase):
         HexTestCase.__init__(self, testname)
 
     def assertAsmResults(self, source_file, bin_file):
-        path = 'fixtures/nesasm/scrolling/'
+        path = 'fixtures/nerdynights/scrolling/'
         f = open (path + source_file)
         code = f.read()
         f.close()
@@ -22,7 +22,7 @@ class ScrollingTest(HexTestCase):
         ast = syntax(tokens)
 
         cart = Cartridge()
-        cart.path = 'fixtures/nesasm/scrolling/'
+        cart.path = 'fixtures/nerdynights/scrolling/'
 
         opcodes = semantic(ast, True, cart=cart)
 

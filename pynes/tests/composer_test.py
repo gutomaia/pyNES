@@ -330,7 +330,7 @@ class ComposerTest(ComposerTestCase):
         self.assertEquals("world", self.game._vars['hello'])
 
     def test_import_chr_mario(self):
-        self.path = 'fixtures/nesasm/scrolling/'
+        self.path = 'fixtures/nerdynights/scrolling/'
         (self.assert_asm_from(
             'from pynes.bitbag import *\n'
 

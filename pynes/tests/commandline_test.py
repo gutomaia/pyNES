@@ -71,7 +71,7 @@ class CommandLineTest(FileTestCase):
     def test_py_real_build_mario(self):
         args = (
             "pynes py pynes/examples/mario.py "
-            "--path fixtures/nesasm/scrolling "
+            "--path fixtures/nerdynights/scrolling "
             "--output pynes/examples/mario.nes"
             ).split()
         main(args)
@@ -79,7 +79,7 @@ class CommandLineTest(FileTestCase):
     def test_py_real_build_helloworld(self):
         args = (
             "pynes py pynes/examples/helloworld.py "
-            "--path fixtures/nesasm/scrolling "
+            "--path fixtures/nerdynights/scrolling "
             "--output pynes/examples/helloworld.nes"
             ).split()
         main(args)
@@ -87,7 +87,7 @@ class CommandLineTest(FileTestCase):
     def test_py_real_build_slides(self):
         args = (
             "pynes py pynes/examples/slides.py "
-            "--path fixtures/nesasm/scrolling "
+            "--path fixtures/nerdynights/scrolling "
             "--output pynes/examples/slides.nes --asm"
             ).split()
         main(args)

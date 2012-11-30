@@ -75,7 +75,7 @@ class ImageTest(SpriteTestCase):
         image.import_chr('fixtures/mario.png', '/tmp/mario.chr')
         self.assertFileExists('/tmp/mario.chr')
         self.assertCHRFileEquals(
-            'fixtures/nesasm/scrolling/mario.chr',
+            'fixtures/nerdynights/scrolling/mario.chr',
             '/tmp/mario.chr')
         os.remove('/tmp/mario.chr')
 
@@ -85,7 +85,7 @@ class ImageTest(SpriteTestCase):
         except:
             pass
         self.assertFileNotExists('/tmp/mario.png')
-        image.export_chr('fixtures/nesasm/scrolling/mario.chr', '/tmp/mario.png')
+        image.export_chr('fixtures/nerdynights/scrolling/mario.chr', '/tmp/mario.png')
         self.assertFileExists('/tmp/mario.png')
         self.assertPNGFileEquals('fixtures/mario.png', '/tmp/mario.png')
 
@@ -106,8 +106,8 @@ class ImageTest(SpriteTestCase):
 
         self.assertFileNotExists('/tmp/level.png')
         image.export_nametable(
-            'fixtures/nesasm/scrolling/SMBlevel.bin',
-            'fixtures/nesasm/scrolling/mario.chr',
+            'fixtures/nerdynights/scrolling/SMBlevel.bin',
+            'fixtures/nerdynights/scrolling/mario.chr',
             '/tmp/level.png')
         self.assertFileExists('/tmp/level.png')
         
@@ -116,11 +116,11 @@ class ImageTest(SpriteTestCase):
         sprite.length(sprs)
         self.assertEquals(1024,sprite.length(sprs))
         return #TODO why?!
-        nt_file = open('fixtures/nesasm/scrolling/SMBlevel.bin')
+        nt_file = open('fixtures/nerdynights/scrolling/SMBlevel.bin')
         nt = nt_file.read()
         nt_file.close()
         nts = [ord(n) for n in nt]
-        mario = sprite.load_sprites('fixtures/nesasm/scrolling/mario.chr')
+        mario = sprite.load_sprites('fixtures/nerdynights/scrolling/mario.chr')
         for i in range(32):
             for j in range(32):
                 self.assertSpriteEquals(
@@ -139,10 +139,10 @@ class ImageTest(SpriteTestCase):
         
         image.import_nametable(
             'fixtures/level.png',
-            'fixtures/nesasm/scrolling/mario.chr',
+            'fixtures/nerdynights/scrolling/mario.chr',
             '/tmp/level.bin')
 
-        expected = open('fixtures/nesasm/scrolling/SMBlevel.bin', 'rb').read()
+        expected = open('fixtures/nerdynights/scrolling/SMBlevel.bin', 'rb').read()
         actual = open('/tmp/level.bin', 'rb').read()
         size = len(actual)
         self.assertEquals(expected[:size], actual[:size])
@@ -150,10 +150,10 @@ class ImageTest(SpriteTestCase):
 
     def test_read_nametable(self): 
         level = Image.open('fixtures/level.png')
-        sprs = sprite.load_sprites('fixtures/nesasm/scrolling/mario.chr')
+        sprs = sprite.load_sprites('fixtures/nerdynights/scrolling/mario.chr')
         nt = image.read_nametable(level, sprs)
         return
-        expected = open('fixtures/nesasm/scrolling/SMBlevel.bin', 'rb').read()
+        expected = open('fixtures/nerdynights/scrolling/SMBlevel.bin', 'rb').read()
         actual = open('/tmp/level.bin', 'rb').read()
         size = len(actual)
         self.assertEquals(expected[:size], actual[:size])
@@ -192,8 +192,8 @@ class ImageTest(SpriteTestCase):
         import os
         os.rename('nametable.bin', 'pythonbrasil8.bin')
         image.export_nametable(
-            'fixtures/nesasm/scrolling/garoa.bin',
-            'fixtures/nesasm/scrolling/sprite.chr',
+            'fixtures/nerdynights/scrolling/garoa.bin',
+            'fixtures/nerdynights/scrolling/sprite.chr',
             'garoa.png')
 
 

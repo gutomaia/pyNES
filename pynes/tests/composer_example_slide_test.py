@@ -7,7 +7,7 @@ from pynes.tests import ComposerTestCase
 class ComposerSlideTest(ComposerTestCase):
 
     def test_mario(self):
-        self.path = 'fixtures/nesasm/scrolling/'
+        self.path = 'fixtures/nerdynights/scrolling/'
         f = open('pynes/examples/slides.py')
         code = f.read()
         f.close()

@@ -7,7 +7,7 @@ class SpriteTest(unittest.TestCase):
 
     def __init__(self, testcase_name):
         unittest.TestCase.__init__(self, testcase_name)
-        f = open('fixtures/nesasm/scrolling/mario.chr', 'rb')
+        f = open('fixtures/nerdynights/scrolling/mario.chr', 'rb')
         content = f.read()
         self.bin = [ord(c) for c in content]
 
@@ -34,7 +34,7 @@ class SpriteTest(unittest.TestCase):
         ]
 
     def test_spriteset(self):
-        sprites = SpriteSet('fixtures/nesasm/scrolling/mario.chr')
+        sprites = SpriteSet('fixtures/nerdynights/scrolling/mario.chr')
         self.assertEquals(self.bin, sprites.sprs)
         self.assertEquals(self.mario1, sprites.get(0))
         self.assertEquals(self.mario2, sprites.get(1))

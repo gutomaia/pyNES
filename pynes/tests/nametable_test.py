@@ -7,7 +7,7 @@ from pynes import nametable
 class NametableTest(unittest.TestCase):
 
     def setUp(self):
-        self.nt = nametable.load_nametable('fixtures/nesasm/scrolling/SMBlevel.bin')
+        self.nt = nametable.load_nametable('fixtures/nerdynights/scrolling/SMBlevel.bin')
         self.assertIsNotNone(self.nt)
 
     def test_length_nametable(self):
