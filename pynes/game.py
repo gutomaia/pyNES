@@ -279,7 +279,7 @@ class Joypad():
 class Game(object):
 
 
-    def __init__(self):
+    def __init__(self, optimized = True):
         self.ppu = PPU()
 
         self._asm_chunks = {}
