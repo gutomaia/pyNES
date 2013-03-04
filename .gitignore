@@ -3,3 +3,6 @@
 build/
 dist/
 pynes.egg-info/
+pynes/examples/*.asm
+pynes/examples/*.chr
+pynes/examples/*.nes
