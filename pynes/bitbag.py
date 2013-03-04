@@ -104,6 +104,49 @@ class define_sprite(BitPak):
         assert isinstance(tile, int) or isinstance(tile, NesArray)
         return NesSprite(x, y, tile, attrib)
 
+class cls(BitPak):
+
+    def __init__(self, game):
+        BitPak.__init__(self, game)
+
+    def  __call__(self):
+        self.line = self.game.get_param('line', 1)
+
+    def asm(self):
+        return '  JSR CLS\n'
+
+    def procedure(self):
+        return (
+          'CLS:\n'
+          '  LDA $2002\n'
+          '  LDA $20\n'
+          '  LDA $2006\n'
+          '  LDA $00\n'
+          '  LDA $2006\n'
+          '  LDA #00\n'
+          'LineLoop:'
+          '  STA line\n'
+          '  LDY #00\n'
+          '  LDA #$25\n' #blank == space
+          'ColumnLoop:'
+          '  STA $2007\n'
+          '  INY'
+          '  CPY #16\n'
+          '  BNE ColumnLoop\n'
+          '  LDA line\n'
+          '  CLC\n'
+          '  ADC #01\n'
+          #'  STA line\n'
+          '  CMP #16\n'
+          '  BNE LineLoop\n'
+
+          "  LDA #00\n"
+          "  STA $2005\n"
+          "  STA $2005\n"
+          )
+
+
+
 class show(BitPak):
 
     def __init__(self, game):
