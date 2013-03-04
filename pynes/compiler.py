@@ -17,7 +17,7 @@ asm65_tokens = [
     dict(type='T_INSTRUCTION', regex=r'^(ADC|AND|ASL|BCC|BCS|BEQ|BIT|BMI|BNE|BPL|BRK|BVC|BVS|CLC|CLD|CLI|CLV|CMP|CPX|CPY|DEC|DEX|DEY|EOR|INC|INX|INY|JMP|JSR|LDA|LDX|LDY|LSR|NOP|ORA|PHA|PHP|PLA|PLP|ROL|ROR|RTI|RTS|SBC|SEC|SED|SEI|STA|STX|STY|TAX|TAY|TSX|TXA|TXS|TYA)', store=True),
     dict(type='T_ADDRESS', regex=r'\$([\dA-F]{2,4})', store=True),
     dict(type='T_HEX_NUMBER', regex=r'\#\$([\dA-F]{2})', store=True),
-    dict(type='T_BINARY_NUMBER', regex=r'\#%([01]{8})', store=True),
+    dict(type='T_BINARY_NUMBER', regex=r'\#?%([01]{8})', store=True), #TODO: just to compile background.asm
     dict(type='T_DECIMAL_NUMBER', regex=r'\#(\d{1,3})', store=True),
     dict(type='T_LABEL', regex=r'^([a-zA-Z]{2}[a-zA-Z\d]*)\:', store=True),
     dict(type='T_MARKER', regex=r'^[a-zA-Z]{2}[a-zA-Z\d]*', store=True),
@@ -94,6 +94,9 @@ def t_string(tokens, index):
 def t_address_or_t_marker(tokens, index):
     return OR([t_address, t_marker], tokens, index)
 
+def t_address_or_t_binary_number(tokens, index):
+    return OR([t_address, t_binary_number], tokens, index)
+
 def t_hex_number(tokens, index):
     return look_ahead(tokens, index, 'T_HEX_NUMBER')
 
@@ -137,12 +140,12 @@ def t_nesasm_compatible_close(tokens, index):
         return OR([t_close, t_close_square_brackets], tokens, index)
 
 def t_list(tokens, index):
-    if t_address(tokens, index) and t_separator(tokens, index+1):
+    if t_address_or_t_binary_number(tokens, index) and t_separator(tokens, index+1):
         islist = 1
         arg = 0
         while (islist):
             islist = islist and t_separator(tokens, index + (arg * 2) + 1)
-            islist = islist and t_address(tokens, index + (arg * 2) + 2)
+            islist = islist and t_address_or_t_binary_number(tokens, index + (arg * 2) + 2)
             if (t_endline(tokens, index + (arg * 2) + 3) or
                 (index + (arg * 2) + 3) == len(tokens)):
                 break;
@@ -255,8 +258,10 @@ def syntax(tokens):
                 walk = 0
                 print('------------')
                 print(tokens[x])
-                print(len(tokens))
-                print(len(tokens[x:]))
+                print(tokens[x+1])
+                print(tokens[x+2])
+                print(tokens[x+3])
+
                 raise(Exception('UNKNOW TOKEN'))
     return ast
 
