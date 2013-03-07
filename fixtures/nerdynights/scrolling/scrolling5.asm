@@ -1,3 +1,11 @@
+; Got this example from Nerdy Nights:
+; http://www.nintendoage.com/forum/messageview.cfm?catid=22&threadid=7155
+
+; this is the scrolling example
+; http://www.nintendoage.com/forum/messageview.cfm?catid=22&threadid=36958
+
+
+
   .inesprg 1   ; 1x 16KB PRG code
   .ineschr 1   ; 1x  8KB CHR data
   .inesmap 0   ; mapper 0 = NROM, no bank swapping
