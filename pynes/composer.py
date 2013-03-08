@@ -11,6 +11,8 @@ from pynes.game import Game, PPU, PPUSprite, Joypad
 from pynes.nes_types import NesType, NesRs, NesArray, NesString, NesSprite, NesChrFile
 from pynes.compiler import compile
 
+from _ast import *
+
 class OperationStack:
 
     def __init__(self):
@@ -44,6 +46,23 @@ class OperationStack:
     def resolve(self):
         return self._pile.pop()
 
+class PyNesTransformer(ast.NodeTransformer):
+
+    def visit_Compare(self, node):
+        expr = self.generic_visit(node)
+        if (expr.left.id == '__name__' and
+            len(expr.ops) == 1 and
+            isinstance(expr.ops[0], Eq)):
+            return Name(id='False', ctx=Load())
+        #print dir(node)
+        return expr
+
+    def visit_If(self, node):
+        expr = self.generic_visit(node)
+        if (isinstance(expr.test, Name) and expr.test.id =='False'):
+            return None
+        return expr
+
 class PyNesVisitor(ast.NodeVisitor):
 
     def __init__(self):
@@ -76,9 +95,7 @@ class PyNesVisitor(ast.NodeVisitor):
         pass #TODO fix imports
 
     def visit_If(self, node):
-        if (len(node.test.comparators) == 1
-            and isinstance(node.test.comparators[0], ast.Str)
-            and node.test.comparators[0].s == '__main__'):
+        if 'comparators' not in dir(node.test):
             pass
         elif(len(node.test.comparators) == 1):
             #TODO: fix this hack, using just piles
@@ -95,6 +112,8 @@ class PyNesVisitor(ast.NodeVisitor):
             game +=  '%s:\n' % elseif
             self.generic_visit(node.orelse)
             game +=  '%s:\n' % end
+
+
 
     def visit_Expr(self, node):
         #TODO: perfect place to unpile list
@@ -299,7 +318,12 @@ def compose(code, game_program = game):
         game = game_program = Game()
 
     python_land = ast.parse(code)
+
+    builder = PyNesTransformer()
+    builder.visit(python_land)
+
     turist = PyNesVisitor()
     turist.visit(python_land)
+
     game = None
     return game_program

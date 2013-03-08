@@ -5,6 +5,8 @@ class NesType:
     def __init__(self):
         self.instance_name = None
         self.is_used = False
+        self.is_attrib = False
+        self.lineno = 0
 
 class NesRs(NesType):
 
@@ -87,7 +89,7 @@ class NesInt(int, NesType):
         NesType.__init__(self)
         int.__init__(self, number)
 
-class NesString(NesType, str):
+class NesString(str, NesType):
 
     def __init__(self, string):
         str.__init__(self, string)
