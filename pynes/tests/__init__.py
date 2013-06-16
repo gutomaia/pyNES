@@ -82,6 +82,13 @@ class ComposerTestCase(TestCase):
         compile(self.asm, self.path)
         return WhatElse(self)
 
+    def assert_asm_without_ines_from(self, code):
+        self.code = code
+        self.game = compose(code)
+        self.asm = self.game.to_asm()
+        compile(self.asm, self.path)
+        return WhatElse(self)
+
 class HexTestCase(TestCase):
 
     def __init__(self, testname):

@@ -3,6 +3,11 @@ from re import match
 from collections import OrderedDict
 from pynes.nes_types import NesType, NesRs, NesArray, NesString, NesSprite, NesChrFile
 
+#TODO remove this
+from pynes.bitbag import *
+
+import pynes
+
 class Bit(object):
 
     def __init__(self, varname, bit, options=False):
@@ -295,6 +300,59 @@ class Game(object):
         #TODO: self.local_scope = {}
         #TODO: self.global_scope = {}
 
+    def define(self, varname, value, size = 1):
+        if isinstance(value, NesRs):
+            self._vars[varname] = value
+
+    def assign(self, varname, value):
+        if isinstance(value, NesType):
+            value.instance_name = varname
+        self._vars[varname] = value
+        return value
+
+    def minusAssign(self, varname, value):
+        return
+        self += (
+            '  SEC\n'
+            '  SBC #%02d\n') % value
+        #self += '  STA %s\n' % value.instance_name
+        return value
+
+
+    def asmFunction(self, functionname):
+        self.state = functionname
+
+    #used just for bitpacks
+    def call(self, bitpak_name, args=[]):
+        if bitpak_name not in self.bitpaks:
+            obj = getattr(pynes.bitbag, bitpak_name, None)
+            bp = obj(self)
+            self.bitpaks[bitpak_name] = bp
+        print args
+        returnValue = self.bitpaks[bitpak_name](*args)
+        self.add_asm_chunk(self.bitpaks[bitpak_name].asm())
+        return returnValue
+        if (obj):
+            try:
+                #self.stack(bp(*args))
+                bp(*args)
+                self += bp.asm()
+            except TypeError as ex:
+                msg = ex.message.replace('__call__', bitpak_name, 1)
+                raise(TypeError(msg))
+        else:
+            raise(NameError("name '%s' is not defined" % bitpak_name))
+
+    def add_asm_chunk(self, asm_chunk):
+        if asm_chunk and isinstance(asm_chunk, str):
+            if self.state not in self._asm_chunks:
+                self._asm_chunks[self.state] = asm_chunk
+            else:
+                self._asm_chunks[self.state] += asm_chunk
+
+    def press_start(self):
+        return self.to_asm()
+
     def __add__(self, other):
         if other and isinstance(other, str):
             if self.state not in self._asm_chunks:
@@ -323,7 +381,11 @@ class Game(object):
     def state(self, value):
         #if self._state not in self._asm_chunks:
         #    self._asm_chunks[self.state] = ''
-        self._state = value
+        if value == 'reset':
+            self._state = value.upper()
+            self += self.init()
+        else:
+            self._state = value
 
     def headers(self):
         return '\n'.join(['%s %d' % (h, self._header[h])

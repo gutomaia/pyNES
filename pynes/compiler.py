@@ -208,14 +208,14 @@ def get_value(token, labels = []):
     elif token['type'] == 'T_LABEL':
         m = match(asm65_tokens[5]['regex'], token['value'])
         return m.group(1)
-    elif token['type'] == 'T_MARKER':
+    elif token['type'] == 'T_MARKER' and token['value'] in labels:
         return labels[token['value']]
     elif token['type'] == 'T_DECIMAL_ARGUMENT':
         return int(token['value'])
     elif token['type'] == 'T_STRING':
         return token['value'][1:-1]
     else:
-        raise Exception('could not get value')
+        raise Exception('could not get value:' + token['type'] + token['value']+ str(token['line']))
 
 def syntax(tokens):
     ast = []

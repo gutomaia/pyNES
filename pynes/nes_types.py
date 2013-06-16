@@ -1,18 +1,20 @@
 # -*- coding: utf-8 -*-
 
+from ast import Num, List
+
 class NesType:
 
-    def __init__(self):
+    def __init__(self, size = 1):
         self.instance_name = None
-        self.is_used = False
-        self.is_attrib = False
+        self.is_used = False #define if a var is used
+        self.is_attrib = False #define is assigned more than once
+        self.size = size
         self.lineno = 0
 
 class NesRs(NesType):
 
-    def __init__(self, size):
-        NesType.__init__(self)
-        self.size = size
+    def __init__(self, size=1):
+        NesType.__init__(self, size)
 
 class NesSprite(NesType):
 
@@ -26,10 +28,14 @@ class NesSprite(NesType):
         self.width = width
 
     def __len__(self):
-        if isinstance(self.tile, int):
-            return 1
-        else:
+        print self.tile
+        print dir(self.tile)
+        print self.tile
+        print self.tile.__class__
+        print isinstance(self.tile, list)
+        if isinstance(self.tile, List):
             return len(self.tile)
+        return 1
 
     def to_asm(self):
         if isinstance(self.tile, int):
@@ -59,9 +65,12 @@ class NesSprite(NesType):
             return asmcode
 
 
-class NesArray(NesType, list):
+class NesArray(NesType, list, List):
 
-    def __init__(self, lst):
+    def __init__(self, elts):
+        NesType.__init__(self)
+        List.__init__(self, elts=elts)
+        lst = [l.n if isinstance(l, Num) else l for l in elts]
         list.__init__(self, lst)
         self.is_used = True
         self.locked = False
@@ -79,15 +88,13 @@ class NesArray(NesType, list):
             return asm
         return False
 
-class NesInt(int, NesType):
-
-    def __new__(cls, val, **kwargs):
-        inst = super(NesInt, cls).__new__(cls, val)
-        return inst
+class NesInt(int, Num, NesType):
 
     def __init__(self, number):
-        NesType.__init__(self)
         int.__init__(self, number)
+        Num.__init__(self, n=number)
+        NesType.__init__(self)
+
 
 class NesString(str, NesType):
 

@@ -8,8 +8,8 @@ from inspect import getmembers
 import pynes.bitbag #TODO fix import to be able to remove this
 
 from pynes.game import Game, PPU, PPUSprite, Joypad
-from pynes.nes_types import NesType, NesRs, NesArray, NesString, NesSprite, NesChrFile
-from pynes.compiler import compile
+from pynes.nes_types import NesType, NesInt, NesRs, NesArray, NesString, NesSprite, NesChrFile
+from pynes.compiler import compile as nes_compile
 
 from _ast import *
 
@@ -46,7 +46,23 @@ class OperationStack:
     def resolve(self):
         return self._pile.pop()
 
+class PyNesVisitor(ast.NodeVisitor):
+
+    def visit_Import(self, node):
+        pass
+
 class PyNesTransformer(ast.NodeTransformer):
+
+    def visit_Num(self, node):
+        return Num(NesInt(node.n))
+
+    def visit_List(self, node):
+        expr = self.generic_visit(node)
+        #print dir(expr)
+        #lst = [l.n for l in expr.elts]
+        #List(elts=[Num(n=1), Num(n=2), Num(n=3), Num(n=4)]
+        return List(elts=expr.elts)
+        return NesArray(expr.elts)
 
     def visit_Compare(self, node):
         expr = self.generic_visit(node)
@@ -117,7 +133,7 @@ class PyNesVisitor(ast.NodeVisitor):
 
     def visit_Expr(self, node):
         #TODO: perfect place to unpile list
-        self.generic_visit(node, True)
+        self.generic_visit(node)
 
     def visit_AugAssign(self, node):
         self.generic_visit(node)
@@ -197,9 +213,6 @@ class PyNesVisitor(ast.NodeVisitor):
                     name = rs.instance_name
                     game += ' STA %s\n' % name
 
-    def visit_List(self, node):
-        lst = [l.n for l in node.elts]
-        self.stack(NesArray(lst))
 
     def visit_Attribute(self, node):
         self.generic_visit(node)
@@ -231,6 +244,9 @@ class PyNesVisitor(ast.NodeVisitor):
                 self.stack.wipe()
             else:
                 args = []
+            print "call"
+            print args
+
             if node.func.id not in game.bitpaks: #check this condition, seens strange
                 obj = getattr(pynes.bitbag, node.func.id, None)
                 if (obj):
@@ -274,6 +290,9 @@ class PyNesVisitor(ast.NodeVisitor):
     def visit_Str(self, node):
         self.stack(NesString(node.s))
 
+    def visit_List(self, node):
+        self.stack(NesArray(node.elts))
+
     def visit_Num(self, node):
         self.stack(node.n)
 
@@ -309,7 +328,7 @@ def compose_file(input, output=None, path=None, asm=False):
         asmfile = open('output.asm', 'w')
         asmfile.write(asmcode)
         asmfile.close()
-    opcodes = compile(asmcode, path)
+    opcodes = nes_compile(asmcode, path)
     pynes.write_bin_code(opcodes, output)
 
 def compose(code, game_program = game):
@@ -324,6 +343,10 @@ def compose(code, game_program = game):
 
     turist = PyNesVisitor()
     turist.visit(python_land)
+
+    python_land = ast.fix_missing_locations(python_land)
+
+    #exec compile(python_land, '<string>', 'exec')
 
     game = None
     return game_program

@@ -1,3 +1,5 @@
+# -*- coding: utf-8 -*-
+
 import unittest
 
 from pynes.compiler import lexical, syntax, semantic, \
@@ -143,3 +145,9 @@ class CompilerTest(unittest.TestCase):
         expected = {'palette': 0xE000, 'sprites': 0xE000 + 32}
 
         self.assertEquals(expected, labels)
+
+    def test_raise_erro_with_unknow_label(self):
+        return
+        with self.assertRaises(Exception) as e:
+            lexical('LDA unknow')
+

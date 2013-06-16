@@ -226,11 +226,11 @@ class load_palette(BitPak):
 
     def  __call__(self, palette):
         assert isinstance(palette, NesArray)
+        assert palette.instance_name != None
         self.palette = palette
-        return None
+        return palette
 
     def asm(self):
-
         asmcode = (
           'LoadPalettes:\n'
           '  LDA $2002             ; Reset PPU, start writing\n'
