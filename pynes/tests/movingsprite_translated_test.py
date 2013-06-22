@@ -1,10 +1,11 @@
-from pynes.examples.movingsprite_translated import game
 
 from pynes.tests import HexTestCase
 from pynes.compiler import lexical, syntax, semantic
 from pynes.cartridge import Cartridge
 
 '''
+from pynes.examples.movingsprite_translated import game
+
 class MovingSpriteTranslatedTest(HexTestCase):
 
     def __init__(self, testname):
