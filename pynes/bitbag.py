@@ -1,10 +1,8 @@
 # -*- coding: utf-8 -*-
-
 from re import match
-
 from pynes.nes_types import NesRs, NesArray, NesSprite, NesString, NesChrFile
-
 from pynes.game import PPUSprite
+
 
 class BitPak:
 
@@ -27,6 +25,7 @@ class BitPak:
     def assigned_to(self, assigned):
         self.assigned = assigned
 
+
 class rs(BitPak):
 
     def __init__(self, game):
@@ -34,6 +33,7 @@ class rs(BitPak):
 
     def __call__(self, size):
         return NesRs(size)
+
 
 class get_sprite(BitPak):
 
@@ -57,9 +57,10 @@ class wait_vblank(BitPak):
 
     def procedure(self):
         return ('WAITVBLANK:\n'
-          '  BIT $2002\n'
-          '  BPL WAITVBLANK\n'
-          '  RTS\n')
+                '  BIT $2002\n'
+                '  BPL WAITVBLANK\n'
+                '  RTS\n')
+
 
 class clearmem(BitPak):
 
@@ -67,21 +68,19 @@ class clearmem(BitPak):
         BitPak.__init__(self, game)
 
     def asm(self):
-        return (
-          'CLEARMEM:\n'
-          '  LDA #$00\n'
-          '  STA $0000, x\n'
-          '  STA $0100, x\n'
-          '  STA $0200, x\n'
-          '  STA $0400, x\n'
-          '  STA $0500, x\n'
-          '  STA $0600, x\n'
-          '  STA $0700, x\n'
-          '  LDA #$FE\n'
-          '  STA $0300, x\n'
-          '  INX\n'
-          '  BNE CLEARMEM\n'
-        )
+        return ('CLEARMEM:\n'
+                '  LDA #$00\n'
+                '  STA $0000, x\n'
+                '  STA $0100, x\n'
+                '  STA $0200, x\n'
+                '  STA $0400, x\n'
+                '  STA $0500, x\n'
+                '  STA $0600, x\n'
+                '  STA $0700, x\n'
+                '  LDA #$FE\n'
+                '  STA $0300, x\n'
+                '  INX\n'
+                '  BNE CLEARMEM\n')
 
 
 class import_chr(BitPak):
@@ -93,6 +92,7 @@ class import_chr(BitPak):
         assert isinstance(string, NesString)
         return NesChrFile(string)
 
+
 class define_sprite(BitPak):
 
     def __init__(self, game):
@@ -103,6 +103,7 @@ class define_sprite(BitPak):
         assert isinstance(y, int)
         assert isinstance(tile, int) or isinstance(tile, NesArray)
         return NesSprite(x, y, tile, attrib)
+
 
 class cls(BitPak):
 
@@ -116,35 +117,32 @@ class cls(BitPak):
         return '  JSR CLS\n'
 
     def procedure(self):
-        return (
-          'CLS:\n'
-          '  LDA $2002\n'
-          '  LDA $20\n'
-          '  LDA $2006\n'
-          '  LDA $00\n'
-          '  LDA $2006\n'
-          '  LDA #00\n'
-          'LineLoop:'
-          '  STA line\n'
-          '  LDY #00\n'
-          '  LDA #$25\n' #blank == space
-          'ColumnLoop:'
-          '  STA $2007\n'
-          '  INY'
-          '  CPY #16\n'
-          '  BNE ColumnLoop\n'
-          '  LDA line\n'
-          '  CLC\n'
-          '  ADC #01\n'
-          #'  STA line\n'
-          '  CMP #16\n'
-          '  BNE LineLoop\n'
+        return ('CLS:\n'
+                '  LDA $2002\n'
+                '  LDA $20\n'
+                '  LDA $2006\n'
+                '  LDA $00\n'
+                '  LDA $2006\n'
+                '  LDA #00\n'
+                'LineLoop:'
+                '  STA line\n'
+                '  LDY #00\n'
+                '  LDA #$25\n'  # blank == space
+                'ColumnLoop:'
+                '  STA $2007\n'
+                '  INY'
+                '  CPY #16\n'
+                '  BNE ColumnLoop\n'
+                '  LDA line\n'
+                '  CLC\n'
+                '  ADC #01\n'
+                #'  STA line\n'
+                '  CMP #16\n'
+                '  BNE LineLoop\n'
 
-          "  LDA #00\n"
-          "  STA $2005\n"
-          "  STA $2005\n"
-          )
-
+                "  LDA #00\n"
+                "  STA $2005\n"
+                "  STA $2005\n")
 
 
 class show(BitPak):
@@ -161,7 +159,7 @@ class show(BitPak):
         posLow = game.get_param('posLow', 1)
         posHigh = game.get_param('posHigh', 1)
 
-    def  __call__(self, string, y = None, x = None, nametable=0):
+    def  __call__(self, string, y=None, x=None, nametable=0):
         assert isinstance(string, NesString)
         string.is_used = True
         self.string = string

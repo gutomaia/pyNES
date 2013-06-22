@@ -12,12 +12,12 @@ class Cartridge:
         self.path = ''
 
     def nes_id(self):
-        #NES 
+        #NES
         return [0x4e, 0x45, 0x53, 0x1a]
 
     def nes_get_header(self):
-        id = self.nes_id();
-        unused = [0,0,0,0,0,0,0,0]
+        id = self.nes_id()
+        unused = [0, 0, 0, 0, 0, 0, 0, 0]
         header = []
         header.extend(id)
         header.append(self.inespgr)

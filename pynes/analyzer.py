@@ -3,12 +3,13 @@
 from re import match
 import re
 
+
 def analyse(code, tokenTypes):
     tokens = []
     ttype = None
     line = 1
     column = 1
-    while(len(code)!=0):
+    while len(code) != 0:
         found = False
         for tokenType in tokenTypes:
             m = match(tokenType['regex'], code, re.S)
@@ -17,7 +18,7 @@ def analyse(code, tokenTypes):
                 found = True
                 if (tokenType['store']):
                     tokens.append(
-                        dict (
+                        dict(
                             type=tokenType['type'],
                             value=m.group(0),
                             line=line,
@@ -31,7 +32,7 @@ def analyse(code, tokenTypes):
                 else:
                     column = column + len(m.group(0))
                 code = code[len(m.group(0)):]
-                break;
+                break
         if not found:
             raise Exception('Unknow Token Code:'+code[0:500])
     return tokens

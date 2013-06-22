@@ -46,13 +46,13 @@ def look_ahead(tokens, index, type, value = None):
             return 1
     return 0
 
-def t_endline (tokens, index):
+def t_endline(tokens, index):
     return look_ahead(tokens, index, 'T_ENDLINE', '\n')
 
 def t_modifier(tokens, index):
     return look_ahead(tokens, index, 'T_MODIFIER')
 
-def t_directive (tokens, index):
+def t_directive(tokens, index):
     return look_ahead(tokens, index, 'T_DIRECTIVE')
 
 def t_directive_argument(tokens, index):
@@ -61,7 +61,7 @@ def t_directive_argument(tokens, index):
 def t_decimal_argument(tokens, index):
     return look_ahead(tokens, index, 'T_DECIMAL_ARGUMENT')
 
-def t_relative (tokens, index):
+def t_relative(tokens, index):
     if (look_ahead(tokens, index, 'T_INSTRUCTION') and 
         tokens[index]['value'] in [
             'BCC', 'BCS', 'BEQ', 'BNE',
