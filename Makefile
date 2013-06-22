@@ -23,6 +23,9 @@ todo:
 	pep8 --first pynes
 	find pynes -type f | xargs -I [] grep -H TODO []
 
+search:
+	find pynes -regex .*\.py$ | xargs -I [] egrep -H -n 'print|ipdb' [] || echo ''
+
 report:
 	coverage run --source=pynes setup.py test
 
