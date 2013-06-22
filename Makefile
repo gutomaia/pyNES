@@ -17,8 +17,7 @@ ci:
 	@nosetests
 
 pep8:
-	@pep8 --statistics -qq pynes || echo ''
-
+	@pep8 --statistics -qq pynes | sort -n || echo ''
 
 todo:
 	pep8 --first pynes
