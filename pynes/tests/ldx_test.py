@@ -32,7 +32,7 @@ class LdxTest(unittest.TestCase):
         code = semantic(ast)
         self.assertEquals(code, [0xa2, 0x0a])
 
-    def test_ldx_imm_with_decimal(self):
+    def test_ldx_imm_with_binary(self):
         tokens = lexical('LDX #%00000100')
         self.assertEquals(2 , len(tokens))
         self.assertEquals('T_INSTRUCTION', tokens[0]['type'])
