@@ -4,7 +4,8 @@ from PIL import Image, ImageDraw
 from collections import Counter, OrderedDict
 
 from pynes import write_bin_code
-import sprite, nametable
+import sprite
+import nametable
 
 from sprite import SpriteSet
 

@@ -98,7 +98,7 @@ class define_sprite(BitPak):
     def __init__(self, game):
         BitPak.__init__(self, game)
 
-    def  __call__(self, x, y, tile, attrib=0x80):
+    def __call__(self, x, y, tile, attrib=0x80):
         assert isinstance(x, int)
         assert isinstance(y, int)
         assert isinstance(tile, int) or isinstance(tile, NesArray)
@@ -110,7 +110,7 @@ class cls(BitPak):
     def __init__(self, game):
         BitPak.__init__(self, game)
 
-    def  __call__(self):
+    def __call__(self):
         self.line = self.game.get_param('line', 1)
 
     def asm(self):
@@ -159,61 +159,55 @@ class show(BitPak):
         posLow = game.get_param('posLow', 1)
         posHigh = game.get_param('posHigh', 1)
 
-    def  __call__(self, string, y=None, x=None, nametable=0):
+    def __call__(self, string, y=None, x=None, nametable=0):
         assert isinstance(string, NesString)
         string.is_used = True
         self.string = string
         base_adress = 0x2000
 
-        if y == None:
+        if y is None:
             y = 15
-        if x == None:
-            x = 16  - len(string) / 2
+        if x is None:
+            x = 16 - len(string) / 2
         pos = base_adress + y * 32 + x
         self.posHigh = (pos & 0xff00) >> 8
         self.posLow = (pos & 0x00ff)
 
     def asm(self):
-        asmcode = (
-            "  LDA #LOW(%s)\n"
-            "  STA addressLow\n"
-            "  LDA #HIGH(%s)\n"
-            "  STA addressHigh\n"
-            "  LDA #$%02X\n"
-            "  STA posHigh\n"
-            "  LDA #$%02X\n"
-            "  STA posLow\n"
-            "  JSR Show\n"
-          ) % (
-            self.string.instance_name,
-            self.string.instance_name,
-            self.posHigh,
-            self.posLow
-          )
+        asmcode = ("  LDA #LOW(%s)\n"
+                   "  STA addressLow\n"
+                   "  LDA #HIGH(%s)\n"
+                   "  STA addressHigh\n"
+                   "  LDA #$%02X\n"
+                   "  STA posHigh\n"
+                   "  LDA #$%02X\n"
+                   "  STA posLow\n"
+                   "  JSR Show\n") % (self.string.instance_name,
+                                      self.string.instance_name,
+                                      self.posHigh,
+                                      self.posLow)
         return asmcode
 
     def procedure(self):
-        asmcode = (
-          "Show:\n"
-          "  LDA $2002\n"
-          "  LDA posHigh\n"
-          "  STA $2006\n"
-          "  LDA posLow\n"
-          "  STA $2006\n"
-          "  LDY #$00\n"
-          "PrintLoop:\n"
-          "  LDA (addressLow), y\n"
-          "  CMP #$25\n"
-          "  BEQ PrintEnd\n"
-          "  STA $2007\n"
-          "  INY\n"
-          "  JMP PrintLoop\n"
-          "PrintEnd:\n"
-          "  LDA #00\n"
-          "  STA $2005\n"
-          "  STA $2005\n"
-          "  RTS\n"
-          )
+        asmcode = ("Show:\n"
+                   "  LDA $2002\n"
+                   "  LDA posHigh\n"
+                   "  STA $2006\n"
+                   "  LDA posLow\n"
+                   "  STA $2006\n"
+                   "  LDY #$00\n"
+                   "PrintLoop:\n"
+                   "  LDA (addressLow), y\n"
+                   "  CMP #$25\n"
+                   "  BEQ PrintEnd\n"
+                   "  STA $2007\n"
+                   "  INY\n"
+                   "  JMP PrintLoop\n"
+                   "PrintEnd:\n"
+                   "  LDA #00\n"
+                   "  STA $2005\n"
+                   "  STA $2005\n"
+                   "  RTS\n")
         return asmcode
 
 
@@ -222,38 +216,39 @@ class load_palette(BitPak):
     def __init__(self, game):
         BitPak.__init__(self, game)
 
-    def  __call__(self, palette):
+    def __call__(self, palette):
         assert isinstance(palette, NesArray)
-        assert palette.instance_name != None
+        assert palette.instance_name is not None
         self.palette = palette
         return palette
 
     def asm(self):
         asmcode = (
-          'LoadPalettes:\n'
-          '  LDA $2002             ; Reset PPU, start writing\n'
-          '  LDA #$3F\n'
-          '  STA $2006             ; High byte = $3F00\n'
-          '  LDA #$00\n'
-          '  STA $2006             ; Low byte = $3F00\n'
-          '  LDX #$00\n'
-          'LoadPalettesIntoPPU:\n'
-          '  LDA %s, x\n'
-          '  STA $2007\n'
-          '  INX\n' ) % self.palette.instance_name
+            'LoadPalettes:\n'
+            '  LDA $2002             ; Reset PPU, start writing\n'
+            '  LDA #$3F\n'
+            '  STA $2006             ; High byte = $3F00\n'
+            '  LDA #$00\n'
+            '  STA $2006             ; Low byte = $3F00\n'
+            '  LDX #$00\n'
+            'LoadPalettesIntoPPU:\n'
+            '  LDA %s, x\n'
+            '  STA $2007\n'
+            '  INX\n') % self.palette.instance_name
         asmcode += '  CPX #$%02x\n' % len(self.palette)
         asmcode += '  BNE LoadPalettesIntoPPU\n'
         return asmcode
+
 
 class load_sprite(BitPak):
 
     def __init__(self, game):
         BitPak.__init__(self, game)
-        self.game.has_nmi = True #TODO remove this
+        self.game.has_nmi = True  # TODO remove this
         self.game.ppu.sprite_enable = True
         self.game.ppu.nmi_enable = True
 
-    def  __call__(self, sprite, ppu_pos):
+    def __call__(self, sprite, ppu_pos):
         assert isinstance(sprite, NesSprite)
         assert ppu_pos < 64
         self.sprite = sprite
@@ -261,7 +256,7 @@ class load_sprite(BitPak):
         self.sprite.ppu_address = ppu_pos
         return None
 
-    def  asm(self):
+    def asm(self):
         size = len(self.sprite)
         load_sprites = self.game.get_label_for('LoadSprites')
         load_sprites_into_PPU = self.game.get_label_for('LoadSpritesIntoPPU')
@@ -277,18 +272,18 @@ class load_sprite(BitPak):
             bne('LoadSpritesIntoPPU')
         '''
         asmcode = (
-          '%s:\n'
-          '  LDX #$00\n'
-          '%s:\n'
-          '  LDA %s, x\n'
-          '  STA $%04X, x\n'
-          '  INX\n'
-          '  CPX #%d\n'
-          '  BNE %s\n'
+            '%s:\n'
+            '  LDX #$00\n'
+            '%s:\n'
+            '  LDA %s, x\n'
+            '  STA $%04X, x\n'
+            '  INX\n'
+            '  CPX #%d\n'
+            '  BNE %s\n'
         ) % (load_sprites,
-            load_sprites_into_PPU,
-            self.sprite.instance_name,
-            self.start_address,
-            size * 4,
-            load_sprites_into_PPU)
+             load_sprites_into_PPU,
+             self.sprite.instance_name,
+             self.start_address,
+             size * 4,
+             load_sprites_into_PPU)
         return asmcode
