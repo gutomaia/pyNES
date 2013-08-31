@@ -1,3 +1,4 @@
+*.fns
 *.pyc
 .DS_Store
 build/
