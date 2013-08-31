@@ -43,7 +43,7 @@ asm65_tokens = [
 ]
 
 
-def look_ahead(tokens, index, type, value = None):
+def look_ahead(tokens, index, type, value=None):
     if index > len(tokens) - 1:
         return 0
     token = tokens[index]
@@ -174,12 +174,14 @@ def t_nesasm_compatible_close(tokens, index):
 
 
 def t_list(tokens, index):
-    if t_address_or_t_binary_number(tokens, index) and t_separator(tokens, index+1):
+    if (t_address_or_t_binary_number(tokens, index)
+            and t_separator(tokens, index+1)):
         islist = 1
         arg = 0
         while (islist):
             islist = islist and t_separator(tokens, index + (arg * 2) + 1)
-            islist = islist and t_address_or_t_binary_number(tokens, index + (arg * 2) + 2)
+            var_index = index + (arg * 2) + 2
+            islist = islist and t_address_or_t_binary_number(tokens, var_index)
             if (t_endline(tokens, index + (arg * 2) + 3)
                     or (index + (arg * 2) + 3) == len(tokens)):
                 break
@@ -194,11 +196,10 @@ def get_list_jump(tokens, index):
     a = 0
     while keep:
         keep = keep & (
-                t_address(tokens, index + a) |
-                t_separator(tokens, index + a)
-            )
+            t_address(tokens, index + a) | t_separator(tokens, index + a))
         a += 1
     return a
+
 
 def OR(args, tokens, index):
     for t in args:
@@ -211,23 +212,37 @@ asm65_bnf = [
     dict(type='S_DIRECTIVE', bnf=[t_directive, t_directive_argument]),
     dict(type='S_RELATIVE', bnf=[t_relative, t_address_or_t_marker]),
     dict(type='S_IMMEDIATE', bnf=[t_instruction, t_number]),
-    dict(type='S_IMMEDIATE_WITH_MODIFIER', bnf=[t_instruction, t_modifier, t_open, t_address_or_t_marker, t_close]),  # nesasm hack
+    dict(type='S_IMMEDIATE_WITH_MODIFIER',
+         bnf=[t_instruction, t_modifier, t_open, t_address_or_t_marker,
+              t_close]),
     dict(type='S_ACCUMULATOR', bnf=[t_instruction, t_accumulator]),
-    dict(type='S_ZEROPAGE_X', bnf=[t_instruction, t_zeropage, t_separator, t_register_x]),
-    dict(type='S_ZEROPAGE_Y', bnf=[t_instruction, t_zeropage, t_separator, t_register_y]),
+    dict(type='S_ZEROPAGE_X',
+         bnf=[t_instruction, t_zeropage, t_separator, t_register_x]),
+    dict(type='S_ZEROPAGE_Y',
+         bnf=[t_instruction, t_zeropage, t_separator, t_register_y]),
     dict(type='S_ZEROPAGE', bnf=[t_instruction, t_zeropage]),
-    dict(type='S_ABSOLUTE_X', bnf=[t_instruction, t_address_or_t_marker, t_separator, t_register_x]),
-    dict(type='S_ABSOLUTE_Y', bnf=[t_instruction, t_address_or_t_marker, t_separator, t_register_y]),
+    dict(type='S_ABSOLUTE_X',
+         bnf=[t_instruction, t_address_or_t_marker, t_separator,
+              t_register_x]),
+    dict(type='S_ABSOLUTE_Y',
+         bnf=[t_instruction, t_address_or_t_marker, t_separator,
+              t_register_y]),
     dict(type='S_ABSOLUTE', bnf=[t_instruction, t_address_or_t_marker]),
-    dict(type='S_INDIRECT_X', bnf=[t_instruction, t_nesasm_compatible_open, t_address_or_t_marker, t_separator, t_register_x, t_nesasm_compatible_close]),
-    dict(type='S_INDIRECT_Y', bnf=[t_instruction, t_nesasm_compatible_open, t_address_or_t_marker, t_nesasm_compatible_close, t_separator, t_register_y]),
+    dict(type='S_INDIRECT_X',
+         bnf=[t_instruction, t_nesasm_compatible_open, t_address_or_t_marker,
+              t_separator, t_register_x, t_nesasm_compatible_close]),
+    dict(type='S_INDIRECT_Y',
+         bnf=[t_instruction, t_nesasm_compatible_open, t_address_or_t_marker,
+              t_nesasm_compatible_close, t_separator, t_register_y]),
     dict(type='S_IMPLIED', bnf=[t_instruction]),
 ]
+
 
 def lexical(code):
     return analyse(code, asm65_tokens)
 
-def get_value(token, labels = []):
+
+def get_value(token, labels=[]):
     if token['type'] == 'T_ADDRESS':
         m = match(asm65_tokens[1]['regex'], token['value'])
         return int(m.group(1), 16)
@@ -250,7 +265,9 @@ def get_value(token, labels = []):
     elif token['type'] == 'T_STRING':
         return token['value'][1:-1]
     else:
-        raise Exception('could not get value:' + token['type'] + token['value']+ str(token['line']))
+        raise Exception('could not get value:' + token['type'] +
+                        token['value'] + str(token['line']))
+
 
 def syntax(tokens):
     ast = []
@@ -279,7 +296,7 @@ def syntax(tokens):
                         leaf['labels'] = labels
                         labels = []
                     size = 0
-                    look_ahead = 0;
+                    look_ahead = 0
                     for b in bnf['bnf']:
                         size += b(tokens, x+look_ahead)
                         look_ahead += 1
@@ -303,10 +320,10 @@ def syntax(tokens):
 
 def get_labels(ast):
     labels = {}
-    address = 0;
+    address = 0
     for leaf in ast:
-        if ('S_DIRECTIVE' == leaf['type'] and
-            '.org' == leaf['children'][0]['value']):
+        if ('S_DIRECTIVE' == leaf['type']
+                and '.org' == leaf['children'][0]['value']):
             address = int(leaf['children'][1]['value'][1:], 16)
         if 'labels' in leaf:
             for label in leaf['labels']:
@@ -314,24 +331,27 @@ def get_labels(ast):
         if leaf['type'] != 'S_DIRECTIVE' and leaf['type'] != 'S_RS':
             size = address_mode_def[leaf['type']]['size']
             address += size
-        elif 'S_DIRECTIVE' == leaf['type'] and '.db' == leaf['children'][0]['value']:
+        elif ('S_DIRECTIVE' == leaf['type']
+                and '.db' == leaf['children'][0]['value']):
             for i in leaf['children']:
                 if 'T_ADDRESS' == i['type']:
                     address += 1
-        elif 'S_DIRECTIVE' == leaf['type'] and '.incbin' == leaf['children'][0]['value']:
-            address += 4 * 1024; #TODO check file size;
+        elif ('S_DIRECTIVE' == leaf['type']
+                and '.incbin' == leaf['children'][0]['value']):
+            address += 4 * 1024  # TODO check file size;
     return labels
 
-def semantic(ast, iNES=False, cart=None ):
-    if cart == None:
+
+def semantic(ast, iNES=False, cart=None):
+    if cart is None:
         cart = Cartridge()
     labels = get_labels(ast)
     address = 0
     #translate statments to opcode
     for leaf in ast:
         if leaf['type'] == 'S_RS':
-            labels[leaf['children'][0]['value']] = cart.rs;
-            cart.rs += get_value(leaf['children'][2]);
+            labels[leaf['children'][0]['value']] = cart.rs
+            cart.rs += get_value(leaf['children'][2])
         elif leaf['type'] == 'S_DIRECTIVE':
             directive = leaf['children'][0]['value']
             if len(leaf['children']) == 2:
@@ -352,14 +372,15 @@ def semantic(ast, iNES=False, cart=None ):
             elif leaf['type'] == 'S_IMMEDIATE_WITH_MODIFIER':
                 instruction = leaf['children'][0]['value']
                 modifier = leaf['children'][1]['value']
-                address = get_value(leaf['children'][3], labels);
+                address = get_value(leaf['children'][3], labels)
                 if modifier == '#LOW':
                     address = (address & 0x00ff)
                 elif modifier == '#HIGH':
-                    address = (address & 0xff00) >> 8;
-            elif leaf['type'] in [
-                'S_RELATIVE', 'S_IMMEDIATE', 'S_ZEROPAGE', 'S_ABSOLUTE',
-                'S_ZEROPAGE_X', 'S_ZEROPAGE_Y', 'S_ABSOLUTE_X', 'S_ABSOLUTE_Y']:
+                    address = (address & 0xff00) >> 8
+            elif leaf['type'] in ['S_RELATIVE', 'S_IMMEDIATE', 'S_ZEROPAGE',
+                                  'S_ABSOLUTE', 'S_ZEROPAGE_X',
+                                  'S_ZEROPAGE_Y', 'S_ABSOLUTE_X',
+                                  'S_ABSOLUTE_Y']:
                 instruction = leaf['children'][0]['value']
                 address = get_value(leaf['children'][1], labels)
             elif leaf['type'] in ['S_INDIRECT_X', 'S_INDIRECT_Y']:
@@ -392,6 +413,7 @@ def semantic(ast, iNES=False, cart=None ):
     else:
         return cart.get_code()
 
+
 def compile_file(asmfile, output=None, path=None):
     from os.path import dirname, realpath
 
@@ -399,14 +421,15 @@ def compile_file(asmfile, output=None, path=None):
     code = f.read()
     f.close()
 
-    if path == None:
+    if path is None:
         path = dirname(realpath(asmfile)) + '/'
 
-    if output == None:
+    if output is None:
         output = 'output.nes'
 
     opcodes = compile(code, path)
     pynes.write_bin_code(opcodes, output)
+
 
 def compile(code, path):
 
@@ -418,5 +441,3 @@ def compile(code, path):
     opcodes = semantic(ast, True, cart)
 
     return opcodes
-
-

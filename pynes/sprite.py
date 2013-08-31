@@ -61,28 +61,28 @@ def decode_sprite(channelA, channelB):
                 pixel = 2
             elif ((a & bit) and (b & bit)):
                 pixel = 3
-            line.append(pixel);
+            line.append(pixel)
         s.append(line)
-    return s;
+    return s
 
 def get_sprite(index, sprites):
     assert len(sprites) > index
-    iA = index * 16;
-    iB = iA + 8;
-    iC = iB + 8;
+    iA = index * 16
+    iB = iA + 8
+    iC = iB + 8
     channelA = sprites[iA:iB]
     channelB = sprites[iB:iC]
     return decode_sprite(channelA, channelB)
 
 def encode_sprite(sprite):
-    channelA = [];
-    channelB = [];
+    channelA = []
+    channelB = []
     for y in range(8):
         a = 0
         b = 0
         for x in range(8):
-            pixel = sprite[y][x];
-            bit = pow(2,7-x);
+            pixel = sprite[y][x]
+            bit = pow(2,7-x)
             if pixel == 1:
                 a = a | bit
             elif pixel == 2:
@@ -90,18 +90,18 @@ def encode_sprite(sprite):
             elif pixel == 3:
                 a = a | bit
                 b = b | bit
-        channelA.append(a);
-        channelB.append(b);
+        channelA.append(a)
+        channelB.append(b)
     return channelA + channelB
 
 def put_sprite(index, sprites, spr):
-    start = index * 16;
-    encoded = encode_sprite(spr);
+    start = index * 16
+    encoded = encode_sprite(spr)
     j = 0
     for i in range(start, start + 16):
         sprites[i] = encoded[j]
         j += 1
-    return sprites;
+    return sprites
 
 def length(sprites):
     return len(sprites) / 16

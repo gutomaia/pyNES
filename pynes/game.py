@@ -21,7 +21,7 @@ class Bit(object):
         return getattr(instance, self.varname) & flag == flag
 
     def __set__(self, instance, value):
-        assert isinstance(value, (bool,int))
+        assert isinstance(value, (bool, int))
         assert value == 0 or value == 1
         assert hasattr(instance, self.varname)
         flag = pow(2, self.bit)
@@ -50,13 +50,12 @@ class PPU(object):
         self.scrolling = True
 
     def on_reset(self):
-        asm = (
-          '  LDA #%{ctrl:08b}\n'
-          '  STA $2000\n'
-          '  LDA #%{mask:08b}\n'
-          '  STA $2001\n').format(
-            ctrl=self.ctrl,
-            mask=self.mask)
+        asm = ('  LDA #%{ctrl:08b}\n'
+               '  STA $2000\n'
+               '  LDA #%{mask:08b}\n'
+               '  STA $2001\n').format(
+               ctrl=self.ctrl,
+               mask=self.mask)
         return asm
 
     def on_nmi(self):
@@ -71,7 +70,7 @@ class PPU(object):
 #change to SpriteSwarmOperation
 class NesAddressSet(NesType):
 
-    def __init__ (self, addresses, width):
+    def __init__(self, addresses, width):
         NesType.__init__(self)
         self.addresses = addresses
         self.width = width
