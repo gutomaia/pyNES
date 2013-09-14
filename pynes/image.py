@@ -159,7 +159,6 @@ Export a nametable to a image
 using a chr_file
 '''
 def export_nametable(nametable_data, chr_data, png_file, palette=palette):
-    print nametable_data
     if isinstance(nametable_data, str):
         nts = nametable.load_nametable(nametable_data)
     else:
