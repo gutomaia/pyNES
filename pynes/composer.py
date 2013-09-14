@@ -5,7 +5,7 @@ import ast
 from re import match
 from inspect import getmembers
 
-import pynes.bitbag #TODO fix import to be able to remove this
+import pynes.bitbag  # TODO fix import to be able to remove this
 
 from pynes.game import Game, PPU, PPUSprite, Joypad
 from pynes.nes_types import NesType, NesInt, NesRs, NesArray, NesString, NesSprite, NesChrFile
@@ -13,14 +13,15 @@ from pynes.compiler import compile as nes_compile
 
 from _ast import *
 
+
 class OperationStack:
 
     def __init__(self):
         self._stack = []
         self._pile = []
 
-    def __call__(self, operand = None):
-        if operand != None:
+    def __call__(self, operand=None):
+        if operand is not None:
             self._stack.append(operand)
         return self._stack
 
