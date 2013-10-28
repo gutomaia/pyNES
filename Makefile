@@ -110,7 +110,11 @@ dist/windows/pynes.exe: ${PYINSTALLER} ${PYTHON_EXE} windows_binary_dependencies
 	wine ${PYTHON_EXE} ${PYINSTALLER} --onefile pynes.windows.spec
 	@touch $@
 
-dist: clean dist/linux/pynes dist/windows/pynes.exe
+linux: dist/linux/pynes
+
+windows: dist/windows/pynes.exe
+
+dist: clean linux windows
 
 clean:
 	@rm -rf build
