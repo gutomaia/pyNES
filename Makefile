@@ -59,8 +59,6 @@ ${PYTHON_EXE}: deps/python-${PYTHON_VERSION}.msi
 		msiexec /i python-2.7.3.msi /qb
 	@touch $@
 
-dependencies_wine: ${PYTHON_EXE} pip.installed
-
 ${WINE_PATH}/Python27/msvcp90.dll: ${WINE_PATH}/windows/system32/msvcp90.dll
 	@cp $< $@
 
@@ -89,8 +87,6 @@ ${PYINSTALLER}: tools/.done deps/pyinstaller-2.0.zip
 		unzip ../deps/pyinstaller-2.0.zip
 	@touch $@
 
-build_tools: tools/pyinstaller-${PYINSTALLER_VERSION}/pyinstaller.py
-
 tools/env/bin/activate: tools/.done
 	virtualenv --no-site-packages --distribute tools/env
 	@touch $@
@@ -107,11 +103,14 @@ dependencies_wine: ${PYTHON_EXE} ${PIP_EXE}
 
 windows_binary_dependencies: ${WINE_PATH}/Python27/Scripts/pywin32_postinstall.py
 
+dist/linux/pynes: ${PYINSTALLER} tools/requirements.windows.checked
+	python ${PYINSTALLER} pynes.linux.spec
+
 dist/windows/pynes.exe: ${PYINSTALLER} ${PYTHON_EXE} windows_binary_dependencies tools/requirements.windows.checked
 	wine ${PYTHON_EXE} ${PYINSTALLER} --onefile pynes.windows.spec
 	@touch $@
 
-dist: clean dist/windows/pynes.exe
+dist: clean dist/linux/pynes dist/windows/pynes.exe
 
 clean:
 	@rm -rf build
