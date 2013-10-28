@@ -59,10 +59,6 @@ ${PYTHON_EXE}: deps/python-${PYTHON_VERSION}.msi
 		msiexec /i python-2.7.3.msi /qb
 	@touch $@
 
-${PIP_EXE}: ${PYTHON_EXE} deps/distribute_setup.py
-	wine ${PYTHON_EXE} deps/distribute_setup.py
-
-
 dependencies_wine: ${PYTHON_EXE} pip.installed
 
 ${WINE_PATH}/Python27/msvcp90.dll: ${WINE_PATH}/windows/system32/msvcp90.dll
@@ -79,10 +75,11 @@ deps/distribute_setup.py:
 	@touch $@
 
 ${EASYINSTALL_EXE}: ${PYTHON_EXE} deps/distribute_setup.py
-	wine ${PYTHON_EXE} deps/distribute_setup.py
+	cd deps && \
+		wine ${PYTHON_EXE} distribute_setup.py
 	@touch $@
 
-deps/pip.installed: ${PYTHON_EXE} ${EASYINSTALL_EXE}
+${PIP_EXE}: ${PYTHON_EXE} ${EASYINSTALL_EXE}
 	wine ${EASYINSTALL_EXE} pip
 	@touch $@
 
@@ -98,7 +95,7 @@ tools/env/bin/activate: tools/.done
 	virtualenv --no-site-packages --distribute tools/env
 	@touch $@
 
-tools/requirements.windows.checked: deps/pip.installed requirements.txt
+tools/requirements.windows.checked: ${PIP_EXE} requirements.txt
 	wine ${PIP_EXE} install -r requirements.txt
 	@touch $@
 
@@ -107,17 +104,14 @@ dependencies: tools/requirements.checked \
 
 dependencies_wine: ${PYTHON_EXE} ${PIP_EXE}
 
-dist/backupd.exe: ${PYINSTALLER} tools/requirements.windows.checked
-	wine ${PYTHON_EXE} ${PYINSTALLER} --onefile backupd.spec
-	@touch $@
 
 windows_binary_dependencies: ${WINE_PATH}/Python27/Scripts/pywin32_postinstall.py
 
-dist/app.exe: ${PYINSTALLER} ${PYTHON_EXE} windows_binary_dependencies tools/requirements.windows.checked
-	#windows_binary_dependencies
-	wine ${PYTHON_EXE} ${PYINSTALLER} app.win.spec
+dist/windows/pynes.exe: ${PYINSTALLER} ${PYTHON_EXE} windows_binary_dependencies tools/requirements.windows.checked
+	wine ${PYTHON_EXE} ${PYINSTALLER} --onefile pynes.windows.spec
+	@touch $@
 
-dist: dist/app.exe
+dist: clean dist/windows/pynes.exe
 
 clean:
 	@rm -rf build
