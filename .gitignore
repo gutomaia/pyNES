@@ -1,9 +1,12 @@
 *.fns
 *.pyc
+*~
 .DS_Store
 build/
+deps/
 dist/
 pynes.egg-info/
 pynes/examples/*.asm
 pynes/examples/*.chr
 pynes/examples/*.nes
+tools/
