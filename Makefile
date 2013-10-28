@@ -104,9 +104,15 @@ dependencies_wine: ${PYTHON_EXE} ${PIP_EXE}
 windows_binary_dependencies: ${WINE_PATH}/Python27/Scripts/pywin32_postinstall.py
 
 dist/linux/pynes: ${PYINSTALLER} tools/requirements.windows.checked
+	@rm -rf build/pyi.linux
+	@rm -rf build/pyi.linux2
+	@rm -rf dist/linux
 	python ${PYINSTALLER} pynes.linux.spec
+	@touch $@
 
 dist/windows/pynes.exe: ${PYINSTALLER} ${PYTHON_EXE} windows_binary_dependencies tools/requirements.windows.checked
+	@rm -rf build/pyi.win32
+	@rm -rf dist/windows
 	wine ${PYTHON_EXE} ${PYINSTALLER} --onefile pynes.windows.spec
 	@touch $@
 
@@ -114,7 +120,7 @@ linux: dist/linux/pynes
 
 windows: dist/windows/pynes.exe
 
-dist: clean linux windows
+dist: linux windows
 
 clean:
 	@rm -rf build
@@ -165,4 +171,4 @@ ghpages: deploy download_deps
 		git push --force remote +master:gh-pages
 	rm -rf /tmp/ghpages
 
-.PHONY: clean run report ghpages
+.PHONY: clean linux windows run report ghpages
