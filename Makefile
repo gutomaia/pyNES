@@ -3,6 +3,7 @@ PYWIN32_VERSION = 218
 PYINSTALLER_VERSION = 2.0
 SETUPTOOLS_VERSION=0.6c11
 
+MSVCP90 = ${WINE_PATH}/Python27/msvcp90.dll
 PYINSTALLER=tools/pyinstaller-${PYINSTALLER_VERSION}/pyinstaller.py
 PYWIN32=pywin32-${PYWIN32_VERSION}.win32-py2.7.exe
 
@@ -11,9 +12,6 @@ WINE_PATH=~/.wine/drive_c
 NSIS_PATH = ${WINE_PATH}/Program\ Files/NSIS
 
 MAKENSIS_EXE = ${NSIS_PATH}/makensis.exe
-#NSIS_EXE = ${WINE_PATH}/Program\ Files/NSIS/NSIS.exe
-#NSIS_EXE = ${WINE_PATH}/Program\ Files\ \(x86\)/NSIS/NSIS.exe
-
 
 DOWNLOAD_PATH=deps
 
@@ -34,6 +32,44 @@ default:
 else
 default: test
 endif
+
+ifeq "Darwin" "$(shell uname)"
+
+	echo "opa"
+endif
+
+clean:
+	@rm -rf build
+	@rm -rf dist
+	@rm -rf reports
+
+purge: clean
+	@ rm -rf deps
+	@rm -rf tools
+
+test:
+	@nosetests --processes=2 -e image_test.py
+
+build: test
+
+ci:
+	@nosetests
+
+pep8:
+	@pep8 --statistics -qq pynes | sort -rn || echo ''
+
+todo:
+	pep8 --first pynes
+	find pynes -type f | xargs -I [] grep -H TODO []
+
+search:
+	find pynes -regex .*\.py$ | xargs -I [] egrep -H -n 'print|ipdb' [] || echo ''
+
+report:
+	coverage run --source=pynes setup.py test
+
+tdd:
+	tdaemon --ignore-dirs build,dist,bin,site,pynes.egg-info --custom-args="-e image_test.py --with-growl"
 
 deps/.done:
 	@echo "Creating dependencies dir: \c"
@@ -135,48 +171,16 @@ deps/nsis-3.0a1-setup.exe:
 		${WGET} http://downloads.sourceforge.net/project/nsis/NSIS%203%20Pre-release/3.0a1/nsis-3.0a1-setup.exe
 	@touch $@
 
-${NSIS_EXE}: deps/nsis-3.0a1-setup.exe
-	#wine deps/nsis-3.0a1-setup.exe
-	#@touch $@
-	echo "oi"
+${MAKENSIS_EXE}: deps/nsis-3.0a1-setup.exe
+	@echo "Installing NSIS \c"
+	@wine deps/nsis-3.0a1-setup.exe /S /D=C:\NSIS
+	@touch "$@"
+	${CHECK}
 
-nsis: ${NSIS_EXE}
-	wine ${MAKENSIS_EXE} installer.nsi
+nsis: ${MAKENSIS_EXE}
+	@wine ${MAKENSIS_EXE} installer.nsi
 
 installer: nsis
-
-clean:
-	@rm -rf build
-	@rm -rf dist
-	@rm -rf reports
-
-purge: clean
-	@ rm -rf deps
-	@rm -rf tools
-
-test:
-	@nosetests --processes=2 -e image_test.py
-
-build: test
-
-ci:
-	@nosetests
-
-pep8:
-	@pep8 --statistics -qq pynes | sort -rn || echo ''
-
-todo:
-	pep8 --first pynes
-	find pynes -type f | xargs -I [] grep -H TODO []
-
-search:
-	find pynes -regex .*\.py$ | xargs -I [] egrep -H -n 'print|ipdb' [] || echo ''
-
-report:
-	coverage run --source=pynes setup.py test
-
-tdd:
-	tdaemon --ignore-dirs build,dist,bin,site,pynes.egg-info --custom-args="-e image_test.py --with-growl"
 
 ghpages: deploy download_deps
 	rm -rf /tmp/ghpages
@@ -194,4 +198,4 @@ ghpages: deploy download_deps
 		git push --force remote +master:gh-pages
 	rm -rf /tmp/ghpages
 
-.PHONY: clean linux windows run report ghpages
+.PHONY: clean linux windows dist nsis installer run report ghpages
