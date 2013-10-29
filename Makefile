@@ -9,7 +9,7 @@ PYWIN32=pywin32-${PYWIN32_VERSION}.win32-py2.7.exe
 
 WINE_PATH=~/.wine/drive_c
 
-NSIS_PATH = ${WINE_PATH}/Program\ Files/NSIS
+NSIS_PATH = ${WINE_PATH}/NSIS
 
 MAKENSIS_EXE = ${NSIS_PATH}/makensis.exe
 
@@ -167,13 +167,15 @@ windows: dist/windows/pynes.exe
 dist: linux windows
 
 deps/nsis-3.0a1-setup.exe:
+	@echo "Downloading NSIS \c"
 	@cd deps && \
 		${WGET} http://downloads.sourceforge.net/project/nsis/NSIS%203%20Pre-release/3.0a1/nsis-3.0a1-setup.exe
-	@touch $@
+	@touch "$@"
+	${CHECK}
 
 ${MAKENSIS_EXE}: deps/nsis-3.0a1-setup.exe
 	@echo "Installing NSIS \c"
-	@wine deps/nsis-3.0a1-setup.exe /S /D=C:\NSIS
+	@wine deps/nsis-3.0a1-setup.exe /S /D=C:\\NSIS
 	@touch "$@"
 	${CHECK}
 
