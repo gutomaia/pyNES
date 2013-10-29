@@ -7,6 +7,8 @@ PYINSTALLER=tools/pyinstaller-${PYINSTALLER_VERSION}/pyinstaller.py
 PYWIN32=pywin32-${PYWIN32_VERSION}.win32-py2.7.exe
 
 WINE_PATH=~/.wine/drive_c
+NSIS_EXE = ${WINE_PATH}/Program\ Files\ \(x86\)/NSIS/NSIS.exe
+
 DOWNLOAD_PATH=deps
 
 PYTHON_EXE=${WINE_PATH}/Python27/python.exe
@@ -121,6 +123,20 @@ linux: dist/linux/pynes
 windows: dist/windows/pynes.exe
 
 dist: linux windows
+
+deps/nsis-3.0a1-setup.exe: 
+	@cd deps && \
+		${WGET} http://downloads.sourceforge.net/project/nsis/NSIS%203%20Pre-release/3.0a1/nsis-3.0a1-setup.exe
+	@touch $@
+
+${NSIS_EXE}: deps/nsis-3.0a1-setup.exe
+	wine deps/nsis-3.0a1-setup.exe
+	@touch $@
+
+nsis: ${NSIS_EXE}
+	wine ${NSIS_EXE} 
+
+installer: nsis
 
 clean:
 	@rm -rf build
