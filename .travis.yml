@@ -7,7 +7,7 @@ before_install:
 python:
   - "2.7"
 install:
-  - pip install -q -r requirements.txt --use-mirrors
+  - pip install -q -r requirements.txt
 script:
   - nosetests
   - coverage run --source=pynes setup.py test
