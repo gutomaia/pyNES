@@ -3,8 +3,7 @@
 from re import match
 import re
 
-
-def analyse(code, tokenTypes):
+def analyse_generator(code, tokenTypes):
     tokens = []
     ttype = None
     line = 1
@@ -17,13 +16,11 @@ def analyse(code, tokenTypes):
             if m:
                 found = True
                 if (tokenType['store']):
-                    tokens.append(
-                        dict(
-                            type=tokenType['type'],
-                            value=m.group(0),
-                            line=line,
-                            column=column
-                        )
+                    yield dict(
+                        type=tokenType['type'],
+                        value=m.group(0),
+                        line=line,
+                        column=column
                     )
                     #print tokenType['type'] + ' ' + m.group(0)
                 if m.group(0) == "\n":
@@ -35,4 +32,6 @@ def analyse(code, tokenTypes):
                 break
         if not found:
             raise Exception('Unknow Token Code:'+code[0:500])
-    return tokens
+
+def analyse(code, tokenTypes):
+    return list(analyse_generator(code, tokenTypes))
