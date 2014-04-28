@@ -3,7 +3,7 @@
 from re import match
 import re
 
-def analyse_generator(code, tokenTypes):
+def analyse(code, tokenTypes):
     tokens = []
     ttype = None
     line = 1
@@ -33,5 +33,3 @@ def analyse_generator(code, tokenTypes):
         if not found:
             raise Exception('Unknow Token Code:'+code[0:500])
 
-def analyse(code, tokenTypes):
-    return list(analyse_generator(code, tokenTypes))

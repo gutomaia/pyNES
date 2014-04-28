@@ -15,7 +15,7 @@ class MovingSpriteTest(HexTestCase):
         code = f.read()
         f.close()
         tokens = lexical(code)
-        self.ast = syntax(tokens)
+        self.ast = syntax(list(tokens))
 
     def test_inesprg_1(self):
         self.assertEquals('S_DIRECTIVE', self.ast[0]['type'])

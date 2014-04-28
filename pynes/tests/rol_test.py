@@ -12,7 +12,7 @@ from pynes.compiler import lexical, syntax, semantic
 class RolTest(unittest.TestCase):
 
     def test_rol_imm(self):
-        tokens = lexical('ROL #$10')
+        tokens = list(lexical('ROL #$10'))
         self.assertEquals(2 , len(tokens))
         self.assertEquals('T_INSTRUCTION', tokens[0]['type'])
         self.assertEquals('T_HEX_NUMBER', tokens[1]['type'])
@@ -23,7 +23,7 @@ class RolTest(unittest.TestCase):
         self.assertEquals(code, [0x2a, 0x10])
 
     def test_rol_imm_with_decimal(self):
-        tokens = lexical('ROL #10')
+        tokens = list(lexical('ROL #10'))
         self.assertEquals(2 , len(tokens))
         self.assertEquals('T_INSTRUCTION', tokens[0]['type'])
         self.assertEquals('T_DECIMAL_NUMBER', tokens[1]['type'])
@@ -34,7 +34,7 @@ class RolTest(unittest.TestCase):
         self.assertEquals(code, [0x2a, 0x0a])
 
     def test_rol_imm_with_binary(self):
-        tokens = lexical('ROL #%00000100')
+        tokens = list(lexical('ROL #%00000100'))
         self.assertEquals(2 , len(tokens))
         self.assertEquals('T_INSTRUCTION', tokens[0]['type'])
         self.assertEquals('T_BINARY_NUMBER', tokens[1]['type'])
@@ -45,7 +45,7 @@ class RolTest(unittest.TestCase):
         self.assertEquals(code, [0x2a, 0x04])
 
     def test_rol_zp(self):
-        tokens = lexical('ROL $00')
+        tokens = list(lexical('ROL $00'))
         self.assertEquals(2 , len(tokens))
         self.assertEquals('T_INSTRUCTION', tokens[0]['type'])
         self.assertEquals('T_ADDRESS', tokens[1]['type'])
@@ -56,7 +56,7 @@ class RolTest(unittest.TestCase):
         self.assertEquals(code, [0x26, 0x00])
 
     def test_rol_zpx(self):
-        tokens = lexical('ROL $10,X')
+        tokens = list(lexical('ROL $10,X'))
         self.assertEquals(4 , len(tokens))
         token = tokens[0]
         self.assertEquals('T_INSTRUCTION', tokens[0]['type'])
@@ -70,7 +70,7 @@ class RolTest(unittest.TestCase):
         self.assertEquals(code, [0x36, 0x10])
 
     def test_rol_abs(self):
-        tokens = lexical('ROL $1234')
+        tokens = list(lexical('ROL $1234'))
         self.assertEquals(2 , len(tokens))
         self.assertEquals('T_INSTRUCTION', tokens[0]['type'])
         self.assertEquals('T_ADDRESS', tokens[1]['type'])
@@ -82,7 +82,7 @@ class RolTest(unittest.TestCase):
         self.assertEquals(code, [0x2e, 0x34, 0x12])
 
     def test_rol_absx(self):
-        tokens = lexical('ROL $1234,X')
+        tokens = list(lexical('ROL $1234,X'))
         self.assertEquals(4 , len(tokens))
         token = tokens[0]
         self.assertEquals('T_INSTRUCTION', tokens[0]['type'])

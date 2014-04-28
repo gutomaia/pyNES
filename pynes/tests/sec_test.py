@@ -7,7 +7,7 @@ from pynes.compiler import lexical, syntax, semantic
 class SecTest(unittest.TestCase):
 
     def test_sec_sngl(self):
-        tokens = lexical('SEC')
+        tokens = list(lexical('SEC'))
         self.assertEquals(1 , len(tokens))
         self.assertEquals('T_INSTRUCTION', tokens[0]['type'])
         ast = syntax(tokens)

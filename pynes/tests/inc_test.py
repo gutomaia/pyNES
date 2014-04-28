@@ -6,7 +6,7 @@ from pynes.compiler import lexical, syntax, semantic
 class IncTest(unittest.TestCase):
 
     def test_inc_zp(self):
-        tokens = lexical('INC $00')
+        tokens = list(lexical('INC $00'))
         self.assertEquals(2 , len(tokens))
         self.assertEquals('T_INSTRUCTION', tokens[0]['type'])
         self.assertEquals('T_ADDRESS', tokens[1]['type'])
@@ -17,7 +17,7 @@ class IncTest(unittest.TestCase):
         self.assertEquals(code, [0xe6, 0x00])
 
     def test_inc_zpx(self):
-        tokens = lexical('INC $10,X')
+        tokens = list(lexical('INC $10,X'))
         self.assertEquals(4 , len(tokens))
         token = tokens[0]
         self.assertEquals('T_INSTRUCTION', tokens[0]['type'])
@@ -31,7 +31,7 @@ class IncTest(unittest.TestCase):
         self.assertEquals(code, [0xf6, 0x10])
 
     def test_inc_abs(self):
-        tokens = lexical('INC $1234')
+        tokens = list(lexical('INC $1234'))
         self.assertEquals(2 , len(tokens))
         self.assertEquals('T_INSTRUCTION', tokens[0]['type'])
         self.assertEquals('T_ADDRESS', tokens[1]['type'])
@@ -44,7 +44,7 @@ class IncTest(unittest.TestCase):
 
 
     def test_inc_absx(self):
-        tokens = lexical('INC $1234,X')
+        tokens = list(lexical('INC $1234,X'))
         self.assertEquals(4 , len(tokens))
         token = tokens[0]
         self.assertEquals('T_INSTRUCTION', tokens[0]['type'])

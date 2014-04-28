@@ -7,7 +7,7 @@ from pynes.compiler import lexical, syntax, semantic
 class TxaTest(unittest.TestCase):
 
     def test_txa_sngl(self):
-        tokens = lexical('TXA')
+        tokens = list(lexical('TXA'))
         self.assertEquals(1 , len(tokens))
         self.assertEquals('T_INSTRUCTION', tokens[0]['type'])
         ast = syntax(tokens)

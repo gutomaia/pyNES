@@ -225,7 +225,7 @@ asm65_bnf = [
 ]
 
 def lexical(code):
-    return analyse(code, asm65_tokens)
+    return analyse(code, asm65_tokens) # A generator
 
 def get_value(token, labels = []):
     if token['type'] == 'T_ADDRESS':
@@ -414,7 +414,7 @@ def compile(code, path):
     cart.path = path
 
     tokens = lexical(code)
-    ast = syntax(tokens)
+    ast = syntax(list(tokens))
     opcodes = semantic(ast, True, cart)
 
     return opcodes
