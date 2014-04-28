@@ -4,6 +4,20 @@ from re import match
 import re
 from io import StringIO, BytesIO
 
+class UnknownToken(Exception):
+    ''' Unknown token error when trying to tokenize a single line '''
+    def __init__(self, line, column, line_code):
+        self.line_code = line_code
+        self.line = line
+        self.column = column
+        super(UnknownToken, self).__init__(self.message)
+
+    @property
+    def message(self):
+        msg = 'Unknown token @({line},{column}): {0}'
+        return msg.format(self.line_code.rstrip(), **vars(self))
+
+
 def code_line_generator(code):
     ''' A generator for lines from a file/string, keeping the \n at end '''
     if isinstance(code, unicode):
@@ -40,5 +54,5 @@ def analyse(code, token_types):
                     column += len(value)
                     break
             else:
-                raise Exception('Unknown token at column {}:' + line_code)
+                raise UnknownToken(line, column, line_code)
 
