@@ -2,9 +2,27 @@
 
 from re import match
 import re
+from io import StringIO, BytesIO
+
+def code_line_generator(code):
+    ''' A generator for lines from a file/string, keeping the \n at end '''
+    if isinstance(code, unicode):
+        stream = StringIO(code)
+    elif isinstance(code, str):
+        stream = BytesIO(code)
+    else:
+        stream = code # Should be a file input stream, already
+
+    while True:
+        line = stream.readline()
+        if line:
+            yield line
+        else: # Line is empty (without \n) at EOF
+            break
+
 
 def analyse(code, tokenTypes):
-    tokens = []
+    code = "".join(code_line_generator(code))
     ttype = None
     line = 1
     column = 1

@@ -3,7 +3,7 @@
 from pynes.analyzer import analyse
 from pynes.c6502 import opcodes, address_mode_def
 from re import match
-
+import io
 import inspect
 from binascii import hexlify
 
@@ -395,17 +395,15 @@ def semantic(ast, iNES=False, cart=None ):
 def compile_file(asmfile, output=None, path=None):
     from os.path import dirname, realpath
 
-    f = open(asmfile)
-    code = f.read()
-    f.close()
-
     if path == None:
         path = dirname(realpath(asmfile)) + '/'
 
     if output == None:
         output = 'output.nes'
 
-    opcodes = compile(code, path)
+    with io.open(asmfile, "r", encoding="utf-8") as f:
+      opcodes = compile(f, path)
+
     pynes.write_bin_code(opcodes, output)
 
 def compile(code, path):
