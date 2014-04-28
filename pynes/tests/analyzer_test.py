@@ -35,3 +35,13 @@ class AnalyzerTest(TestCase):
             self.assertEquals('Unknown token @(2,3):   @--Case', ut.message)
         else:
             self.fail("UnkownToken not raised")
+
+    def test_empty_token_types_list(self):
+        tokens = analyse('something', [])
+        with self.assertRaises(UnknownToken):
+            next(tokens) # unknown
+
+    def test_empty_inputs(self):
+        tokens = analyse('', [])
+        with self.assertRaises(StopIteration):
+            next(tokens) # unknown
