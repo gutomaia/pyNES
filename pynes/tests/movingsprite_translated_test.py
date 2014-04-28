@@ -13,7 +13,7 @@ class MovingSpriteTranslatedTest(HexTestCase):
         code = game.press_start()
         self.code = code
         tokens = lexical(code)
-        self.ast = syntax(list(tokens))
+        self.ast = syntax(tokens)
 
     def test_inesprg_1(self):
         self.assertEquals('S_DIRECTIVE', self.ast[0]['type'])

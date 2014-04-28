@@ -253,6 +253,7 @@ def get_value(token, labels = []):
         raise Exception('could not get value:' + token['type'] + token['value']+ str(token['line']))
 
 def syntax(tokens):
+    tokens = list(tokens)
     ast = []
     x = 0  # consumed
     debug = 0
@@ -412,7 +413,7 @@ def compile(code, path):
     cart.path = path
 
     tokens = lexical(code)
-    ast = syntax(list(tokens))
+    ast = syntax(tokens)
     opcodes = semantic(ast, True, cart)
 
     return opcodes

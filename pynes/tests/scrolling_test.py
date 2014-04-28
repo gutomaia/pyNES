@@ -19,7 +19,7 @@ class ScrollingTest(HexTestCase):
         code = f.read()
         f.close()
         tokens = lexical(code)
-        ast = syntax(list(tokens))
+        ast = syntax(tokens)
 
         cart = Cartridge()
         cart.path = 'fixtures/nerdynights/scrolling/'
