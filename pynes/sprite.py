@@ -24,6 +24,7 @@ palette = [
     0x00f8fc, 0xc8c0c0, 0x000000, 0x000000
 ]
 
+
 def load_sprites(src):
     f = open(src, 'rb')
     content = f.read()
@@ -31,6 +32,7 @@ def load_sprites(src):
     assert len(content) % 16 == 0
     bin = [ord(c) for c in content]
     return bin
+
 
 def load_indexed_sprites(src):
     f = open(src, 'rb')
@@ -43,15 +45,16 @@ def load_indexed_sprites(src):
         indexes[content[i * 16: i * 16 + 16]] = i
     return bin, indexes
 
+
 def decode_sprite(channelA, channelB):
     s = []
     y = 0
-    for y in range(0,8):
+    for y in range(0, 8):
         a = channelA[y]
         b = channelB[y]
         line = []
-        for x in range(0,8):
-            bit = pow(2,7-x)
+        for x in range(0, 8):
+            bit = pow(2, 7 - x)
             pixel = -1
             if (not (a & bit) and not (b & bit)):
                 pixel = 0
@@ -65,6 +68,7 @@ def decode_sprite(channelA, channelB):
         s.append(line)
     return s
 
+
 def get_sprite(index, sprites):
     assert len(sprites) > index
     iA = index * 16
@@ -74,6 +78,7 @@ def get_sprite(index, sprites):
     channelB = sprites[iB:iC]
     return decode_sprite(channelA, channelB)
 
+
 def encode_sprite(sprite):
     channelA = []
     channelB = []
@@ -82,7 +87,7 @@ def encode_sprite(sprite):
         b = 0
         for x in range(8):
             pixel = sprite[y][x]
-            bit = pow(2,7-x)
+            bit = pow(2, 7 - x)
             if pixel == 1:
                 a = a | bit
             elif pixel == 2:
@@ -94,6 +99,7 @@ def encode_sprite(sprite):
         channelB.append(b)
     return channelA + channelB
 
+
 def put_sprite(index, sprites, spr):
     start = index * 16
     encoded = encode_sprite(spr)
@@ -103,14 +109,17 @@ def put_sprite(index, sprites, spr):
         j += 1
     return sprites
 
+
 def length(sprites):
     return len(sprites) / 16
+
 
 def find_sprite(sprites, spr, start=0):
     for index in range(start, length(sprites)):
         if spr == get_sprite(index, sprites):
             return index - start
     return -1
+
 
 class SpriteSet():
 
@@ -136,5 +145,3 @@ class SpriteSet():
         if spr in self.indexes:
             return self.indexes[spr]
         return False
-
-
