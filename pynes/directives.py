@@ -1,22 +1,29 @@
 # -*- coding: utf-8 -*-
 
+
 def d_inesprg(arg, cart):
     cart.set_iNES_prg(arg)
+
 
 def d_ineschr(arg, cart):
     cart.set_iNES_chr(arg)
 
+
 def d_inesmap(arg, cart):
     cart.set_iNES_map(arg)
+
 
 def d_inesmir(arg, cart):
     cart.set_iNES_mir(arg)
 
+
 def d_bank(arg, cart):
     cart.set_bank_id(arg)
 
+
 def d_org(arg, cart):
     cart.set_org(arg)
+
 
 def d_db(arg, cart):
     l = []
@@ -25,10 +32,12 @@ def d_db(arg, cart):
             l.append(int(token['value'][1:], 16))
     cart.append_code(l)
 
+
 def d_dw(arg, cart):
     arg1 = (arg & 0x00ff)
     arg2 = (arg & 0xff00) >> 8
     cart.append_code([arg1, arg2])
+
 
 def d_incbin(arg, cart):
     f = open(cart.path + arg, 'rw')
@@ -36,8 +45,10 @@ def d_incbin(arg, cart):
     for c in content:
         cart.append_code([ord(c)])
 
+
 def d_rsset(arg, cart):
     pass
+
 
 def d_rs(arg, cart):
     pass
