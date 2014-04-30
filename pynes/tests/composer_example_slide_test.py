@@ -1,8 +1,6 @@
 # -*- coding: utf-8 -*-
-
-import unittest
-
 from pynes.tests import ComposerTestCase
+
 
 class ComposerSlideTest(ComposerTestCase):
 
@@ -25,12 +23,12 @@ class ComposerSlideTest(ComposerTestCase):
                 .and_then('CLEARMEM:')
                 .and_then('JSR WAITVBLANK')
                 .and_then('LoadPalettes:')
-                #.and_then('LDA #%10000000')
+            # .and_then('LDA #%10000000')
 
                 .and_then('LDA #00')
                 .and_then('STA slide')
                 .and_then('STA $2000')
-                #.and_then('LDA #%00010000')
+            # .and_then('LDA #%00010000')
                 .and_then('STA $2001')
 
                 .and_then('NMI:')
@@ -44,7 +42,7 @@ class ComposerSlideTest(ComposerTestCase):
 
                 .and_then('.bank 1')
 
-                #.and_then('palette:')
-                #.and_then('tinymario:')
-                #.and_then('mario:')
+            # .and_then('palette:')
+            # .and_then('tinymario:')
+            # .and_then('mario:')
         )

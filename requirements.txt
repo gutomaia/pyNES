@@ -1,3 +1,5 @@
 pillow
 mock
 coveralls
+nose
+coverage

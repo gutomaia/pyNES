@@ -4,6 +4,7 @@ import unittest
 
 from pynes.tests import ComposerTestCase
 
+
 class ComposerExampleMovingSpriteTest(ComposerTestCase):
 
     def test_compile_moving_sprite(self):
@@ -21,8 +22,8 @@ class ComposerExampleMovingSpriteTest(ComposerTestCase):
                 .and_then('JSR WAITVBLANK')
                 .and_then('LoadPalettes:')
                 .and_then('LoadSprites:')
-                #TODO:
-                # .and_then('LDA #%10000000')
+            # TODO:
+            # .and_then('LDA #%10000000')
                 .and_then('NMI:')
                 .and_then('JoyPad1A:')
                 .and_then('JoyPad1B:')

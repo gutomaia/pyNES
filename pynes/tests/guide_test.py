@@ -1,14 +1,13 @@
 # -*- coding: utf-8 -*-
-
 import unittest
 
-import pynes
-from pynes.compiler import lexical, syntax, semantic
+from pynes.compiler import lexical, syntax
 
 '''
 Those tests are based on examples from:
 http://nesdev.parodius.com/6502guid.txt
 '''
+
 
 class GuideTest(unittest.TestCase):
 
@@ -66,6 +65,7 @@ class GuideTest(unittest.TestCase):
         self.assertEquals(96, len(tokens))
 
     def test_example_5_6(self):
+        """
         example_5_6 = '''
         ; Example 5-6.  16-bit by 16-bit unsigned multiply
         ;
@@ -95,8 +95,9 @@ class GuideTest(unittest.TestCase):
                 BNE nxtbt    ; loop until 16 bits are done
                 RTS
         '''
-        #TODO ROR A?
-        #tokens = lexical(example_5_6)
+        # TODO ROR A?
+        # tokens = lexical(example_5_6)
+        """
 
     def test_example_5_14(self):
         example_5_14 = '''
@@ -132,7 +133,7 @@ class GuideTest(unittest.TestCase):
         '''
         tokens = lexical(example_5_14)
         self.assertEquals(74, len(tokens))
-        
+
         self.assertEquals('T_ENDLINE', tokens[0]['type'])
         self.assertEquals('T_ENDLINE', tokens[1]['type'])
         self.assertEquals('T_ENDLINE', tokens[2]['type'])
@@ -156,4 +157,3 @@ class GuideTest(unittest.TestCase):
         self.assertEquals('T_INSTRUCTION', tokens[16]['type'])
         self.assertEquals('T_ADDRESS', tokens[17]['type'])
         self.assertEquals('T_ENDLINE', tokens[18]['type'])
-

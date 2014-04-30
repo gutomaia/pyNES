@@ -4,6 +4,7 @@ import unittest
 
 from pynes.tests import ComposerTestCase
 
+
 class ComposerMarioTest(ComposerTestCase):
 
     def test_mario(self):
