@@ -2,34 +2,34 @@
 
 import unittest
 
-from pynes.compiler import lexical, syntax, semantic, \
-    t_zeropage, t_address, t_separator, get_labels
+from pynes.compiler import (lexical, syntax,
+                            t_zeropage, t_address, t_separator, get_labels)
 
 
 class CompilerTest(unittest.TestCase):
 
     def setUp(self):
         self.zeropage = dict(
-            type = 'T_ADDRESS',
-            value = '$00'
+            type='T_ADDRESS',
+            value='$00'
         )
         self.address10 = dict(
-            type = 'T_ADDRESS',
-            value = '$1234'
+            type='T_ADDRESS',
+            value='$1234'
         )
         self.separator = dict(
-            type = 'T_SEPARATOR',
-            value = ','
+            type='T_SEPARATOR',
+            value=','
         )
 
     def test_t_zeropage(self):
-        self.assertTrue(t_zeropage([self.zeropage],0))
+        self.assertTrue(t_zeropage([self.zeropage], 0))
 
     def test_t_address(self):
-        self.assertTrue(t_address([self.address10],0))
+        self.assertTrue(t_address([self.address10], 0))
 
     def test_t_separator(self):
-        self.assertTrue(t_separator([self.separator],0))
+        self.assertTrue(t_separator([self.separator], 0))
 
     def test_compile_more_than_on_instruction(self):
         code = '''
@@ -74,9 +74,9 @@ class CompilerTest(unittest.TestCase):
 
         self.assertEquals('S_DIRECTIVE', ast[0]['type'])
         self.assertEquals('.db', ast[0]['children'][0]['value'])
-        self.assertEquals( 32, len(ast[0]['children']))
+        self.assertEquals(32, len(ast[0]['children']))
         palette1 = [0x0f, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0x08, 0x09,
-            0x0a, 0x0b, 0x0c, 0x0d, 0x0e, 0x0f]
+                    0x0a, 0x0b, 0x0c, 0x0d, 0x0e, 0x0f]
         for i in range(len(palette1)):
             h = '$%02X' % palette1[i]
             self.assertEquals(h, ast[0]['children'][i * 2 + 1]['value'])
@@ -84,13 +84,12 @@ class CompilerTest(unittest.TestCase):
 
         self.assertEquals('S_DIRECTIVE', ast[1]['type'])
         self.assertEquals('.db', ast[0]['children'][0]['value'])
-        self.assertEquals( 32, len(ast[1]['children']))
+        self.assertEquals(32, len(ast[1]['children']))
         palette2 = [0x0f, 0x30, 0x31, 0x32, 0x33, 0x35, 0x36, 0x37, 0x38, 0x39,
-            0x3a, 0x3b, 0x3c, 0x3d, 0x3e, 0x0f]
+                    0x3a, 0x3b, 0x3c, 0x3d, 0x3e, 0x0f]
         for i in range(len(palette2)):
             h = '$%02X' % palette2[i]
             self.assertEquals(h, ast[1]['children'][i * 2 + 1]['value'])
-
 
     def test_instructions_with_labels(self):
         code = '''
@@ -148,6 +147,5 @@ class CompilerTest(unittest.TestCase):
 
     def test_raise_erro_with_unknow_label(self):
         return
-        with self.assertRaises(Exception) as e:
+        with self.assertRaises(Exception):
             lexical('LDA unknow')
-
