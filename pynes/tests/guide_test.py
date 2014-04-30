@@ -22,7 +22,7 @@ class GuideTest(unittest.TestCase):
             SBC $23     ;add to it the high byte of the second, plus carry
             STA $25     ;store in high byte of the result
             '''
-        tokens = lexical(ex_2)
+        tokens = list(lexical(ex_2))
         self.assertEquals(21, len(tokens))
         ast = syntax(tokens)
         self.assertEquals(7, len(ast))
@@ -62,7 +62,7 @@ class GuideTest(unittest.TestCase):
                 STA ($30,X)
                 RTS
         '''
-        tokens = lexical(example_4_2)
+        tokens = list(lexical(example_4_2))
         self.assertEquals(96, len(tokens))
 
     def test_example_5_6(self):
@@ -96,7 +96,7 @@ class GuideTest(unittest.TestCase):
                 RTS
         '''
         #TODO ROR A?
-        #tokens = lexical(example_5_6)
+        #tokens = list(lexical(example_5_6))
 
     def test_example_5_14(self):
         example_5_14 = '''
@@ -130,7 +130,7 @@ class GuideTest(unittest.TestCase):
                 STX $21      ; and remainder
                 RTS
         '''
-        tokens = lexical(example_5_14)
+        tokens = list(lexical(example_5_14))
         self.assertEquals(74, len(tokens))
         
         self.assertEquals('T_ENDLINE', tokens[0]['type'])

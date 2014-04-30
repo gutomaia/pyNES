@@ -12,7 +12,7 @@ class ClcTest(unittest.TestCase):
 
 
     def test_clc_sngl(self):
-        tokens = lexical('CLC')
+        tokens = list(lexical('CLC'))
         self.assertEquals(1 , len(tokens))
         self.assertEquals('T_INSTRUCTION', tokens[0]['type'])
         ast = syntax(tokens)

@@ -10,7 +10,7 @@ from pynes.compiler import lexical, syntax, semantic
 class SbcTest(unittest.TestCase):
 
     def test_sbc_imm(self):
-        tokens = lexical('SBC #$10')
+        tokens = list(lexical('SBC #$10'))
         self.assertEquals(2 , len(tokens))
         self.assertEquals('T_INSTRUCTION', tokens[0]['type'])
         self.assertEquals('T_HEX_NUMBER', tokens[1]['type'])
@@ -21,7 +21,7 @@ class SbcTest(unittest.TestCase):
         self.assertEquals(code, [0xe9, 0x10])
 
     def test_sbc_imm_with_decimal(self):
-        tokens = lexical('SBC #10')
+        tokens = list(lexical('SBC #10'))
         self.assertEquals(2 , len(tokens))
         self.assertEquals('T_INSTRUCTION', tokens[0]['type'])
         self.assertEquals('T_DECIMAL_NUMBER', tokens[1]['type'])
@@ -32,7 +32,7 @@ class SbcTest(unittest.TestCase):
         self.assertEquals(code, [0xe9, 0x0a])
 
     def test_sbc_imm_with_binary(self):
-        tokens = lexical('SBC #%00000100')
+        tokens = list(lexical('SBC #%00000100'))
         self.assertEquals(2 , len(tokens))
         self.assertEquals('T_INSTRUCTION', tokens[0]['type'])
         self.assertEquals('T_BINARY_NUMBER', tokens[1]['type'])
@@ -43,7 +43,7 @@ class SbcTest(unittest.TestCase):
         self.assertEquals(code, [0xe9, 0x04])
 
     def test_sbc_zp(self):
-        tokens = lexical('SBC $00')
+        tokens = list(lexical('SBC $00'))
         self.assertEquals(2 , len(tokens))
         self.assertEquals('T_INSTRUCTION', tokens[0]['type'])
         self.assertEquals('T_ADDRESS', tokens[1]['type'])
@@ -54,7 +54,7 @@ class SbcTest(unittest.TestCase):
         self.assertEquals(code, [0xe5, 0x00])
 
     def test_sbc_zpx(self):
-        tokens = lexical('SBC $10,X')
+        tokens = list(lexical('SBC $10,X'))
         self.assertEquals(4 , len(tokens))
         self.assertEquals('T_INSTRUCTION', tokens[0]['type'])
         self.assertEquals('T_ADDRESS', tokens[1]['type'])
@@ -67,7 +67,7 @@ class SbcTest(unittest.TestCase):
         self.assertEquals(code, [0xf5, 0x10])
 
     def test_sbc_abs(self):
-        tokens = lexical('SBC $1234')
+        tokens = list(lexical('SBC $1234'))
         self.assertEquals(2 , len(tokens))
         self.assertEquals('T_INSTRUCTION', tokens[0]['type'])
         self.assertEquals('T_ADDRESS', tokens[1]['type'])
@@ -79,7 +79,7 @@ class SbcTest(unittest.TestCase):
         self.assertEquals(code, [0xed, 0x34, 0x12])
 
     def test_sbc_absx(self):
-        tokens = lexical('SBC $1234,X')
+        tokens = list(lexical('SBC $1234,X'))
         self.assertEquals(4 , len(tokens))
         self.assertEquals('T_INSTRUCTION', tokens[0]['type'])
         self.assertEquals('T_ADDRESS', tokens[1]['type'])
@@ -93,7 +93,7 @@ class SbcTest(unittest.TestCase):
         self.assertEquals(code, [0xfd, 0x34, 0x12])
 
     def test_sbc_absy(self):
-        tokens = lexical('SBC $1234,Y')
+        tokens = list(lexical('SBC $1234,Y'))
         self.assertEquals(4 , len(tokens))
         self.assertEquals('T_INSTRUCTION', tokens[0]['type'])
         self.assertEquals('T_ADDRESS', tokens[1]['type'])
@@ -106,7 +106,7 @@ class SbcTest(unittest.TestCase):
         self.assertEquals(code, [0xf9, 0x34, 0x12])
 
     def test_sbc_indx(self):
-        tokens = lexical('SBC ($20,X)')
+        tokens = list(lexical('SBC ($20,X)'))
         self.assertEquals(6 , len(tokens))
         self.assertEquals('T_INSTRUCTION', tokens[0]['type'])
         self.assertEquals('T_OPEN', tokens[1]['type'])
@@ -122,7 +122,7 @@ class SbcTest(unittest.TestCase):
         self.assertEquals(code, [0xe1, 0x20])
 
     def test_sbc_indy(self):
-        tokens = lexical('SBC ($20),Y')
+        tokens = list(lexical('SBC ($20),Y'))
         self.assertEquals(6 , len(tokens))
         self.assertEquals('T_INSTRUCTION', tokens[0]['type'])
         self.assertEquals('T_OPEN', tokens[1]['type'])

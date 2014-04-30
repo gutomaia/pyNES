@@ -8,7 +8,7 @@ class BitTest(unittest.TestCase):
 
 
     def test_bit_zp(self):
-        tokens = lexical('BIT $00')
+        tokens = list(lexical('BIT $00'))
         self.assertEquals(2 , len(tokens))
         self.assertEquals('T_INSTRUCTION', tokens[0]['type'])
         self.assertEquals('T_ADDRESS', tokens[1]['type'])
@@ -19,7 +19,7 @@ class BitTest(unittest.TestCase):
         self.assertEquals(code, [0x24, 0x00])
 
     def test_bit_abs(self):
-        tokens = lexical('BIT $1234')
+        tokens = list(lexical('BIT $1234'))
         self.assertEquals(2 , len(tokens))
         self.assertEquals('T_INSTRUCTION', tokens[0]['type'])
         self.assertEquals('T_ADDRESS', tokens[1]['type'])

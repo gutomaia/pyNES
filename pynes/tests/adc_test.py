@@ -17,7 +17,7 @@ class AdcTest(unittest.TestCase):
         Test the arithmetic operation ADC between decimal 16
         and the content of the accumulator.
         '''
-        tokens = lexical('ADC #$10')
+        tokens = list(lexical('ADC #$10'))
         self.assertEquals(2 , len(tokens))
         self.assertEquals('T_INSTRUCTION', tokens[0]['type'])
         self.assertEquals('T_HEX_NUMBER', tokens[1]['type'])
@@ -32,7 +32,7 @@ class AdcTest(unittest.TestCase):
         Test the arithmetic operation ADC between decimal 10
         and the content of the accumulator.
         '''
-        tokens = lexical('ADC #10')
+        tokens = list(lexical('ADC #10'))
         self.assertEquals(2 , len(tokens))
         self.assertEquals('T_INSTRUCTION', tokens[0]['type'])
         self.assertEquals('T_DECIMAL_NUMBER', tokens[1]['type'])
@@ -47,7 +47,7 @@ class AdcTest(unittest.TestCase):
         Test the arithmetic operation ADC between binary %00000100
         (Decimal 4) and the content of the accumulator.
         '''
-        tokens = lexical('ADC #%00000100')
+        tokens = list(lexical('ADC #%00000100'))
         self.assertEquals(2 , len(tokens))
         self.assertEquals('T_INSTRUCTION', tokens[0]['type'])
         self.assertEquals('T_BINARY_NUMBER', tokens[1]['type'])
@@ -62,7 +62,7 @@ class AdcTest(unittest.TestCase):
         Test the arithmetic operation ADC between the content of
         the accumulator and the content of the zero page address.
         '''
-        tokens = lexical('ADC $00')
+        tokens = list(lexical('ADC $00'))
         self.assertEquals(2 , len(tokens))
         self.assertEquals('T_INSTRUCTION', tokens[0]['type'])
         self.assertEquals('T_ADDRESS', tokens[1]['type'])
@@ -78,7 +78,7 @@ class AdcTest(unittest.TestCase):
         accumulator and the content of the zero page with address
         calculated from $10 adding content of X.
         '''
-        tokens = lexical('ADC $10,X')
+        tokens = list(lexical('ADC $10,X'))
         self.assertEquals(4 , len(tokens))
         self.assertEquals('T_INSTRUCTION', tokens[0]['type'])
         self.assertEquals('T_ADDRESS', tokens[1]['type'])
@@ -95,7 +95,7 @@ class AdcTest(unittest.TestCase):
         Test the arithmetic operation ADC between the content of 
         the accumulator and the content located at address $1234.
         '''
-        tokens = lexical('ADC $1234')
+        tokens = list(lexical('ADC $1234'))
         self.assertEquals(2 , len(tokens))
         self.assertEquals('T_INSTRUCTION', tokens[0]['type'])
         self.assertEquals('T_ADDRESS', tokens[1]['type'])
@@ -113,7 +113,7 @@ class AdcTest(unittest.TestCase):
         accumulator and the content located at address $1234
         adding the content of X.
         '''
-        tokens = lexical('ADC $1234,X')
+        tokens = list(lexical('ADC $1234,X'))
         self.assertEquals(4 , len(tokens))
         self.assertEquals('T_INSTRUCTION', tokens[0]['type'])
         self.assertEquals('T_ADDRESS', tokens[1]['type'])
@@ -132,7 +132,7 @@ class AdcTest(unittest.TestCase):
         accumulator and the content located at address $1234
         adding the content of Y.
         '''
-        tokens = lexical('ADC $1234,Y')
+        tokens = list(lexical('ADC $1234,Y'))
         self.assertEquals(4 , len(tokens))
         self.assertEquals('T_INSTRUCTION', tokens[0]['type'])
         self.assertEquals('T_ADDRESS', tokens[1]['type'])
@@ -151,7 +151,7 @@ class AdcTest(unittest.TestCase):
         obtained from the address calculated from the value
         stored in the address $20 adding the content of Y.
         '''
-        tokens = lexical('ADC ($20,X)')
+        tokens = list(lexical('ADC ($20,X)'))
         self.assertEquals(6 , len(tokens))
         self.assertEquals('T_INSTRUCTION', tokens[0]['type'])
         self.assertEquals('T_OPEN', tokens[1]['type'])
@@ -173,7 +173,7 @@ class AdcTest(unittest.TestCase):
         obtained from the address calculated from the value
         stored in the address $20 adding the content of Y.
         '''
-        tokens = lexical('ADC ($20),Y')
+        tokens = list(lexical('ADC ($20),Y'))
         self.assertEquals(6 , len(tokens))
         self.assertEquals('T_INSTRUCTION', tokens[0]['type'])
         self.assertEquals('T_OPEN', tokens[1]['type'])

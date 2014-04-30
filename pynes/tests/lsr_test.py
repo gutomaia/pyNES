@@ -11,7 +11,7 @@ from pynes.compiler import lexical, syntax, semantic
 class LsrTest(unittest.TestCase):
 
     def test_lsr_acc(self):
-        tokens = lexical('LSR A');
+        tokens = list(lexical('LSR A'))
         self.assertEquals(2 , len(tokens))
         self.assertEquals('T_INSTRUCTION', tokens[0]['type'])
         self.assertEquals('T_ACCUMULATOR', tokens[1]['type'])
@@ -22,7 +22,7 @@ class LsrTest(unittest.TestCase):
         self.assertEquals(code, [0x4a])
 
     def test_lsr_imm(self):
-        tokens = lexical('LSR #$10')
+        tokens = list(lexical('LSR #$10'))
         self.assertEquals(2 , len(tokens))
         self.assertEquals('T_INSTRUCTION', tokens[0]['type'])
         self.assertEquals('T_HEX_NUMBER', tokens[1]['type'])
@@ -33,7 +33,7 @@ class LsrTest(unittest.TestCase):
         self.assertEquals(code, [0x4a, 0x10])
 
     def test_lsr_imm_with_decimal(self):
-        tokens = lexical('LSR #10')
+        tokens = list(lexical('LSR #10'))
         self.assertEquals(2 , len(tokens))
         self.assertEquals('T_INSTRUCTION', tokens[0]['type'])
         self.assertEquals('T_DECIMAL_NUMBER', tokens[1]['type'])
@@ -44,7 +44,7 @@ class LsrTest(unittest.TestCase):
         self.assertEquals(code, [0x4a, 0x0a])
 
     def test_lsr_imm_with_binary(self):
-        tokens = lexical('LSR #%00000100')
+        tokens = list(lexical('LSR #%00000100'))
         self.assertEquals(2 , len(tokens))
         self.assertEquals('T_INSTRUCTION', tokens[0]['type'])
         self.assertEquals('T_BINARY_NUMBER', tokens[1]['type'])
@@ -55,7 +55,7 @@ class LsrTest(unittest.TestCase):
         self.assertEquals(code, [0x4a, 0x04])
 
     def test_lsr_zp(self):
-        tokens = lexical('LSR $00')
+        tokens = list(lexical('LSR $00'))
         self.assertEquals(2 , len(tokens))
         self.assertEquals('T_INSTRUCTION', tokens[0]['type'])
         self.assertEquals('T_ADDRESS', tokens[1]['type'])
@@ -66,7 +66,7 @@ class LsrTest(unittest.TestCase):
         self.assertEquals(code, [0x46, 0x00])
 
     def test_lsr_zpx(self):
-        tokens = lexical('LSR $10,X')
+        tokens = list(lexical('LSR $10,X'))
         self.assertEquals(4 , len(tokens))
         self.assertEquals('T_INSTRUCTION', tokens[0]['type'])
         self.assertEquals('T_ADDRESS', tokens[1]['type'])
@@ -79,7 +79,7 @@ class LsrTest(unittest.TestCase):
         self.assertEquals(code, [0x56, 0x10])
 
     def test_lsr_abs(self):
-        tokens = lexical('LSR $1234')
+        tokens = list(lexical('LSR $1234'))
         self.assertEquals(2 , len(tokens))
         self.assertEquals('T_INSTRUCTION', tokens[0]['type'])
         self.assertEquals('T_ADDRESS', tokens[1]['type'])
@@ -91,7 +91,7 @@ class LsrTest(unittest.TestCase):
         self.assertEquals(code, [0x4e, 0x34, 0x12])
 
     def test_lsr_absx(self):
-        tokens = lexical('LSR $1234,X')
+        tokens = list(lexical('LSR $1234,X'))
         self.assertEquals(4 , len(tokens))
         self.assertEquals('T_INSTRUCTION', tokens[0]['type'])
         self.assertEquals('T_ADDRESS', tokens[1]['type'])

@@ -7,7 +7,7 @@ from pynes.compiler import lexical, syntax, semantic
 class RtsTest(unittest.TestCase):
 
     def test_rts_sngl(self):
-        tokens = lexical('RTS')
+        tokens = list(lexical('RTS'))
         self.assertEquals(1 , len(tokens))
         self.assertEquals('T_INSTRUCTION', tokens[0]['type'])
         ast = syntax(tokens)

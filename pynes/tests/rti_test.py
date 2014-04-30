@@ -7,7 +7,7 @@ from pynes.compiler import lexical, syntax, semantic
 class RtiTest(unittest.TestCase):
 
     def test_rti_sngl(self):
-        tokens = lexical('RTI')
+        tokens = list(lexical('RTI'))
         self.assertEquals(1 , len(tokens))
         self.assertEquals('T_INSTRUCTION', tokens[0]['type'])
         ast = syntax(tokens)

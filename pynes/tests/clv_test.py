@@ -7,7 +7,7 @@ from pynes.compiler import lexical, syntax, semantic
 class ClvTest(unittest.TestCase):
 
     def test_clv_sngl(self):
-        tokens = lexical('CLV')
+        tokens = list(lexical('CLV'))
         self.assertEquals(1 , len(tokens))
         self.assertEquals('T_INSTRUCTION', tokens[0]['type'])
         ast = syntax(tokens)
