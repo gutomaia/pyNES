@@ -8,6 +8,7 @@ from pynes.tests import HexTestCase
 from pynes.compiler import lexical, syntax, semantic
 from pynes.cartridge import Cartridge
 
+
 class ScrollingTest(HexTestCase):
 
     def __init__(self, testname):
@@ -15,7 +16,7 @@ class ScrollingTest(HexTestCase):
 
     def assertAsmResults(self, source_file, bin_file):
         path = 'fixtures/nerdynights/scrolling/'
-        f = open (path + source_file)
+        f = open(path + source_file)
         code = f.read()
         f.close()
         tokens = lexical(code)
@@ -31,7 +32,7 @@ class ScrollingTest(HexTestCase):
         f = open(path + bin_file, 'rb')
         content = f.read()
         f.close()
-        self.assertHexEquals(content,bin)
+        self.assertHexEquals(content, bin)
 
     def test_asm_compiler_scrolling_1(self):
         self.assertAsmResults('scrolling1.asm', 'scrolling1.nes')
