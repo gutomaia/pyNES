@@ -7,7 +7,7 @@ from pynes.compiler import lexical, syntax, semantic
 class PlpTest(unittest.TestCase):
 
     def test_plp_sngl(self):
-        tokens = lexical('PLP')
+        tokens = list(lexical('PLP'))
         self.assertEquals(1 , len(tokens))
         self.assertEquals('T_INSTRUCTION', tokens[0]['type'])
         ast = syntax(tokens)

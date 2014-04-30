@@ -6,7 +6,7 @@ from pynes.compiler import lexical, syntax, semantic
 class StxTest(unittest.TestCase):
 
     def test_stx_zp(self):
-        tokens = lexical('STX $00')
+        tokens = list(lexical('STX $00'))
         self.assertEquals(2 , len(tokens))
         self.assertEquals('T_INSTRUCTION', tokens[0]['type'])
         self.assertEquals('T_ADDRESS', tokens[1]['type'])
@@ -17,7 +17,7 @@ class StxTest(unittest.TestCase):
         self.assertEquals(code, [0x86, 0x00])
 
     def test_stx_zpy(self):
-        tokens = lexical('STX $10,Y')
+        tokens = list(lexical('STX $10,Y'))
         self.assertEquals(4 , len(tokens))
         token = tokens[0]
         self.assertEquals('T_INSTRUCTION', tokens[0]['type'])
@@ -31,7 +31,7 @@ class StxTest(unittest.TestCase):
         self.assertEquals(code, [0x96, 0x10])
 
     def test_stx_abs(self):
-        tokens = lexical('STX $1234')
+        tokens = list(lexical('STX $1234'))
         self.assertEquals(2 , len(tokens))
         self.assertEquals('T_INSTRUCTION', tokens[0]['type'])
         self.assertEquals('T_ADDRESS', tokens[1]['type'])

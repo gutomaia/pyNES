@@ -7,7 +7,7 @@ from pynes.compiler import lexical, syntax, semantic
 class SedTest(unittest.TestCase):
 
     def test_sed_sngl(self):
-        tokens = lexical('SED')
+        tokens = list(lexical('SED'))
         self.assertEquals(1 , len(tokens))
         self.assertEquals('T_INSTRUCTION', tokens[0]['type'])
         ast = syntax(tokens)

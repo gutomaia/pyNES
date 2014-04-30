@@ -10,7 +10,7 @@ from pynes.compiler import lexical, syntax, semantic
 class CpxTest(unittest.TestCase):
 
     def test_cpx_imm(self):
-        tokens = lexical('CPX #$10')
+        tokens = list(lexical('CPX #$10'))
         self.assertEquals(2 , len(tokens))
         self.assertEquals('T_INSTRUCTION', tokens[0]['type'])
         self.assertEquals('T_HEX_NUMBER', tokens[1]['type'])
@@ -21,7 +21,7 @@ class CpxTest(unittest.TestCase):
         self.assertEquals(code, [0xe0, 0x10])
 
     def test_cpx_imm_with_decimal(self):
-        tokens = lexical('CPX #10')
+        tokens = list(lexical('CPX #10'))
         self.assertEquals(2 , len(tokens))
         self.assertEquals('T_INSTRUCTION', tokens[0]['type'])
         self.assertEquals('T_DECIMAL_NUMBER', tokens[1]['type'])
@@ -32,7 +32,7 @@ class CpxTest(unittest.TestCase):
         self.assertEquals(code, [0xe0, 0x0a])
 
     def test_cpx_imm_with_binary(self):
-        tokens = lexical('CPX #%00000100')
+        tokens = list(lexical('CPX #%00000100'))
         self.assertEquals(2 , len(tokens))
         self.assertEquals('T_INSTRUCTION', tokens[0]['type'])
         self.assertEquals('T_BINARY_NUMBER', tokens[1]['type'])
@@ -43,7 +43,7 @@ class CpxTest(unittest.TestCase):
         self.assertEquals(code, [0xe0, 0x04])
 
     def test_cpx_zp(self):
-        tokens = lexical('CPX $00')
+        tokens = list(lexical('CPX $00'))
         self.assertEquals(2 , len(tokens))
         self.assertEquals('T_INSTRUCTION', tokens[0]['type'])
         self.assertEquals('T_ADDRESS', tokens[1]['type'])
@@ -54,7 +54,7 @@ class CpxTest(unittest.TestCase):
         self.assertEquals(code, [0xe4, 0x00])
 
     def test_cpx_abs(self):
-        tokens = lexical('CPX $1234')
+        tokens = list(lexical('CPX $1234'))
         self.assertEquals(2 , len(tokens))
         self.assertEquals('T_INSTRUCTION', tokens[0]['type'])
         self.assertEquals('T_ADDRESS', tokens[1]['type'])

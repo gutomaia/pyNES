@@ -7,7 +7,7 @@ from pynes.compiler import lexical, syntax, semantic
 class DexTest(unittest.TestCase):
 
     def test_dex_sngl(self):
-        tokens = lexical('DEX')
+        tokens = list(lexical('DEX'))
         self.assertEquals(1 , len(tokens))
         self.assertEquals('T_INSTRUCTION', tokens[0]['type'])
         ast = syntax(tokens)
