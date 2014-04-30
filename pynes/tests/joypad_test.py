@@ -1,4 +1,4 @@
-#TODO: coding
+# TODO: coding
 
 import unittest
 
@@ -8,7 +8,6 @@ from pynes.game import Game, Joypad
 
 
 class JoypadTest(unittest.TestCase):
-
 
     def test_joypad1(self):
         joypad_1 = Joypad(1, Game())
@@ -35,4 +34,4 @@ class JoypadTest(unittest.TestCase):
         self.assertTrue('JoyPad1Down:' in asm)
         self.assertTrue('JoyPad1Left:' in asm)
         self.assertTrue('JoyPad1Right:' in asm)
-        self.assertTrue('JoyPad2' not in asm )
+        self.assertTrue('JoyPad2' not in asm)
