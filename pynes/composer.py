@@ -39,7 +39,7 @@ class OperationStack:
     def last(self):
         if len(self._pile) > 0:
             return self._pile[-1]
-        return [] #TODO if none breaks some len()
+        return []  # TODO if none breaks some len()
 
     def pendding(self):
         return self._pile
@@ -47,10 +47,6 @@ class OperationStack:
     def resolve(self):
         return self._pile.pop()
 
-class PyNesVisitor(ast.NodeVisitor):
-
-    def visit_Import(self, node):
-        pass
 
 class PyNesTransformer(ast.NodeTransformer):
 
@@ -59,33 +55,34 @@ class PyNesTransformer(ast.NodeTransformer):
 
     def visit_List(self, node):
         expr = self.generic_visit(node)
-        #print dir(expr)
-        #lst = [l.n for l in expr.elts]
-        #List(elts=[Num(n=1), Num(n=2), Num(n=3), Num(n=4)]
+        # print dir(expr)
+        # lst = [l.n for l in expr.elts]
+        # List(elts=[Num(n=1), Num(n=2), Num(n=3), Num(n=4)]
         return List(elts=expr.elts)
         return NesArray(expr.elts)
 
     def visit_Compare(self, node):
         expr = self.generic_visit(node)
         if (expr.left.id == '__name__' and
-            len(expr.ops) == 1 and
-            isinstance(expr.ops[0], Eq)):
+                len(expr.ops) == 1 and
+                isinstance(expr.ops[0], Eq)):
             return Name(id='False', ctx=Load())
-        #print dir(node)
+        # print dir(node)
         return expr
 
     def visit_If(self, node):
         expr = self.generic_visit(node)
-        if (isinstance(expr.test, Name) and expr.test.id =='False'):
+        if (isinstance(expr.test, Name) and expr.test.id == 'False'):
             return None
         return expr
+
 
 class PyNesVisitor(ast.NodeVisitor):
 
     def __init__(self):
         self.stack = OperationStack()
 
-    def generic_visit(self, node, debug = False):
+    def generic_visit(self, node, debug=False):
         if isinstance(node, list):
             for n in node:
                 if debug:
@@ -106,16 +103,16 @@ class PyNesVisitor(ast.NodeVisitor):
                     self.visit(value)
 
     def visit_ImportFrom(self, node):
-        pass #TODO fix imports
+        pass  # TODO fix imports
 
     def visit_Import(self, node):
-        pass #TODO fix imports
+        pass  # TODO fix imports
 
     def visit_If(self, node):
         if 'comparators' not in dir(node.test):
             pass
         elif(len(node.test.comparators) == 1):
-            #TODO: fix this hack, using just piles
+            # TODO: fix this hack, using just piles
             global game
             label = node.test.left.id
             index = node.test.comparators[0].n
@@ -126,25 +123,26 @@ class PyNesVisitor(ast.NodeVisitor):
             game += '  BNE %s\n' % elseif
             self.generic_visit(node.body)
             game += '  JMP %s\n' % end
-            game +=  '%s:\n' % elseif
+            game += '%s:\n' % elseif
             self.generic_visit(node.orelse)
-            game +=  '%s:\n' % end
-
-
+            game += '%s:\n' % end
 
     def visit_Expr(self, node):
-        #TODO: perfect place to unpile list
+        # TODO: perfect place to unpile list
         self.generic_visit(node)
 
     def visit_AugAssign(self, node):
         self.generic_visit(node)
         global game
         if len(self.stack.current()) == 2 and len(self.stack.last()) == 2:
+            # TODO how to check
+            # TODO op
             if (isinstance(self.stack.last()[0], int) and
-                isinstance(self.stack.last()[1], str) and #TODO op
-                isinstance(self.stack.current()[0], PPUSprite) and
-                isinstance(self.stack.current()[1], str)): #TODO how to check
-                address = getattr(self.stack.current()[0], self.stack.current()[1])
+                    isinstance(self.stack.last()[1], str) and
+                    isinstance(self.stack.current()[0], PPUSprite) and
+                    isinstance(self.stack.current()[1], str)):
+                address = getattr(
+                    self.stack.current()[0], self.stack.current()[1])
                 self.stack.wipe()
                 operation = self.stack.last()[1]
                 operand = self.stack.resolve()
@@ -153,22 +151,24 @@ class PyNesVisitor(ast.NodeVisitor):
                 elif operation == '-':
                     address -= operand[0]
                 game += address.to_asm()
-        elif (len(self.stack.current()) == 3 and 
-            isinstance(self.stack.current()[0], int) and
-                isinstance(self.stack.current()[1], str) and #TODO op
-                isinstance(self.stack.current()[2], NesRs)): #TODO how to check
+        # TODO op
+        # TODO how to check
+        elif (len(self.stack.current()) == 3 and
+              isinstance(self.stack.current()[0], int) and
+                isinstance(self.stack.current()[1], str) and
+                isinstance(self.stack.current()[2], NesRs)):
             operand = self.stack.current()[0]
             operation = self.stack.current()[1]
             rs = self.stack.current()[2]
             game += '  LDA %s\n' % rs.instance_name
             if operation == '+':
-                game +=    (
-                '  CLC\n'
-                '  ADC #%02d\n') % operand
+                game += (
+                    '  CLC\n'
+                    '  ADC #%02d\n') % operand
             elif operation == '-':
-                game +=    (
-                '  SEC\n'
-                '  SBC #%02d\n') % operand
+                game += (
+                    '  SEC\n'
+                    '  SBC #%02d\n') % operand
             game += '  STA %s\n' % rs.instance_name
 
     def visit_Assign(self, node):
@@ -180,13 +180,13 @@ class PyNesVisitor(ast.NodeVisitor):
                 call = node.value
                 if call.func.id:
                     if (len(self.stack.last()) == 1 and
-                        isinstance(self.stack.last()[0], NesType)):
+                            isinstance(self.stack.last()[0], NesType)):
                         rs = self.stack.resolve()[0]
                         self.stack.wipe()
                         game.set_var(varname, rs)
             elif isinstance(node.value, ast.List):
                 self.generic_visit(node)
-                #TODO: just umpile
+                # TODO: just umpile
                 varname = node.targets[0].id
                 assert isinstance(self.stack.last()[0], NesArray)
                 assert varname == self.stack.current()[0]
@@ -200,20 +200,21 @@ class PyNesVisitor(ast.NodeVisitor):
                 value = self.stack.resolve()[0]
                 self.stack.wipe()
                 game.set_var(varname, value)
-            elif 'ctx' in dir(node.targets[0]): #TODO fix this please
-                self.generic_visit(node) #TODO: upthis
-                if len(self.stack.last()) == 1 and isinstance(self.stack.last()[0], int):
+            elif 'ctx' in dir(node.targets[0]):  # TODO fix this please
+                self.generic_visit(node)  # TODO: upthis
+                if (len(self.stack.last()) == 1 and
+                        isinstance(self.stack.last()[0], int)):
                     game += '  LDA #%02d\n' % self.stack.resolve()[0]
                 if len(self.stack.current()) == 2:
-                    address = getattr(self.stack.current()[0], self.stack.current()[1])
+                    address = getattr(
+                        self.stack.current()[0], self.stack.current()[1])
                     game += '  STA $%04x\n' % address
-                elif (len(self.stack.current()) == 1 and 
-                    isinstance(self.stack.current()[0], NesRs)):
+                elif (len(self.stack.current()) == 1 and
+                      isinstance(self.stack.current()[0], NesRs)):
                     rs = self.stack.current()[0]
                     self.stack.wipe()
                     name = rs.instance_name
                     game += ' STA %s\n' % name
-
 
     def visit_Attribute(self, node):
         self.generic_visit(node)
@@ -229,7 +230,8 @@ class PyNesVisitor(ast.NodeVisitor):
         elif 'nmi' == node.name:
             game.state = node.name.upper()
             self.generic_visit(node)
-        elif  match('^joypad[12]_(a|b|select|start|up|down|left|right)', node.name):
+        elif match('^joypad[12]_(a|b|select|start|up|down|left|right)',
+                   node.name):
             game.state = node.name
             self.generic_visit(node)
         else:
@@ -248,7 +250,8 @@ class PyNesVisitor(ast.NodeVisitor):
             print "call"
             print args
 
-            if node.func.id not in game.bitpaks: #check this condition, seens strange
+            # check this condition, seens strange
+            if node.func.id not in game.bitpaks:
                 obj = getattr(pynes.bitbag, node.func.id, None)
                 if (obj):
                     try:
@@ -267,11 +270,11 @@ class PyNesVisitor(ast.NodeVisitor):
                 game += bp.asm()
         else:
             self.generic_visit(node)
-            attrib = getattr(self.stack.current()[0], self.stack.current()[1], None)
+            attrib = getattr(
+                self.stack.current()[0], self.stack.current()[1], None)
             self.stack.wipe()
             if callable(attrib):
                 attrib()
-
 
     def visit_Add(self, node):
         self.stack('+')
@@ -281,7 +284,7 @@ class PyNesVisitor(ast.NodeVisitor):
 
     def visit_BinOp(self, node):
         if (isinstance(node.left, ast.Num) and
-            isinstance(node.right, ast.Num)):
+                isinstance(node.right, ast.Num)):
             a = node.left.n
             b = node.right.n
             self.stack(a + b)
@@ -303,9 +306,10 @@ class PyNesVisitor(ast.NodeVisitor):
             value.instance_name = node.id
             self.stack(value)
         else:
-            self.stack(node.id) #TODO
+            self.stack(node.id)  # TODO
 
 game = None
+
 
 def compose_file(input, output=None, path=None, asm=False):
     from os.path import dirname, realpath
@@ -314,14 +318,13 @@ def compose_file(input, output=None, path=None, asm=False):
     code = f.read()
     f.close()
 
-    if path == None:
+    if path is None:
         path = dirname(realpath(input)) + '/'
     elif path[-1] != '/':
         path += '/'
 
-    if output == None:
+    if output is None:
         output = 'output.nes'
-
 
     game = compose(code)
     asmcode = game.to_asm()
@@ -332,9 +335,10 @@ def compose_file(input, output=None, path=None, asm=False):
     opcodes = nes_compile(asmcode, path)
     pynes.write_bin_code(opcodes, output)
 
-def compose(code, game_program = game):
+
+def compose(code, game_program=game):
     global game
-    if game_program == None:
+    if game_program is None:
         game = game_program = Game()
 
     python_land = ast.parse(code)
@@ -347,7 +351,7 @@ def compose(code, game_program = game):
 
     python_land = ast.fix_missing_locations(python_land)
 
-    #exec compile(python_land, '<string>', 'exec')
+    # exec compile(python_land, '<string>', 'exec')
 
     game = None
     return game_program
