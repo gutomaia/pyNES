@@ -2,6 +2,7 @@ import unittest
 
 from pynes.game import PPU
 
+
 class PPUTest(unittest.TestCase):
 
     def setUp(self):
@@ -24,20 +25,16 @@ class PPUTest(unittest.TestCase):
         self.assertEquals(0b00000000, self.ppu.ctrl)
         self.ppu.sprite_pattern_table = 1
         self.assertEquals(0b00001000, self.ppu.ctrl)
-        #self.assertEquals(1, self.ppu.sprite_pattern_table)
         self.ppu.sprite_pattern_table = 0
         self.assertEquals(0b00000000, self.ppu.ctrl)
-        #self.assertEquals(0, self.ppu.sprite_pattern_table)
 
     def test_ppu_toogle_background_table(self):
         return
         self.assertEquals(0b00000000, self.ppu.ctrl)
         self.ppu.background_pattern_table = 1
         self.assertEquals(0b00010000, self.ppu.ctrl)
-        #self.assertEquals(1, self.ppu.background_pattern_table)
         self.ppu.background_pattern_table = 0
         self.assertEquals(0b00000000, self.ppu.ctrl)
-        #self.assertEquals(0, self.ppu.background_pattern_table)
 
     def test_ppu_toogle_sprite(self):
         self.assertEquals(0b00000000, self.ppu.mask)
@@ -57,7 +54,7 @@ class PPUTest(unittest.TestCase):
         self.assertEquals(0b00000000, self.ppu.mask)
         self.assertEquals(False, self.ppu.background_enable)
 
-    def test_ppu_toogle_background(self):
+    def test_ppu_toogle_background2(self):
         self.assertEquals(0b00000000, self.ppu.ctrl)
         self.assertEquals(0b00000000, self.ppu.mask)
         self.ppu.nmi_enable = True
