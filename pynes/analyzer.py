@@ -1,5 +1,4 @@
 # -*- coding: utf-8 -*-
-
 from re import match
 import re
 
@@ -16,7 +15,7 @@ def analyse(code, tokenTypes):
             ttype = tokenType
             if m:
                 found = True
-                if (tokenType['store']):
+                if (ttype['store']):
                     tokens.append(
                         dict(
                             type=tokenType['type'],
@@ -25,7 +24,7 @@ def analyse(code, tokenTypes):
                             column=column
                         )
                     )
-                    #print tokenType['type'] + ' ' + m.group(0)
+                    # print tokenType['type'] + ' ' + m.group(0)
                 if m.group(0) == "\n":
                     line += 1
                     column = 1
@@ -34,5 +33,5 @@ def analyse(code, tokenTypes):
                 code = code[len(m.group(0)):]
                 break
         if not found:
-            raise Exception('Unknow Token Code:'+code[0:500])
+            raise Exception('Unknow Token Code:' + code[0:500])
     return tokens

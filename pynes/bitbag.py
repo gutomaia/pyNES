@@ -1,5 +1,4 @@
 # -*- coding: utf-8 -*-
-from re import match
 from pynes.nes_types import NesRs, NesArray, NesSprite, NesString, NesChrFile
 from pynes.game import PPUSprite
 
@@ -136,7 +135,7 @@ class cls(BitPak):
                 '  LDA line\n'
                 '  CLC\n'
                 '  ADC #01\n'
-                #'  STA line\n'
+                # '  STA line\n'
                 '  CMP #16\n'
                 '  BNE LineLoop\n'
 
@@ -154,10 +153,10 @@ class show(BitPak):
         self.game.ppu.background_pattern_table = 1
         self.game.has_nmi = True
 
-        addressLow = game.get_param('addressLow', 1)
-        addressHigh = game.get_param('addressHigh', 1)
-        posLow = game.get_param('posLow', 1)
-        posHigh = game.get_param('posHigh', 1)
+        self.addressLow = game.get_param('addressLow', 1)
+        self.addressHigh = game.get_param('addressHigh', 1)
+        self.posLow = game.get_param('posLow', 1)
+        self.posHigh = game.get_param('posHigh', 1)
 
     def __call__(self, string, y=None, x=None, nametable=0):
         assert isinstance(string, NesString)

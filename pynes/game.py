@@ -3,15 +3,16 @@ from re import match
 from collections import OrderedDict
 from pynes.nes_types import NesType, NesRs, NesArray, NesString, NesSprite, NesChrFile
 
-#TODO remove this
+# TODO remove this
 from pynes.bitbag import *
 
 import pynes
 
+
 class Bit(object):
 
     def __init__(self, varname, bit, options=False):
-        assert bit >=0 and bit <8
+        assert bit >= 0 and bit < 8
         self.varname = varname
         self.bit = bit
 
@@ -32,12 +33,13 @@ class Bit(object):
             byte = getattr(instance, self.varname) | flag
         setattr(instance, self.varname, byte)
 
+
 class PPU(object):
 
-    #TODO base_nametable = Bit('ctrl', 1, options=[0,1,2,3]) #suports 0-3
+    # TODO base_nametable = Bit('ctrl', 1, options=[0,1,2,3]) #suports 0-3
     sprite_pattern_table = Bit('ctrl', 3)
     background_pattern_table = Bit('ctrl', 4)
-    #TODO sprite_size = Bit('ctrl', 5, options=['8x8', '8x16'])
+    # TODO sprite_size = Bit('ctrl', 5, options=['8x8', '8x16'])
     nmi_enable = Bit('ctrl', 7)
 
     grayscale_enable = Bit('mask', 0)
@@ -54,8 +56,8 @@ class PPU(object):
                '  STA $2000\n'
                '  LDA #%{mask:08b}\n'
                '  STA $2001\n').format(
-               ctrl=self.ctrl,
-               mask=self.mask)
+            ctrl=self.ctrl,
+            mask=self.mask)
         return asm
 
     def on_nmi(self):
@@ -67,7 +69,9 @@ class PPU(object):
             return asm
         return ''
 
-#change to SpriteSwarmOperation
+# change to SpriteSwarmOperation
+
+
 class NesAddressSet(NesType):
 
     def __init__(self, addresses, width):
@@ -75,17 +79,18 @@ class NesAddressSet(NesType):
         self.addresses = addresses
         self.width = width
         self.stk = ''
+        self.total_addresses = len(addresses)
 
     def __add__(self, operand):
         self.stk += (
             '  LDA $%04X\n'
             '  CLC\n'
             '  ADC #%d\n') % (self.addresses[0], operand)
-        cols = len(self.addresses) / 2 #width
-        lines = len(self.addresses) / cols
-        for i in range(len(self.addresses)):
+        # cols = this.total_addresses / 2  # width
+        # lines = this.total_addresses / cols
+        for i in range(self.total_addresses):
             self.stk += '  STA $%04X\n' % self.addresses[i]
-            if ((i + 1) % self.width) == 0 and i < len(self.addresses) - 1:
+            if ((i + 1) % self.width) == 0 and i < self.total_addresses - 1:
                 self.stk += '  CLC\n  ADC #8\n'
         return self
 
@@ -95,11 +100,11 @@ class NesAddressSet(NesType):
             '  LDA $%04X\n'
             '  SEC\n'
             '  SBC #%d\n') % (self.addresses[self.width - 1], operand)
-        cols = len(self.addresses) / self.width
-        lines = len(self.addresses) / cols
-        for i in range(len(self.addresses)):
+        # cols = this.total_addresses / self.width
+        # lines = this.total_addresses / cols
+        for i in range(self.total_addresses):
             self.stk += '  STA $%04X\n' % self.addresses[i]
-            if ((i + 1) % self.width) == 0 and i < len(self.addresses) - 1:
+            if ((i + 1) % self.width) == 0 and i < self.total_addresses - 1:
                 self.stk += '  SEC\n  SBC #8\n'
         self.addresses.reverse()
         return self
@@ -107,7 +112,9 @@ class NesAddressSet(NesType):
     def to_asm(self):
         return self.stk
 
-#change to SpriteOperation
+# change to SpriteOperation
+
+
 class NesAddress(int, NesType):
 
     def __new__(cls, val, **kwargs):
@@ -139,7 +146,9 @@ class NesAddress(int, NesType):
         return self.game
 
 
-#TODO: very ugly, make it better
+# TODO: very ugly, make it better
+
+
 class Byte(object):
 
     def __init__(self, address=0):
@@ -181,8 +190,9 @@ class Byte(object):
     def __set__(self, instance, value):
         setattr(instance, self.target, value)
 
+
 class PPUSprite(object):
-    y = Byte() #TODO: should be be Byte(0)
+    y = Byte()  # TODO: should be be Byte(0)
     tile = Byte()
     attrib = Byte()
     x = Byte()
@@ -233,6 +243,7 @@ class PPUSprite(object):
         )
         self.game += asm
 
+
 class Joypad():
 
     def __init__(self, player_num, game):
@@ -243,8 +254,8 @@ class Joypad():
         else:
             self.port = '$4017'
         self.game = game
-        self.actions = ['a', 'b', 'select', 'start', 
-          'up', 'down', 'left', 'right']
+        self.actions = ['a', 'b', 'select', 'start',
+                        'up', 'down', 'left', 'right']
 
     def __iter__(self):
         for action in self.actions:
@@ -253,7 +264,7 @@ class Joypad():
                 "JoyPad" + str(self.num) + tag + ":\n"
                 "  LDA " + self.port + "\n"
                 "  AND #%00000001\n"
-                "  BEQ End" + tag +"\n"
+                "  BEQ End" + tag + "\n"
             )
             index = 'joypad' + str(self.num) + '_' + action
             if index in self.game._asm_chunks:
@@ -262,11 +273,11 @@ class Joypad():
             yield asm_code
 
     def init(self):
-        return ('StartInput:\n' 
-            '  LDA #$01\n'
-            '  STA $4016\n'
-            '  LDA #$00\n'
-            '  STA $4016\n')
+        return ('StartInput:\n'
+                '  LDA #$01\n'
+                '  STA $4016\n'
+                '  LDA #$00\n'
+                '  STA $4016\n')
 
     @property
     def is_used(self):
@@ -280,26 +291,26 @@ class Joypad():
             return '\n'.join(self)
         return ''
 
+
 class Game(object):
 
-
-    def __init__(self, optimized = True):
+    def __init__(self, optimized=True):
         self.ppu = PPU()
 
         self._asm_chunks = {}
         self.has_nmi = False
         self.state = 'prog'
 
-        self._header = {'.inesprg':1, '.ineschr':1,
-            '.inesmap':0, '.inesmir':1}
-        self._vars = OrderedDict() #game nes vars
+        self._header = {'.inesprg': 1, '.ineschr': 1,
+                        '.inesmap': 0, '.inesmir': 1}
+        self._vars = OrderedDict()  # game nes vars
         self.bitpaks = {}
         self.labels = []
 
-        #TODO: self.local_scope = {}
-        #TODO: self.global_scope = {}
+        # TODO: self.local_scope = {}
+        # TODO: self.global_scope = {}
 
-    def define(self, varname, value, size = 1):
+    def define(self, varname, value, size=1):
         if isinstance(value, NesRs):
             self._vars[varname] = value
 
@@ -314,14 +325,13 @@ class Game(object):
         self += (
             '  SEC\n'
             '  SBC #%02d\n') % value
-        #self += '  STA %s\n' % value.instance_name
+        # self += '  STA %s\n' % value.instance_name
         return value
-
 
     def asmFunction(self, functionname):
         self.state = functionname
 
-    #used just for bitpacks
+    # used just for bitpacks
     def call(self, bitpak_name, args=[]):
         if bitpak_name not in self.bitpaks:
             obj = getattr(pynes.bitbag, bitpak_name, None)
@@ -333,7 +343,7 @@ class Game(object):
         return returnValue
         if (obj):
             try:
-                #self.stack(bp(*args))
+                # self.stack(bp(*args))
                 bp(*args)
                 self += bp.asm()
             except TypeError as ex:
@@ -378,7 +388,7 @@ class Game(object):
 
     @state.setter
     def state(self, value):
-        #if self._state not in self._asm_chunks:
+        # if self._state not in self._asm_chunks:
         #    self._asm_chunks[self.state] = ''
         if value == 'reset':
             self._state = value.upper()
@@ -388,53 +398,54 @@ class Game(object):
 
     def headers(self):
         return '\n'.join(['%s %d' % (h, self._header[h])
-            for h in ['.inesprg', '.ineschr', '.inesmap', '.inesmir']]) + '\n\n'
+                          for h in ['.inesprg', '.ineschr', '.inesmap',
+                                    '.inesmir']]) + '\n\n'
 
     def boot(self):
-        asm_code =("  .org $FFFA\n"
-             "  .dw %s\n"
-             "  .dw %s\n"
-             "  .dw 0\n"
-            ) % (
+        asm_code = ("  .org $FFFA\n"
+                    "  .dw %s\n"
+                    "  .dw %s\n"
+                    "  .dw 0\n"
+                    ) % (
             'NMI' if self.has_nmi else '0',
             'RESET' if 'RESET' in self._asm_chunks else '0'
-            )
+        )
         return asm_code
 
     def init(self):
         return (
-          '  SEI          ; disable IRQs\n' +
-          '  CLD          ; disable decimal mode\n' +
-          '  LDX #$40\n' +
-          '  STX $4017    ; disable APU frame IRQ\n' +
-          '  LDX #$FF\n' +
-          '  TXS          ; Set up stack\n' +
-          '  INX          ; now X = 0\n' +
-          '  STX $2000    ; disable NMI\n' +
-          '  STX $2001    ; disable rendering\n' +
-          '  STX $4010    ; disable DMC IRQs\n'
+            '  SEI          ; disable IRQs\n' +
+            '  CLD          ; disable decimal mode\n' +
+            '  LDX #$40\n' +
+            '  STX $4017    ; disable APU frame IRQ\n' +
+            '  LDX #$FF\n' +
+            '  TXS          ; Set up stack\n' +
+            '  INX          ; now X = 0\n' +
+            '  STX $2000    ; disable NMI\n' +
+            '  STX $2001    ; disable rendering\n' +
+            '  STX $4010    ; disable DMC IRQs\n'
         )
 
     def rsset(self):
         asm_code = '\n'.join([
-                '%s .rs %d' % (varname, var.size)
-                for varname, var in self._vars.items()
-                if isinstance(var, NesRs)
-            ])
+            '%s .rs %d' % (varname, var.size)
+            for varname, var in self._vars.items()
+            if isinstance(var, NesRs)
+        ])
         if asm_code:
             return ("  .rsset $0000\n%s\n\n" % asm_code)
         return ""
 
     def infinity_loop(self):
         return (
-          "InfiniteLoop:\n"
-          "  JMP InfiniteLoop\n"
+            "InfiniteLoop:\n"
+            "  JMP InfiniteLoop\n"
         )
 
     def prog(self):
         asm_code = ""
         if 'prog' in self._asm_chunks:
-            asm_code += self._asm_chunks['prog'] 
+            asm_code += self._asm_chunks['prog']
         for bp in self.bitpaks:
             procedure = self.bitpaks[bp].procedure()
             if isinstance(procedure, str):
@@ -445,14 +456,14 @@ class Game(object):
             asm_code += self.ppu.on_reset()
             asm_code += self.infinity_loop()
         if len(asm_code) > 0:
-            return ( "  .bank 0\n  .org $C000\n\n" + asm_code +'\n\n')
+            return ("  .bank 0\n  .org $C000\n\n" + asm_code + '\n\n')
         return ""
 
     def bank1(self):
         asm_code = ''. join(
             ['%s:\n%s' % (varname, var.to_asm())
-            for varname, var in self._vars.items()
-            if isinstance (var,(NesArray, NesSprite, NesString)) and 
+             for varname, var in self._vars.items()
+             if isinstance(var, (NesArray, NesSprite, NesString)) and
                 var.is_used])
         if asm_code:
             return ("  .bank 1\n  .org $E000\n\n" + asm_code + '\n\n')
@@ -461,9 +472,9 @@ class Game(object):
     def bank2(self):
         asm_code = '\n'.join(
             ['  .incbin "%s"' % var.filename
-            for varname, var in self._vars.items()
-            if isinstance(var, NesChrFile)
-            ])
+             for varname, var in self._vars.items()
+             if isinstance(var, NesChrFile)
+             ])
 
         if asm_code:
             return ("  .bank 2\n  .org $0000\n\n" + asm_code + '\n\n')
@@ -471,13 +482,13 @@ class Game(object):
 
     def nmi(self):
         joypad_1 = Joypad(1, self)
-        joypad_2 = Joypad(2, self)
+        # joypad_2 = Joypad(2, self)
         joypad_code = ''
         if joypad_1.is_used:
             joypad_code += joypad_1.init()
             joypad_code += joypad_1.to_asm()
         if len(joypad_code) > 0 or self.has_nmi:
-            self.has_nmi = True #TODO remove this, use ppu.enable_nmi insted
+            self.has_nmi = True  # TODO remove this, use ppu.enable_nmi insted
             nmi_code = (
                 "NMI:\n"
                 "  LDA #$00\n"
@@ -508,5 +519,5 @@ class Game(object):
             self.bank1() +
             self.boot() +
             self.bank2()
-            )
+        )
         return asm_code

@@ -2,6 +2,7 @@ import unittest
 
 from pynes.cartridge import Cartridge
 
+
 class CartridgeTest(unittest.TestCase):
 
     def setUp(self):
@@ -45,7 +46,7 @@ class CartridgeTest(unittest.TestCase):
         self.assertEquals(0xc000, self.cart.banks[0]['start'])
 
     def test_append_code(self):
-        code =  [0x4e, 0x45, 0x53, 0x1a]
+        code = [0x4e, 0x45, 0x53, 0x1a]
         self.cart.append_code(code)
         self.assertEquals(4, self.cart.pc)
         self.assertEquals(code, self.cart.get_code())
@@ -58,6 +59,7 @@ class CartridgeTest(unittest.TestCase):
         self.cart.set_org(0xc000 + 8)
         self.cart.append_code(code)
         self.assertEquals(
-            [0x4e, 0x45, 0x53, 0x1a, 0xff, 0xff, 0xff, 0xff, 0x4e, 0x45, 0x53, 0x1a],
+            [0x4e, 0x45, 0x53, 0x1a, 0xff, 0xff,
+                0xff, 0xff, 0x4e, 0x45, 0x53, 0x1a],
             self.cart.get_code()
-            )
+        )

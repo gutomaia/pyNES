@@ -12,7 +12,7 @@ class Cartridge:
         self.path = ''
 
     def nes_id(self):
-        #NES
+        # NES
         return [0x4e, 0x45, 0x53, 0x1a]
 
     def nes_get_header(self):
@@ -41,7 +41,7 @@ class Cartridge:
 
     def set_bank_id(self, id):
         if id not in self.banks:
-            self.banks[id] = dict(code=[], start=None, size=(1024*8))
+            self.banks[id] = dict(code=[], start=None, size=(1024 * 8))
         self.bank_id = id
 
     def set_org(self, org):

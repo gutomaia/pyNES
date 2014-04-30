@@ -1,12 +1,8 @@
 # -*- coding: utf-8 -*-
-
-import os
-
 from pynes import main
 from pynes.tests import FileTestCase
-from mock import patch, Mock
+from mock import patch
 
-import shutil
 
 class CommandLineTest(FileTestCase):
 
@@ -19,18 +15,19 @@ class CommandLineTest(FileTestCase):
 
     @patch('pynes.compiler.compile_file')
     def test_asm_with_output(self, compiler):
-        main("pynes asm fixtures/movingsprite/movingsprite.asm --output /tmp/movingsprite.nes".split())
+        main("pynes asm fixtures/movingsprite/movingsprite.asm --output"
+             " /tmp/movingsprite.nes".split())
         compiler.assert_called_once_with(
             'fixtures/movingsprite/movingsprite.asm',
             output='/tmp/movingsprite.nes', path=None)
 
     @patch('pynes.compiler.compile_file')
     def test_asm_with_path(self, compiler):
-        main("pynes asm fixtures/movingsprite/movingsprite.asm --path fixtures/movingsprite".split())
+        main("pynes asm fixtures/movingsprite/movingsprite.asm --path "
+             "fixtures/movingsprite".split())
         compiler.assert_called_once_with(
             'fixtures/movingsprite/movingsprite.asm',
             output=None, path='fixtures/movingsprite')
-
 
     @patch('pynes.composer.compose_file')
     def test_py(self, composer):
@@ -48,14 +45,16 @@ class CommandLineTest(FileTestCase):
 
     @patch('pynes.composer.compose_file')
     def test_py_with_output(self, composer):
-        main("pynes py pynes/examples/movingsprite.py --output output.nes".split())
+        main("pynes py pynes/examples/movingsprite.py --output "
+             "output.nes".split())
         composer.assert_called_once_with(
             'pynes/examples/movingsprite.py',
             output='output.nes', asm=False, path=None)
 
     @patch('pynes.composer.compose_file')
     def test_py_with_path(self, composer):
-        main("pynes py pynes/examples/movingsprite.py --path fixtures/movingsprite".split())
+        main("pynes py pynes/examples/movingsprite.py --path "
+             "fixtures/movingsprite".split())
         composer.assert_called_once_with(
             'pynes/examples/movingsprite.py',
             output=None, path='fixtures/movingsprite', asm=False)
@@ -65,7 +64,7 @@ class CommandLineTest(FileTestCase):
             "pynes py pynes/examples/movingsprite.py "
             "--path fixtures/movingsprite "
             "--output pynes/examples/movingsprite.nes"
-            ).split()
+        ).split()
         main(args)
 
     def test_py_real_build_mario(self):
@@ -73,7 +72,7 @@ class CommandLineTest(FileTestCase):
             "pynes py pynes/examples/mario.py "
             "--path fixtures/nerdynights/scrolling "
             "--output pynes/examples/mario.nes"
-            ).split()
+        ).split()
         main(args)
 
     def test_py_real_build_helloworld(self):
@@ -81,7 +80,7 @@ class CommandLineTest(FileTestCase):
             "pynes py pynes/examples/helloworld.py "
             "--path fixtures/nerdynights/scrolling "
             "--output pynes/examples/helloworld.nes"
-            ).split()
+        ).split()
         main(args)
 
     def test_py_real_build_slides(self):
@@ -89,5 +88,5 @@ class CommandLineTest(FileTestCase):
             "pynes py pynes/examples/slides.py "
             "--path fixtures/nerdynights/scrolling "
             "--output pynes/examples/slides.nes --asm"
-            ).split()
+        ).split()
         main(args)

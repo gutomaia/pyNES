@@ -1,17 +1,12 @@
 # -*- coding: utf-8 -*-
-
-from pynes.analyzer import analyse
-from pynes.c6502 import opcodes, address_mode_def
 from re import match
 
-import inspect
-from binascii import hexlify
-
+import pynes
+from pynes.analyzer import analyse
+from pynes.c6502 import opcodes, address_mode_def
 from pynes.directives import directive_list
-
 from pynes.cartridge import Cartridge
 
-import pynes
 
 asm65_tokens = [
     dict(type='T_INSTRUCTION',
@@ -166,16 +161,16 @@ def t_close_square_brackets(tokens, index):
 
 
 def t_nesasm_compatible_open(tokens, index):
-        return OR([t_open, t_open_square_brackets], tokens, index)
+    return OR([t_open, t_open_square_brackets], tokens, index)
 
 
 def t_nesasm_compatible_close(tokens, index):
-        return OR([t_close, t_close_square_brackets], tokens, index)
+    return OR([t_close, t_close_square_brackets], tokens, index)
 
 
 def t_list(tokens, index):
     if (t_address_or_t_binary_number(tokens, index)
-            and t_separator(tokens, index+1)):
+            and t_separator(tokens, index + 1)):
         islist = 1
         arg = 0
         while (islist):
@@ -272,7 +267,7 @@ def get_value(token, labels=[]):
 def syntax(tokens):
     ast = []
     x = 0  # consumed
-    debug = 0
+    # debug = 0
     labels = []
     move = 0
     while (x < len(tokens)):
@@ -298,21 +293,21 @@ def syntax(tokens):
                     size = 0
                     look_ahead = 0
                     for b in bnf['bnf']:
-                        size += b(tokens, x+look_ahead)
+                        size += b(tokens, x + look_ahead)
                         look_ahead += 1
-                    leaf['children'] = tokens[x: x+size]
+                    leaf['children'] = tokens[x: x + size]
                     leaf['type'] = bnf['type']
                     ast.append(leaf)
                     x += size
                     break
             if not move:
-                #TODO: deal with erros like on nodeNES
-                walk = 0
+                # TODO: deal with erros like on nodeNES
+                # walk = 0
                 print('------------')
                 print(tokens[x])
-                print(tokens[x+1])
-                print(tokens[x+2])
-                print(tokens[x+3])
+                print(tokens[x + 1])
+                print(tokens[x + 2])
+                print(tokens[x + 3])
 
                 raise(Exception('UNKNOW TOKEN'))
     return ast
@@ -347,7 +342,7 @@ def semantic(ast, iNES=False, cart=None):
         cart = Cartridge()
     labels = get_labels(ast)
     address = 0
-    #translate statments to opcode
+    # translate statments to opcode
     for leaf in ast:
         if leaf['type'] == 'S_RS':
             labels[leaf['children'][0]['value']] = cart.rs
@@ -407,7 +402,7 @@ def semantic(ast, iNES=False, cart=None):
                     cart.append_code([opcode, arg1, arg2])
             else:
                 cart.append_code([opcode])
-    nes_code = []
+    # nes_code = []
     if iNES:
         return cart.get_ines_code()
     else:

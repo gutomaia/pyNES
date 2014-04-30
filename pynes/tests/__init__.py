@@ -1,10 +1,11 @@
 # -*- coding: utf-8 -*-
 
 from unittest import TestCase
-from pynes.composer import compose, Game
+from pynes.composer import compose
 from pynes.compiler import compile
-from pynes import sprite 
+from pynes import sprite
 import os
+
 
 class FileTestCase(TestCase):
 
@@ -14,14 +15,15 @@ class FileTestCase(TestCase):
     def assertFileExists(self, filename):
         try:
             self.assertTrue(os.path.exists(filename))
-        except AssertionError as ae:
+        except AssertionError:
             raise AssertionError('File %s should exist' % filename)
 
     def assertFileNotExists(self, filename):
         try:
             self.assertFalse(os.path.exists(filename))
-        except AssertionError as ae:
+        except AssertionError:
             raise AssertionError('File %s should not exist' % filename)
+
 
 class WhatElse():
 
@@ -47,14 +49,18 @@ class WhatElse():
             self.last = text
         else:
             print self.testcase.asm
-            raise(AssertionError('"%s" was not found after "%s" in code' % (text, self.last)))
+            raise(
+                AssertionError('"%s" was not found after "%s" in code' %
+                               (text, self.last)))
         return self
 
     def and_not_from_then(self, text):
         index = self.testcase.asm[self.start:].find(text)
         if index > 0:
             print self.testcase.asm
-            raise(AssertionError('"%s" was found after "%s" in code' % (text, self.last)))
+            raise(
+                AssertionError('"%s" was found after "%s" in code' %
+                               (text, self.last)))
         return self
 
 
@@ -89,21 +95,19 @@ class ComposerTestCase(TestCase):
         compile(self.asm, self.path)
         return WhatElse(self)
 
+
 class HexTestCase(TestCase):
 
     def __init__(self, testname):
         TestCase.__init__(self, testname)
 
     def assertHexEquals(self, expected, actual):
-        HEADER = '\033[95m'
-        OKBLUE = '\033[94m'
         OKGREEN = '\033[92m'
-        WARNING = '\033[93m'
         FAIL = '\033[91m'
         ENDC = '\033[0m'
         try:
             self.assertEquals(expected, actual)
-        except AssertionError as ae:
+        except AssertionError:
             line = 0
             cursor = 0
             lines = []
@@ -111,7 +115,8 @@ class HexTestCase(TestCase):
             while (cursor < len(expected) or cursor < len(actual)):
                 for a in range(16):
                     if cursor < len(expected) and cursor < len(actual):
-                        if expected[cursor] != actual[cursor] and line not in lines:
+                        if expected[cursor] != actual[cursor] and line not in \
+                                lines:
                             lines.append(line)
                     cursor += 1
                 line += 1
@@ -121,21 +126,24 @@ class HexTestCase(TestCase):
                 exp = 'Expected: %04x: ' % (line)
                 act = 'Actual  : %04x: ' % (line)
                 for a in range(16):
-                    cursor = (line * 16)+ a
+                    cursor = (line * 16) + a
                     if cursor < len(expected) and cursor < len(actual):
                             if expected[cursor] != actual[cursor]:
-                                exp += '%s%02x%s' % (OKGREEN, ord(expected[cursor]), ENDC)
-                                act += '%s%02x%s' % (FAIL, ord(actual[cursor]), ENDC)
+                                exp += '%s%02x%s' % (
+                                    OKGREEN, ord(expected[cursor]), ENDC)
+                                act += '%s%02x%s' % (
+                                    FAIL, ord(actual[cursor]), ENDC)
                             else:
                                 exp += '%02x' % ord(expected[cursor])
                                 act += '%02x' % ord(actual[cursor])
-                    if ((a+1) % 2) == 0:
+                    if ((a + 1) % 2) == 0:
                         exp += ' '
                         act += ' '
                 out += '%s- %d \n' % (exp, line + 1)
                 out += '%s- %d \n' % (act, line + 1)
             print out
             raise AssertionError('Hex are not equal')
+
 
 def get_printable_sprite(spr):
     ALPHA = '\033[01;40m'
@@ -159,9 +167,11 @@ def get_printable_sprite(spr):
     output = '\n'.join(lines) + ENDC
     print output
 
+
 def show_sprite(spr):
     ENDC = '\033[0m'
     print '\n'.join(get_printable_sprite(spr)) + ENDC + '\n'
+
 
 def show_sprites(sprs):
     ENDC = '\033[0m'
@@ -179,6 +189,7 @@ def show_sprites(sprs):
             tiles = []
             print out
 
+
 class SpriteTestCase(FileTestCase):
 
     def __init__(self, testname):
@@ -193,7 +204,7 @@ class SpriteTestCase(FileTestCase):
         actual_file.close()
         try:
             self.assertEquals(expected_bin, actual_bin)
-        except AssertionError as ae:
+        except AssertionError:
             raise AssertionError('CHR files are not equals')
 
     def assertPNGFileEquals(self, expected, actual):
@@ -205,7 +216,7 @@ class SpriteTestCase(FileTestCase):
         actual_file.close()
         try:
             self.assertEquals(expected_bin, actual_bin)
-        except AssertionError as ae:
+        except AssertionError:
             raise AssertionError('PNG files are not equals')
 
     def assertSpriteEquals(self, expected, actual):
