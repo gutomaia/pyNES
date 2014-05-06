@@ -15,7 +15,7 @@ class EorTest(unittest.TestCase):
     content of the Accumulator'''
 
     def test_eor_imm(self):
-        tokens = lexical('EOR #$10')
+        tokens = list(lexical('EOR #$10'))
         self.assertEquals(2, len(tokens))
         self.assertEquals('T_INSTRUCTION', tokens[0]['type'])
         self.assertEquals('T_HEX_NUMBER', tokens[1]['type'])
@@ -29,7 +29,7 @@ class EorTest(unittest.TestCase):
     content of the Accumulator'''
 
     def test_eor_imm_with_decimal(self):
-        tokens = lexical('EOR #10')
+        tokens = list(lexical('EOR #10'))
         self.assertEquals(2, len(tokens))
         self.assertEquals('T_INSTRUCTION', tokens[0]['type'])
         self.assertEquals('T_DECIMAL_NUMBER', tokens[1]['type'])
@@ -43,7 +43,7 @@ class EorTest(unittest.TestCase):
     (Decimal 4) and the content of the Accumulator'''
 
     def test_eor_imm_with_binary(self):
-        tokens = lexical('EOR #%00000100')
+        tokens = list(lexical('EOR #%00000100'))
         self.assertEquals(2, len(tokens))
         self.assertEquals('T_INSTRUCTION', tokens[0]['type'])
         self.assertEquals('T_BINARY_NUMBER', tokens[1]['type'])
@@ -57,7 +57,7 @@ class EorTest(unittest.TestCase):
     Accumulator and the content of zero page $00'''
 
     def test_eor_zp(self):
-        tokens = lexical('EOR $00')
+        tokens = list(lexical('EOR $00'))
         self.assertEquals(2, len(tokens))
         self.assertEquals('T_INSTRUCTION', tokens[0]['type'])
         self.assertEquals('T_ADDRESS', tokens[1]['type'])
@@ -68,7 +68,7 @@ class EorTest(unittest.TestCase):
         self.assertEquals(code, [0x45, 0x00])
 
     def test_eor_zpx(self):
-        tokens = lexical('EOR $10,X')
+        tokens = list(lexical('EOR $10,X'))
         self.assertEquals(4, len(tokens))
         self.assertEquals('T_INSTRUCTION', tokens[0]['type'])
         self.assertEquals('T_ADDRESS', tokens[1]['type'])
@@ -81,7 +81,7 @@ class EorTest(unittest.TestCase):
         self.assertEquals(code, [0x55, 0x10])
 
     def test_eor_abs(self):
-        tokens = lexical('EOR $1234')
+        tokens = list(lexical('EOR $1234'))
         self.assertEquals(2, len(tokens))
         self.assertEquals('T_INSTRUCTION', tokens[0]['type'])
         self.assertEquals('T_ADDRESS', tokens[1]['type'])
@@ -93,7 +93,7 @@ class EorTest(unittest.TestCase):
         self.assertEquals(code, [0x4D, 0x34, 0x12])
 
     def test_eor_absx(self):
-        tokens = lexical('EOR $1234,X')
+        tokens = list(lexical('EOR $1234,X'))
         self.assertEquals(4, len(tokens))
         self.assertEquals('T_INSTRUCTION', tokens[0]['type'])
         self.assertEquals('T_ADDRESS', tokens[1]['type'])
@@ -107,7 +107,7 @@ class EorTest(unittest.TestCase):
         self.assertEquals(code, [0x5D, 0x34, 0x12])
 
     def test_eor_absy(self):
-        tokens = lexical('EOR $1234,Y')
+        tokens = list(lexical('EOR $1234,Y'))
         self.assertEquals(4, len(tokens))
         self.assertEquals('T_INSTRUCTION', tokens[0]['type'])
         self.assertEquals('T_ADDRESS', tokens[1]['type'])
@@ -120,7 +120,7 @@ class EorTest(unittest.TestCase):
         self.assertEquals(code, [0x59, 0x34, 0x12])
 
     def test_eor_indx(self):
-        tokens = lexical('EOR ($20,X)')
+        tokens = list(lexical('EOR ($20,X)'))
         self.assertEquals(6, len(tokens))
         self.assertEquals('T_INSTRUCTION', tokens[0]['type'])
         self.assertEquals('T_OPEN', tokens[1]['type'])
@@ -136,7 +136,7 @@ class EorTest(unittest.TestCase):
         self.assertEquals(code, [0x41, 0x20])
 
     def test_eor_indy(self):
-        tokens = lexical('EOR ($20),Y')
+        tokens = list(lexical('EOR ($20),Y'))
         self.assertEquals(6, len(tokens))
         self.assertEquals('T_INSTRUCTION', tokens[0]['type'])
         self.assertEquals('T_OPEN', tokens[1]['type'])

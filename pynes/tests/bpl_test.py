@@ -20,7 +20,7 @@ class BplTest(unittest.TestCase):
     -128 to +127. The offset is added to the program counter.'''
 
     def test_bpl_rel(self):
-        tokens = lexical('BPL $10')
+        tokens = list(lexical('BPL $10'))
         self.assertEquals(2, len(tokens))
         self.assertEquals('T_INSTRUCTION', tokens[0]['type'])
         self.assertEquals('T_ADDRESS', tokens[1]['type'])

@@ -18,7 +18,7 @@ class AndTest(unittest.TestCase):
         Test the logical operation AND between $10(Decimal 16)
         and the content of the Accumulator
         '''
-        tokens = lexical('AND #$10')
+        tokens = list(lexical('AND #$10'))
         self.assertEquals(2, len(tokens))
         self.assertEquals('T_INSTRUCTION', tokens[0]['type'])
         self.assertEquals('T_HEX_NUMBER', tokens[1]['type'])
@@ -33,7 +33,7 @@ class AndTest(unittest.TestCase):
         Test the logical operation AND between #10(Decimal 10)
         and the content of the Accumulator
         '''
-        tokens = lexical('AND #10')
+        tokens = list(lexical('AND #10'))
         self.assertEquals(2, len(tokens))
         self.assertEquals('T_INSTRUCTION', tokens[0]['type'])
         self.assertEquals('T_DECIMAL_NUMBER', tokens[1]['type'])
@@ -48,7 +48,7 @@ class AndTest(unittest.TestCase):
         Test the logical operation AND between #%00000100 (Decimal 4)
         and the content of the Accumulator
         '''
-        tokens = lexical('AND #%00000100')
+        tokens = list(lexical('AND #%00000100'))
         self.assertEquals(2, len(tokens))
         self.assertEquals('T_INSTRUCTION', tokens[0]['type'])
         self.assertEquals('T_BINARY_NUMBER', tokens[1]['type'])
@@ -63,7 +63,7 @@ class AndTest(unittest.TestCase):
         Test the logical operation AND between the content of
         accumulator and the content of zero page address $00
         '''
-        tokens = lexical('AND $00')
+        tokens = list(lexical('AND $00'))
         self.assertEquals(2, len(tokens))
         self.assertEquals('T_INSTRUCTION', tokens[0]['type'])
         self.assertEquals('T_ADDRESS', tokens[1]['type'])
@@ -79,7 +79,7 @@ class AndTest(unittest.TestCase):
         accumulator and the content located at zero page with
         address calculated from $10 adding content of X
         '''
-        tokens = lexical('AND $10,X')
+        tokens = list(lexical('AND $10,X'))
         self.assertEquals(4, len(tokens))
         self.assertEquals('T_INSTRUCTION', tokens[0]['type'])
         self.assertEquals('T_ADDRESS', tokens[1]['type'])
@@ -92,7 +92,7 @@ class AndTest(unittest.TestCase):
         self.assertEquals(code, [0x35, 0x10])
 
     def test_and_abs(self):
-        tokens = lexical('AND $1234')
+        tokens = list(lexical('AND $1234'))
         self.assertEquals(2, len(tokens))
         self.assertEquals('T_INSTRUCTION', tokens[0]['type'])
         self.assertEquals('T_ADDRESS', tokens[1]['type'])
@@ -104,7 +104,7 @@ class AndTest(unittest.TestCase):
         self.assertEquals(code, [0x2d, 0x34, 0x12])
 
     def test_and_absx(self):
-        tokens = lexical('AND $1234,X')
+        tokens = list(lexical('AND $1234,X'))
         self.assertEquals(4, len(tokens))
         self.assertEquals('T_INSTRUCTION', tokens[0]['type'])
         self.assertEquals('T_ADDRESS', tokens[1]['type'])
@@ -118,7 +118,7 @@ class AndTest(unittest.TestCase):
         self.assertEquals(code, [0x3d, 0x34, 0x12])
 
     def test_and_absy(self):
-        tokens = lexical('AND $1234,Y')
+        tokens = list(lexical('AND $1234,Y'))
         self.assertEquals(4, len(tokens))
         self.assertEquals('T_INSTRUCTION', tokens[0]['type'])
         self.assertEquals('T_ADDRESS', tokens[1]['type'])
@@ -131,7 +131,7 @@ class AndTest(unittest.TestCase):
         self.assertEquals(code, [0x39, 0x34, 0x12])
 
     def test_and_indx(self):
-        tokens = lexical('AND ($20,X)')
+        tokens = list(lexical('AND ($20,X)'))
         self.assertEquals(6, len(tokens))
         self.assertEquals('T_INSTRUCTION', tokens[0]['type'])
         self.assertEquals('T_OPEN', tokens[1]['type'])
@@ -147,7 +147,7 @@ class AndTest(unittest.TestCase):
         self.assertEquals(code, [0x21, 0x20])
 
     def test_and_indy(self):
-        tokens = lexical('AND ($20),Y')
+        tokens = list(lexical('AND ($20),Y'))
         self.assertEquals(6, len(tokens))
         self.assertEquals('T_INSTRUCTION', tokens[0]['type'])
         self.assertEquals('T_OPEN', tokens[1]['type'])

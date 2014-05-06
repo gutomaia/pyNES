@@ -13,7 +13,7 @@ from pynes.compiler import lexical, syntax, semantic
 class LdaTest(unittest.TestCase):
 
     def test_lda_imm(self):
-        tokens = lexical('LDA #$10')
+        tokens = list(lexical('LDA #$10'))
         self.assertEquals(2, len(tokens))
         self.assertEquals('T_INSTRUCTION', tokens[0]['type'])
         self.assertEquals('T_HEX_NUMBER', tokens[1]['type'])
@@ -24,7 +24,7 @@ class LdaTest(unittest.TestCase):
         self.assertEquals(code, [0xa9, 0x10])
 
     def test_lda_imm_with_decimal(self):
-        tokens = lexical('LDA #10')
+        tokens = list(lexical('LDA #10'))
         self.assertEquals(2, len(tokens))
         self.assertEquals('T_INSTRUCTION', tokens[0]['type'])
         self.assertEquals('T_DECIMAL_NUMBER', tokens[1]['type'])
@@ -35,7 +35,7 @@ class LdaTest(unittest.TestCase):
         self.assertEquals(code, [0xa9, 0x0a])
 
     def test_lda_imm_with_binary(self):
-        tokens = lexical('LDA #%00000100')
+        tokens = list(lexical('LDA #%00000100'))
         self.assertEquals(2, len(tokens))
         self.assertEquals('T_INSTRUCTION', tokens[0]['type'])
         self.assertEquals('T_BINARY_NUMBER', tokens[1]['type'])
@@ -46,7 +46,7 @@ class LdaTest(unittest.TestCase):
         self.assertEquals(code, [0xa9, 0x04])
 
     def test_lda_zp(self):
-        tokens = lexical('LDA $00')
+        tokens = list(lexical('LDA $00'))
         self.assertEquals(2, len(tokens))
         self.assertEquals('T_INSTRUCTION', tokens[0]['type'])
         self.assertEquals('T_ADDRESS', tokens[1]['type'])
@@ -57,7 +57,7 @@ class LdaTest(unittest.TestCase):
         self.assertEquals(code, [0xa5, 0x00])
 
     def test_lda_zpx(self):
-        tokens = lexical('LDA $10,X')
+        tokens = list(lexical('LDA $10,X'))
         self.assertEquals(4, len(tokens))
         self.assertEquals('T_INSTRUCTION', tokens[0]['type'])
         self.assertEquals('T_ADDRESS', tokens[1]['type'])
@@ -70,7 +70,7 @@ class LdaTest(unittest.TestCase):
         self.assertEquals(code, [0xb5, 0x10])
 
     def test_lda_abs(self):
-        tokens = lexical('LDA $1234')
+        tokens = list(lexical('LDA $1234'))
         self.assertEquals(2, len(tokens))
         self.assertEquals('T_INSTRUCTION', tokens[0]['type'])
         self.assertEquals('T_ADDRESS', tokens[1]['type'])
@@ -81,7 +81,7 @@ class LdaTest(unittest.TestCase):
         self.assertEquals(code, [0xad, 0x34, 0x12])
 
     def test_lda_absx(self):
-        tokens = lexical('LDA $1234,X')
+        tokens = list(lexical('LDA $1234,X'))
         self.assertEquals(4, len(tokens))
         self.assertEquals('T_INSTRUCTION', tokens[0]['type'])
         self.assertEquals('T_ADDRESS', tokens[1]['type'])
@@ -94,7 +94,7 @@ class LdaTest(unittest.TestCase):
         self.assertEquals(code, [0xbd, 0x34, 0x12])
 
     def test_lda_absy(self):
-        tokens = lexical('LDA $1234,Y')
+        tokens = list(lexical('LDA $1234,Y'))
         self.assertEquals(4, len(tokens))
         self.assertEquals('T_INSTRUCTION', tokens[0]['type'])
         self.assertEquals('T_ADDRESS', tokens[1]['type'])
@@ -107,7 +107,7 @@ class LdaTest(unittest.TestCase):
         self.assertEquals(code, [0xb9, 0x34, 0x12])
 
     def test_lda_indx(self):
-        tokens = lexical('LDA ($20,X)')
+        tokens = list(lexical('LDA ($20,X)'))
         self.assertEquals(6, len(tokens))
         self.assertEquals('T_INSTRUCTION', tokens[0]['type'])
         self.assertEquals('T_OPEN', tokens[1]['type'])
@@ -123,7 +123,7 @@ class LdaTest(unittest.TestCase):
         self.assertEquals(code, [0xa1, 0x20])
 
     def test_lda_indy(self):
-        tokens = lexical('LDA ($20),Y')
+        tokens = list(lexical('LDA ($20),Y'))
         self.assertEquals(6, len(tokens))
         self.assertEquals('T_INSTRUCTION', tokens[0]['type'])
         self.assertEquals('T_OPEN', tokens[1]['type'])

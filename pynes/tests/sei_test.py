@@ -8,7 +8,7 @@ from pynes.compiler import lexical, syntax, semantic
 class SeiTest(unittest.TestCase):
 
     def test_sei_sngl(self):
-        tokens = lexical('SEI')
+        tokens = list(lexical('SEI'))
         self.assertEquals(1, len(tokens))
         self.assertEquals('T_INSTRUCTION', tokens[0]['type'])
         ast = syntax(tokens)

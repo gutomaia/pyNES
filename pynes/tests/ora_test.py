@@ -16,7 +16,7 @@ class OraTest(unittest.TestCase):
     content of the Accumulator'''
 
     def test_ora_imm(self):
-        tokens = lexical('ORA #$10')
+        tokens = list(lexical('ORA #$10'))
         self.assertEquals(2, len(tokens))
         self.assertEquals('T_INSTRUCTION', tokens[0]['type'])
         self.assertEquals('T_HEX_NUMBER', tokens[1]['type'])
@@ -30,7 +30,7 @@ class OraTest(unittest.TestCase):
     content of the Accumulator'''
 
     def test_ora_imm_with_decimal(self):
-        tokens = lexical('ORA #10')
+        tokens = list(lexical('ORA #10'))
         self.assertEquals(2, len(tokens))
         self.assertEquals('T_INSTRUCTION', tokens[0]['type'])
         self.assertEquals('T_DECIMAL_NUMBER', tokens[1]['type'])
@@ -44,7 +44,7 @@ class OraTest(unittest.TestCase):
     (Decimal 4) and the content of the Accumulator'''
 
     def test_ora_imm_with_binary(self):
-        tokens = lexical('ORA #%00000100')
+        tokens = list(lexical('ORA #%00000100'))
         self.assertEquals(2, len(tokens))
         self.assertEquals('T_INSTRUCTION', tokens[0]['type'])
         self.assertEquals('T_BINARY_NUMBER', tokens[1]['type'])
@@ -58,7 +58,7 @@ class OraTest(unittest.TestCase):
     Accumulator and the content of zero page $00'''
 
     def test_ora_zp(self):
-        tokens = lexical('ORA $00')
+        tokens = list(lexical('ORA $00'))
         self.assertEquals(2, len(tokens))
         self.assertEquals('T_INSTRUCTION', tokens[0]['type'])
         self.assertEquals('T_ADDRESS', tokens[1]['type'])
@@ -69,7 +69,7 @@ class OraTest(unittest.TestCase):
         self.assertEquals(code, [0x05, 0x00])
 
     def test_ora_zpx(self):
-        tokens = lexical('ORA $10,X')
+        tokens = list(lexical('ORA $10,X'))
         self.assertEquals(4, len(tokens))
         self.assertEquals('T_INSTRUCTION', tokens[0]['type'])
         self.assertEquals('T_ADDRESS', tokens[1]['type'])
@@ -82,7 +82,7 @@ class OraTest(unittest.TestCase):
         self.assertEquals(code, [0x15, 0x10])
 
     def test_ora_abs(self):
-        tokens = lexical('ORA $1234')
+        tokens = list(lexical('ORA $1234'))
         self.assertEquals(2, len(tokens))
         self.assertEquals('T_INSTRUCTION', tokens[0]['type'])
         self.assertEquals('T_ADDRESS', tokens[1]['type'])
@@ -94,7 +94,7 @@ class OraTest(unittest.TestCase):
         self.assertEquals(code, [0x0d, 0x34, 0x12])
 
     def test_ora_absx(self):
-        tokens = lexical('ORA $1234,X')
+        tokens = list(lexical('ORA $1234,X'))
         self.assertEquals(4, len(tokens))
         self.assertEquals('T_INSTRUCTION', tokens[0]['type'])
         self.assertEquals('T_ADDRESS', tokens[1]['type'])
@@ -108,7 +108,7 @@ class OraTest(unittest.TestCase):
         self.assertEquals(code, [0x1d, 0x34, 0x12])
 
     def test_ora_absy(self):
-        tokens = lexical('ORA $1234,Y')
+        tokens = list(lexical('ORA $1234,Y'))
         self.assertEquals(4, len(tokens))
         self.assertEquals('T_INSTRUCTION', tokens[0]['type'])
         self.assertEquals('T_ADDRESS', tokens[1]['type'])
@@ -121,7 +121,7 @@ class OraTest(unittest.TestCase):
         self.assertEquals(code, [0x19, 0x34, 0x12])
 
     def test_ora_indx(self):
-        tokens = lexical('ORA ($20,X)')
+        tokens = list(lexical('ORA ($20,X)'))
         self.assertEquals(6, len(tokens))
         self.assertEquals('T_INSTRUCTION', tokens[0]['type'])
         self.assertEquals('T_OPEN', tokens[1]['type'])
@@ -137,7 +137,7 @@ class OraTest(unittest.TestCase):
         self.assertEquals(code, [0x01, 0x20])
 
     def test_ora_indy(self):
-        tokens = lexical('ORA ($20),Y')
+        tokens = list(lexical('ORA ($20),Y'))
         self.assertEquals(6, len(tokens))
         self.assertEquals('T_INSTRUCTION', tokens[0]['type'])
         self.assertEquals('T_OPEN', tokens[1]['type'])

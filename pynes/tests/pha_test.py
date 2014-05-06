@@ -8,7 +8,7 @@ from pynes.compiler import lexical, syntax, semantic
 class PhaTest(unittest.TestCase):
 
     def test_pha_sngl(self):
-        tokens = lexical('PHA')
+        tokens = list(lexical('PHA'))
         self.assertEquals(1, len(tokens))
         self.assertEquals('T_INSTRUCTION', tokens[0]['type'])
         ast = syntax(tokens)

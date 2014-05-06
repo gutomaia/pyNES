@@ -8,7 +8,7 @@ from pynes.compiler import lexical, syntax, semantic
 class DecTest(unittest.TestCase):
 
     def test_dec_zp(self):
-        tokens = lexical('DEC $00')
+        tokens = list(lexical('DEC $00'))
         self.assertEquals(2, len(tokens))
         self.assertEquals('T_INSTRUCTION', tokens[0]['type'])
         self.assertEquals('T_ADDRESS', tokens[1]['type'])
@@ -19,7 +19,7 @@ class DecTest(unittest.TestCase):
         self.assertEquals(code, [0xc6, 0x00])
 
     def test_dec_zpx(self):
-        tokens = lexical('DEC $10,X')
+        tokens = list(lexical('DEC $10,X'))
         self.assertEquals(4, len(tokens))
         self.assertEquals('T_INSTRUCTION', tokens[0]['type'])
         self.assertEquals('T_ADDRESS', tokens[1]['type'])
@@ -32,7 +32,7 @@ class DecTest(unittest.TestCase):
         self.assertEquals(code, [0xd6, 0x10])
 
     def test_dec_abs(self):
-        tokens = lexical('DEC $1234')
+        tokens = list(lexical('DEC $1234'))
         self.assertEquals(2, len(tokens))
         self.assertEquals('T_INSTRUCTION', tokens[0]['type'])
         self.assertEquals('T_ADDRESS', tokens[1]['type'])
@@ -44,7 +44,7 @@ class DecTest(unittest.TestCase):
         self.assertEquals(code, [0xce, 0x34, 0x12])
 
     def test_dec_absx(self):
-        tokens = lexical('DEC $1234,X')
+        tokens = list(lexical('DEC $1234,X'))
         self.assertEquals(4, len(tokens))
         self.assertEquals('T_INSTRUCTION', tokens[0]['type'])
         self.assertEquals('T_ADDRESS', tokens[1]['type'])

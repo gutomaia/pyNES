@@ -8,7 +8,7 @@ from pynes.compiler import lexical, syntax, semantic
 class NopTest(unittest.TestCase):
 
     def test_nop_sngl(self):
-        tokens = lexical('NOP')
+        tokens = list(lexical('NOP'))
         self.assertEquals(1, len(tokens))
         self.assertEquals('T_INSTRUCTION', tokens[0]['type'])
         ast = syntax(tokens)

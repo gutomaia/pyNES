@@ -18,7 +18,7 @@ class BvcTest(unittest.TestCase):
     -128 to +127. The offset is added to the program counter.'''
 
     def test_bvc_rel(self):
-        tokens = lexical('BVC $10')
+        tokens = list(lexical('BVC $10'))
         self.assertEquals(2, len(tokens))
         self.assertEquals('T_INSTRUCTION', tokens[0]['type'])
         self.assertEquals('T_ADDRESS', tokens[1]['type'])

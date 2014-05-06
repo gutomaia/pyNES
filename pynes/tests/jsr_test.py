@@ -8,7 +8,7 @@ from pynes.compiler import lexical, syntax, semantic
 class JsrTest(unittest.TestCase):
 
     def test_jsr_abs(self):
-        tokens = lexical('JSR $1234')
+        tokens = list(lexical('JSR $1234'))
         self.assertEquals(2, len(tokens))
         self.assertEquals('T_INSTRUCTION', tokens[0]['type'])
         self.assertEquals('T_ADDRESS', tokens[1]['type'])

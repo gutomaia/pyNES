@@ -8,7 +8,7 @@ from pynes.compiler import lexical, syntax, semantic
 class InyTest(unittest.TestCase):
 
     def test_iny_sngl(self):
-        tokens = lexical('INY')
+        tokens = list(lexical('INY'))
         self.assertEquals(1, len(tokens))
         self.assertEquals('T_INSTRUCTION', tokens[0]['type'])
         ast = syntax(tokens)
