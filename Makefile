@@ -52,7 +52,7 @@ venv: ${VIRTUALENV_DIR}/bin/activate
 	${VIRTUALENV} pip install -r requirements.txt && \
 		touch $@
 
-.requirements_test.txt.check: ${VIRTUALENV_DIR}/bin/activate requirements.txt
+.requirements_test.txt.check: ${VIRTUALENV_DIR}/bin/activate requirements_test.txt
 	${VIRTUALENV} pip install -r requirements_test.txt && \
 		touch $@
 
@@ -83,11 +83,11 @@ test: build .requirements_test.txt.check
 ci:
 	@nosetests
 
-pep8:
-	@pep8 --statistics -qq pynes | sort -rn || echo ''
+pep8: .requirements_test.txt.check
+	${VIRTUALENV} pep8 --statistics -qq pynes | sort -rn || echo ''
 
 todo:
-	pep8 --first pynes
+	${VIRTUALENV} pep8 --first pynes
 	find pynes -type f | xargs -I [] grep -H TODO []
 
 search:
