@@ -1,3 +1,5 @@
+PLATFORM = $(shell uname)
+
 PYTHON_VERSION = 2.7.3
 PYWIN32_VERSION = 218
 PYINSTALLER_VERSION = 2.0
@@ -15,6 +17,12 @@ MAKENSIS_EXE = ${NSIS_PATH}/makensis.exe
 
 DOWNLOAD_PATH=deps
 
+VIRTUALENV_DIR=venv
+VIRTUALENV=@. ${VIRTUALENV_DIR}/bin/activate;
+
+PYTHON_SOURCES = ${shell find analytics -type f -iname '*.py'}
+PYTHON_COMPILED = $(patsubst %.py,%.pyc, ${PYTHON_SOURCES})
+
 PYTHON_EXE=${WINE_PATH}/Python27/python.exe
 EASYINSTALL_EXE=${WINE_PATH}/Python27/Scripts/easy_install.exe
 PIP_EXE=${WINE_PATH}/Python27/Scripts/pip.exe
@@ -25,6 +33,7 @@ OK=\033[32m[OK]\033[39m
 FAIL=\033[31m[FAIL]\033[39m
 CHECK=@if [ $$? -eq 0 ]; then echo "${OK}"; else echo "${FAIL}" ; fi
 
+
 ifeq "" "$(shell which python)"
 default:
 	@echo "Please install python"
@@ -33,10 +42,20 @@ else
 default: test
 endif
 
-ifeq "Darwin" "$(shell uname)"
 
-	echo "opa"
-endif
+${VIRTUALENV_DIR}/bin/activate:
+	test -d venv || virtualenv venv && touch $@
+
+venv: ${VIRTUALENV_DIR}/bin/activate
+
+.requirements.txt.check: ${VIRTUALENV_DIR}/bin/activate requirements.txt
+	${VIRTUALENV} pip install -r requirements.txt && \
+		touch $@
+
+%.pyc: %.py
+	${VIRTUALENV} python -m py_compile $<
+
+dependencies: .requirements.txt.check
 
 clean:
 	@rm -rf build
@@ -44,13 +63,14 @@ clean:
 	@rm -rf reports
 
 purge: clean
-	@ rm -rf deps
+	@rm -rf deps
 	@rm -rf tools
+	@rm -rf venv
 
-test:
-	@nosetests --processes=2 -e image_test.py
+build: dependencies
 
-build: test
+test: build
+	${VIRTUALENV} nosetests --processes=2 -e image_test.py
 
 ci:
 	@nosetests
@@ -135,26 +155,23 @@ tools/env/bin/activate: tools/.done
 	virtualenv --no-site-packages --distribute tools/env
 	@touch $@
 
-tools/requirements.windows.checked: ${PIP_EXE} requirements.txt
+tools/requirements.windows.check: ${PIP_EXE} requirements.txt
 	wine ${PIP_EXE} install -r requirements.txt
 	@touch $@
-
-dependencies: tools/requirements.checked \
-	tools/requirements_test.checked
 
 dependencies_wine: ${PYTHON_EXE} ${PIP_EXE}
 
 
 windows_binary_dependencies: ${WINE_PATH}/Python27/Scripts/pywin32_postinstall.py
 
-dist/linux/pynes: ${PYINSTALLER} tools/requirements.windows.checked
+dist/linux/pynes: ${PYINSTALLER} tools/requirements.windows.check
 	@rm -rf build/pyi.linux
 	@rm -rf build/pyi.linux2
 	@rm -rf dist/linux
 	python ${PYINSTALLER} pynes.linux.spec
 	@touch $@
 
-dist/windows/pynes.exe: ${PYINSTALLER} ${PYTHON_EXE} windows_binary_dependencies tools/requirements.windows.checked
+dist/windows/pynes.exe: ${PYINSTALLER} ${PYTHON_EXE} windows_binary_dependencies tools/requirements.windows.check
 	@rm -rf build/pyi.win32
 	@rm -rf dist/windows
 	wine ${PYTHON_EXE} ${PYINSTALLER} --onefile pynes.windows.spec
