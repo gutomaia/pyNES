@@ -1,5 +1,1 @@
-pillow
-mock
-coveralls
-nose
-coverage
+Pillow==2.5.3

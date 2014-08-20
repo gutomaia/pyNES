@@ -52,6 +52,10 @@ venv: ${VIRTUALENV_DIR}/bin/activate
 	${VIRTUALENV} pip install -r requirements.txt && \
 		touch $@
 
+.requirements_test.txt.check: ${VIRTUALENV_DIR}/bin/activate requirements.txt
+	${VIRTUALENV} pip install -r requirements_test.txt && \
+		touch $@
+
 %.pyc: %.py
 	@echo "Compiling $<: \c"
 	${VIRTUALENV} python -m py_compile $<
@@ -73,7 +77,7 @@ purge: clean
 
 build: dependencies ${PYTHON_COMPILED}
 
-test: build
+test: build .requirements_test.txt.check
 	${VIRTUALENV} nosetests --processes=2 -e image_test.py
 
 ci:
