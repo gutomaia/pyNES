@@ -8,6 +8,7 @@ python:
   - "2.7"
 install:
   - pip install -q -r requirements.txt
+  - pip install -q -r requirements_test.txt
 script:
   - nosetests
   - coverage run --source=pynes setup.py test
