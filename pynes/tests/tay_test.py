@@ -8,7 +8,7 @@ from pynes.compiler import lexical, syntax, semantic
 class TayTest(unittest.TestCase):
 
     def test_tay_sngl(self):
-        tokens = lexical('TAY')
+        tokens = list(lexical('TAY'))
         self.assertEquals(1, len(tokens))
         self.assertEquals('T_INSTRUCTION', tokens[0]['type'])
         ast = syntax(tokens)

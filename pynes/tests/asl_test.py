@@ -12,7 +12,7 @@ class AslTest(unittest.TestCase):
 
     # TODO see the accumulator type instruction, ASL A
     def test_asl_imm(self):
-        tokens = lexical('ASL #$10')
+        tokens = list(lexical('ASL #$10'))
         self.assertEquals(2, len(tokens))
         self.assertEquals('T_INSTRUCTION', tokens[0]['type'])
         self.assertEquals('T_HEX_NUMBER', tokens[1]['type'])
@@ -23,7 +23,7 @@ class AslTest(unittest.TestCase):
         self.assertEquals(code, [0x0a, 0x10])
 
     def test_asl_imm_with_decimal(self):
-        tokens = lexical('ASL #10')
+        tokens = list(lexical('ASL #10'))
         self.assertEquals(2, len(tokens))
         self.assertEquals('T_INSTRUCTION', tokens[0]['type'])
         self.assertEquals('T_DECIMAL_NUMBER', tokens[1]['type'])
@@ -34,7 +34,7 @@ class AslTest(unittest.TestCase):
         self.assertEquals(code, [0x0a, 0x0a])
 
     def test_asl_imm_with_binary(self):
-        tokens = lexical('ASL #%00000100')
+        tokens = list(lexical('ASL #%00000100'))
         self.assertEquals(2, len(tokens))
         self.assertEquals('T_INSTRUCTION', tokens[0]['type'])
         self.assertEquals('T_BINARY_NUMBER', tokens[1]['type'])
@@ -45,7 +45,7 @@ class AslTest(unittest.TestCase):
         self.assertEquals(code, [0x0a, 0x04])
 
     def test_asl_zp(self):
-        tokens = lexical('ASL $00')
+        tokens = list(lexical('ASL $00'))
         self.assertEquals(2, len(tokens))
         self.assertEquals('T_INSTRUCTION', tokens[0]['type'])
         self.assertEquals('T_ADDRESS', tokens[1]['type'])
@@ -56,7 +56,7 @@ class AslTest(unittest.TestCase):
         self.assertEquals(code, [0x06, 0x00])
 
     def test_asl_zpx(self):
-        tokens = lexical('ASL $10,X')
+        tokens = list(lexical('ASL $10,X'))
         self.assertEquals(4, len(tokens))
         self.assertEquals('T_INSTRUCTION', tokens[0]['type'])
         self.assertEquals('T_ADDRESS', tokens[1]['type'])
@@ -69,7 +69,7 @@ class AslTest(unittest.TestCase):
         self.assertEquals(code, [0x16, 0x10])
 
     def test_asl_abs(self):
-        tokens = lexical('ASL $1234')
+        tokens = list(lexical('ASL $1234'))
         self.assertEquals(2, len(tokens))
         self.assertEquals('T_INSTRUCTION', tokens[0]['type'])
         self.assertEquals('T_ADDRESS', tokens[1]['type'])
@@ -81,7 +81,7 @@ class AslTest(unittest.TestCase):
         self.assertEquals(code, [0x0e, 0x34, 0x12])
 
     def test_asl_absx(self):
-        tokens = lexical('ASL $1234,X')
+        tokens = list(lexical('ASL $1234,X'))
         self.assertEquals(4, len(tokens))
         self.assertEquals('T_INSTRUCTION', tokens[0]['type'])
         self.assertEquals('T_ADDRESS', tokens[1]['type'])

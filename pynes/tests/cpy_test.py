@@ -12,7 +12,7 @@ from pynes.compiler import lexical, syntax, semantic
 class CpyTest(unittest.TestCase):
 
     def test_cpy_imm(self):
-        tokens = lexical('CPY #$10')
+        tokens = list(lexical('CPY #$10'))
         self.assertEquals(2, len(tokens))
         self.assertEquals('T_INSTRUCTION', tokens[0]['type'])
         self.assertEquals('T_HEX_NUMBER', tokens[1]['type'])
@@ -23,7 +23,7 @@ class CpyTest(unittest.TestCase):
         self.assertEquals(code, [0xc0, 0x10])
 
     def test_cpy_imm_with_decimal(self):
-        tokens = lexical('CPY #10')
+        tokens = list(lexical('CPY #10'))
         self.assertEquals(2, len(tokens))
         self.assertEquals('T_INSTRUCTION', tokens[0]['type'])
         self.assertEquals('T_DECIMAL_NUMBER', tokens[1]['type'])
@@ -34,7 +34,7 @@ class CpyTest(unittest.TestCase):
         self.assertEquals(code, [0xc0, 0x0a])
 
     def test_cpy_imm_with_binary(self):
-        tokens = lexical('CPY #%00000100')
+        tokens = list(lexical('CPY #%00000100'))
         self.assertEquals(2, len(tokens))
         self.assertEquals('T_INSTRUCTION', tokens[0]['type'])
         self.assertEquals('T_BINARY_NUMBER', tokens[1]['type'])
@@ -45,7 +45,7 @@ class CpyTest(unittest.TestCase):
         self.assertEquals(code, [0xc0, 0x04])
 
     def test_cpy_zp(self):
-        tokens = lexical('CPY $00')
+        tokens = list(lexical('CPY $00'))
         self.assertEquals(2, len(tokens))
         self.assertEquals('T_INSTRUCTION', tokens[0]['type'])
         self.assertEquals('T_ADDRESS', tokens[1]['type'])
@@ -56,7 +56,7 @@ class CpyTest(unittest.TestCase):
         self.assertEquals(code, [0xc4, 0x00])
 
     def test_cpy_abs(self):
-        tokens = lexical('CPY $1234')
+        tokens = list(lexical('CPY $1234'))
         self.assertEquals(2, len(tokens))
         self.assertEquals('T_INSTRUCTION', tokens[0]['type'])
         self.assertEquals('T_ADDRESS', tokens[1]['type'])

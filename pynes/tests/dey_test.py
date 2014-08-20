@@ -8,7 +8,7 @@ from pynes.compiler import lexical, syntax, semantic
 class DeyTest(unittest.TestCase):
 
     def test_dey_sngl(self):
-        tokens = lexical('DEY')
+        tokens = list(lexical('DEY'))
         self.assertEquals(1, len(tokens))
         self.assertEquals('T_INSTRUCTION', tokens[0]['type'])
         ast = syntax(tokens)

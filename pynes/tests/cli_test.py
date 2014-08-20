@@ -8,7 +8,7 @@ from pynes.compiler import lexical, syntax, semantic
 class CliTest(unittest.TestCase):
 
     def test_cli_sngl(self):
-        tokens = lexical('CLI')
+        tokens = list(lexical('CLI'))
         self.assertEquals(1, len(tokens))
         self.assertEquals('T_INSTRUCTION', tokens[0]['type'])
         ast = syntax(tokens)

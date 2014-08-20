@@ -8,7 +8,7 @@ from pynes.compiler import lexical, syntax, semantic
 class StaTest(unittest.TestCase):
 
     def test_sta_zp(self):
-        tokens = lexical('STA $00')
+        tokens = list(lexical('STA $00'))
         self.assertEquals(2, len(tokens))
         self.assertEquals('T_INSTRUCTION', tokens[0]['type'])
         self.assertEquals('T_ADDRESS', tokens[1]['type'])
@@ -19,7 +19,7 @@ class StaTest(unittest.TestCase):
         self.assertEquals(code, [0x85, 0x00])
 
     def test_sta_zpx(self):
-        tokens = lexical('STA $10,X')
+        tokens = list(lexical('STA $10,X'))
         self.assertEquals(4, len(tokens))
         self.assertEquals('T_INSTRUCTION', tokens[0]['type'])
         self.assertEquals('T_ADDRESS', tokens[1]['type'])
@@ -32,7 +32,7 @@ class StaTest(unittest.TestCase):
         self.assertEquals(code, [0x95, 0x10])
 
     def test_sta_abs(self):
-        tokens = lexical('STA $1234')
+        tokens = list(lexical('STA $1234'))
         self.assertEquals(2, len(tokens))
         self.assertEquals('T_INSTRUCTION', tokens[0]['type'])
         self.assertEquals('T_ADDRESS', tokens[1]['type'])
@@ -44,7 +44,7 @@ class StaTest(unittest.TestCase):
         self.assertEquals(code, [0x8D, 0x34, 0x12])
 
     def test_sta_absx(self):
-        tokens = lexical('STA $1234,X')
+        tokens = list(lexical('STA $1234,X'))
         self.assertEquals(4, len(tokens))
         self.assertEquals('T_INSTRUCTION', tokens[0]['type'])
         self.assertEquals('T_ADDRESS', tokens[1]['type'])
@@ -58,7 +58,7 @@ class StaTest(unittest.TestCase):
         self.assertEquals(code, [0x9D, 0x34, 0x12])
 
     def test_sta_absy(self):
-        tokens = lexical('STA $1234,Y')
+        tokens = list(lexical('STA $1234,Y'))
         self.assertEquals(4, len(tokens))
         self.assertEquals('T_INSTRUCTION', tokens[0]['type'])
         self.assertEquals('T_ADDRESS', tokens[1]['type'])
@@ -71,7 +71,7 @@ class StaTest(unittest.TestCase):
         self.assertEquals(code, [0x99, 0x34, 0x12])
 
     def test_sta_indx(self):
-        tokens = lexical('STA ($20,X)')
+        tokens = list(lexical('STA ($20,X)'))
         self.assertEquals(6, len(tokens))
         self.assertEquals('T_INSTRUCTION', tokens[0]['type'])
         self.assertEquals('T_OPEN', tokens[1]['type'])
@@ -87,7 +87,7 @@ class StaTest(unittest.TestCase):
         self.assertEquals(code, [0x81, 0x20])
 
     def test_sta_indy(self):
-        tokens = lexical('STA ($20),Y')
+        tokens = list(lexical('STA ($20),Y'))
         self.assertEquals(6, len(tokens))
         self.assertEquals('T_INSTRUCTION', tokens[0]['type'])
         self.assertEquals('T_OPEN', tokens[1]['type'])

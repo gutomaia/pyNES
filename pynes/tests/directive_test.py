@@ -9,14 +9,14 @@ from pynes.compiler import lexical, syntax, semantic
 class DirectiveTest(unittest.TestCase):
 
     def test_label(self):
-        tokens = lexical('label:')
+        tokens = list(lexical('label:'))
         self.assertEquals(1, len(tokens))
         self.assertEquals('T_LABEL', tokens[0]['type'])
         # ast = syntax(tokens)
         # self.assertEquals(1 , len(ast))
 
     def test_inesprg(self):
-        tokens = lexical('.inesprg 1')
+        tokens = list(lexical('.inesprg 1'))
         self.assertEquals(2, len(tokens))
         self.assertEquals('T_DIRECTIVE', tokens[0]['type'])
         self.assertEquals('T_DECIMAL_ARGUMENT', tokens[1]['type'])
@@ -28,7 +28,7 @@ class DirectiveTest(unittest.TestCase):
         self.assertEquals(code[4], 1)
 
     def test_ineschr(self):
-        tokens = lexical('.ineschr 1')
+        tokens = list(lexical('.ineschr 1'))
         self.assertEquals(2, len(tokens))
         self.assertEquals('T_DIRECTIVE', tokens[0]['type'])
         self.assertEquals('T_DECIMAL_ARGUMENT', tokens[1]['type'])
@@ -40,7 +40,7 @@ class DirectiveTest(unittest.TestCase):
         self.assertEquals(code[5], 1)
 
     def test_inesmap(self):
-        tokens = lexical('.inesmap 1')
+        tokens = list(lexical('.inesmap 1'))
         self.assertEquals(2, len(tokens))
         self.assertEquals('T_DIRECTIVE', tokens[0]['type'])
         self.assertEquals('T_DECIMAL_ARGUMENT', tokens[1]['type'])
@@ -52,7 +52,7 @@ class DirectiveTest(unittest.TestCase):
         self.assertEquals(code[6], 1)
 
     def test_inesmir(self):
-        tokens = lexical('.inesmir 1')
+        tokens = list(lexical('.inesmir 1'))
         self.assertEquals(2, len(tokens))
         self.assertEquals('T_DIRECTIVE', tokens[0]['type'])
         self.assertEquals('T_DECIMAL_ARGUMENT', tokens[1]['type'])
@@ -64,7 +64,7 @@ class DirectiveTest(unittest.TestCase):
         self.assertEquals(code[7], 1)
 
     def test_bank_0(self):
-        tokens = lexical('.bank 0')
+        tokens = list(lexical('.bank 0'))
         self.assertEquals(2, len(tokens))
         self.assertEquals('T_DIRECTIVE', tokens[0]['type'])
         self.assertEquals('T_DECIMAL_ARGUMENT', tokens[1]['type'])
@@ -74,7 +74,7 @@ class DirectiveTest(unittest.TestCase):
         # code = semantic(ast)
 
     def test_org_0000(self):
-        tokens = lexical('.org $0000')
+        tokens = list(lexical('.org $0000'))
         self.assertEquals(2, len(tokens))
         self.assertEquals('T_DIRECTIVE', tokens[0]['type'])
         self.assertEquals('T_ADDRESS', tokens[1]['type'])
@@ -85,7 +85,7 @@ class DirectiveTest(unittest.TestCase):
         # self.assertEquals(0x0000, get_pc())
 
     def test_org_c000(self):
-        tokens = lexical('.org $C000')
+        tokens = list(lexical('.org $C000'))
         self.assertEquals(2, len(tokens))
         self.assertEquals('T_DIRECTIVE', tokens[0]['type'])
         self.assertEquals('T_ADDRESS', tokens[1]['type'])
@@ -96,7 +96,7 @@ class DirectiveTest(unittest.TestCase):
         # self.assertEquals(0xc000, get_pc())
 
     def test_org_fffa(self):
-        tokens = lexical('.org $FFFA')
+        tokens = list(lexical('.org $FFFA'))
         self.assertEquals(2, len(tokens))
         self.assertEquals('T_DIRECTIVE', tokens[0]['type'])
         self.assertEquals('T_ADDRESS', tokens[1]['type'])
@@ -107,9 +107,9 @@ class DirectiveTest(unittest.TestCase):
         # self.assertEquals(0xfffa, get_pc())
 
     def test_db_1(self):
-        tokens = lexical(
-            '.db $0F,$01,$02,$03,$04,$05,$06,$07,$08,$09,$0A,$0B,$0C,$0D,$0E,'
-            '$0F')
+        code = ('.db $0F,$01,$02,$03,$04,$05,$06,$07,' # One-liner string
+                    '$08,$09,$0A,$0B,$0C,$0D,$0E,$0F')
+        tokens = list(lexical(code))
         self.assertEquals(32, len(tokens))
         self.assertEquals('T_DIRECTIVE', tokens[0]['type'])
         # self.assertEquals('T_HEX_NUMBER', tokens[1]['type'])
@@ -125,9 +125,9 @@ class DirectiveTest(unittest.TestCase):
         self.assertEquals(expected, code)
 
     def test_db_2(self):
-        tokens = lexical(
-            '.db $0F,$30,$31,$32,$33,$35,$36,$37,$38,$39,$3A,$3B,$3C,$3D,$3E,'
-            '$0F')
+        code = ('.db $0F,$30,$31,$32,$33,$35,$36,$37,' # One-liner string
+                    '$38,$39,$3A,$3B,$3C,$3D,$3E,$0F')
+        tokens = list(lexical(code))
         self.assertEquals(32, len(tokens))
         self.assertEquals('T_DIRECTIVE', tokens[0]['type'])
         # self.assertEquals('T_HEX_NUMBER', tokens[1]['type'])
@@ -141,7 +141,7 @@ class DirectiveTest(unittest.TestCase):
         self.assertEquals(expected, code)
 
     def test_db_3(self):
-        tokens = lexical('.db $80, $00, $03, $80')
+        tokens = list(lexical('.db $80, $00, $03, $80'))
         self.assertEquals(8, len(tokens))
         self.assertEquals('T_DIRECTIVE', tokens[0]['type'])
         # self.assertEquals('T_HEX_NUMBER', tokens[1]['type'])
@@ -157,7 +157,7 @@ class DirectiveTest(unittest.TestCase):
         code = '''.db $80, $00, $03, $80
         .db $01, $02, $03, $04
         '''
-        tokens = lexical(code)
+        tokens = list(lexical(code))
         self.assertEquals(18, len(tokens))
         self.assertEquals('T_DIRECTIVE', tokens[0]['type'])
         # self.assertEquals('T_HEX_NUMBER', tokens[1]['type'])

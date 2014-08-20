@@ -8,7 +8,7 @@ from pynes.compiler import lexical, syntax, semantic
 class JmpTest(unittest.TestCase):
 
     def test_jmp_abs(self):
-        tokens = lexical('JMP $1234')
+        tokens = list(lexical('JMP $1234'))
         self.assertEquals(2, len(tokens))
         self.assertEquals('T_INSTRUCTION', tokens[0]['type'])
         self.assertEquals('T_ADDRESS', tokens[1]['type'])

@@ -8,7 +8,7 @@ from pynes.compiler import lexical, syntax, semantic
 class TsxTest(unittest.TestCase):
 
     def test_tsx_sngl(self):
-        tokens = lexical('TSX')
+        tokens = list(lexical('TSX'))
         self.assertEquals(1, len(tokens))
         self.assertEquals('T_INSTRUCTION', tokens[0]['type'])
         ast = syntax(tokens)

@@ -13,7 +13,7 @@ from pynes.compiler import lexical, syntax, semantic
 class LdyTest(unittest.TestCase):
 
     def test_ldy_imm(self):
-        tokens = lexical('LDY #$10')
+        tokens = list(lexical('LDY #$10'))
         self.assertEquals(2, len(tokens))
         self.assertEquals('T_INSTRUCTION', tokens[0]['type'])
         self.assertEquals('T_HEX_NUMBER', tokens[1]['type'])
@@ -24,7 +24,7 @@ class LdyTest(unittest.TestCase):
         self.assertEquals(code, [0xa0, 0x10])
 
     def test_ldy_imm_with_decimal(self):
-        tokens = lexical('LDY #10')
+        tokens = list(lexical('LDY #10'))
         self.assertEquals(2, len(tokens))
         self.assertEquals('T_INSTRUCTION', tokens[0]['type'])
         self.assertEquals('T_DECIMAL_NUMBER', tokens[1]['type'])
@@ -35,7 +35,7 @@ class LdyTest(unittest.TestCase):
         self.assertEquals(code, [0xa0, 0x0a])
 
     def test_ldy_imm_with_binary(self):
-        tokens = lexical('LDY #%00000100')
+        tokens = list(lexical('LDY #%00000100'))
         self.assertEquals(2, len(tokens))
         self.assertEquals('T_INSTRUCTION', tokens[0]['type'])
         self.assertEquals('T_BINARY_NUMBER', tokens[1]['type'])
@@ -46,7 +46,7 @@ class LdyTest(unittest.TestCase):
         self.assertEquals(code, [0xa0, 0x04])
 
     def test_ldy_zp(self):
-        tokens = lexical('LDY $00')
+        tokens = list(lexical('LDY $00'))
         self.assertEquals(2, len(tokens))
         self.assertEquals('T_INSTRUCTION', tokens[0]['type'])
         self.assertEquals('T_ADDRESS', tokens[1]['type'])
@@ -57,7 +57,7 @@ class LdyTest(unittest.TestCase):
         self.assertEquals(code, [0xa4, 0x00])
 
     def test_ldy_zpx(self):
-        tokens = lexical('LDY $10,X')
+        tokens = list(lexical('LDY $10,X'))
         self.assertEquals(4, len(tokens))
         self.assertEquals('T_INSTRUCTION', tokens[0]['type'])
         self.assertEquals('T_ADDRESS', tokens[1]['type'])
@@ -70,7 +70,7 @@ class LdyTest(unittest.TestCase):
         self.assertEquals(code, [0xb4, 0x10])
 
     def test_ldy_abs(self):
-        tokens = lexical('LDY $1234')
+        tokens = list(lexical('LDY $1234'))
         self.assertEquals(2, len(tokens))
         self.assertEquals('T_INSTRUCTION', tokens[0]['type'])
         self.assertEquals('T_ADDRESS', tokens[1]['type'])
@@ -81,7 +81,7 @@ class LdyTest(unittest.TestCase):
         self.assertEquals(code, [0xac, 0x34, 0x12])
 
     def test_ldy_absx(self):
-        tokens = lexical('LDY $1234,X')
+        tokens = list(lexical('LDY $1234,X'))
         self.assertEquals(4, len(tokens))
         self.assertEquals('T_INSTRUCTION', tokens[0]['type'])
         self.assertEquals('T_ADDRESS', tokens[1]['type'])
