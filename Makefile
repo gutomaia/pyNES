@@ -20,7 +20,7 @@ DOWNLOAD_PATH=deps
 VIRTUALENV_DIR=venv
 VIRTUALENV=@. ${VIRTUALENV_DIR}/bin/activate;
 
-PYTHON_SOURCES = ${shell find analytics -type f -iname '*.py'}
+PYTHON_SOURCES = ${shell find pynes -type f -iname '*.py'}
 PYTHON_COMPILED = $(patsubst %.py,%.pyc, ${PYTHON_SOURCES})
 
 PYTHON_EXE=${WINE_PATH}/Python27/python.exe
@@ -53,11 +53,15 @@ venv: ${VIRTUALENV_DIR}/bin/activate
 		touch $@
 
 %.pyc: %.py
+	@echo "Compiling $<: \c"
 	${VIRTUALENV} python -m py_compile $<
+	${CHECK}
 
 dependencies: .requirements.txt.check
 
 clean:
+	@find . -regex '^.*.check' -type f -delete
+	@find pynes -regex '^.*py[co]$$' -type f -delete
 	@rm -rf build
 	@rm -rf dist
 	@rm -rf reports
@@ -67,7 +71,7 @@ purge: clean
 	@rm -rf tools
 	@rm -rf venv
 
-build: dependencies
+build: dependencies ${PYTHON_COMPILED}
 
 test: build
 	${VIRTUALENV} nosetests --processes=2 -e image_test.py
