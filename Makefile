@@ -27,7 +27,7 @@ PYTHON_EXE=${WINE_PATH}/Python27/python.exe
 EASYINSTALL_EXE=${WINE_PATH}/Python27/Scripts/easy_install.exe
 PIP_EXE=${WINE_PATH}/Python27/Scripts/pip.exe
 
-WGET = wget
+WGET = wget -q
 
 OK=\033[32m[OK]\033[39m
 FAIL=\033[31m[FAIL]\033[39m
@@ -112,19 +112,26 @@ tools/.done:
 	${CHECK}
 
 deps/pyinstaller-${PYINSTALLER_VERSION}.zip: deps/.done
+	@echo "Downloading pyinstaller-${PYINSTALLER_VERSION}.zip: \c"
 	@cd deps && \
-		${WGET} http://sourceforge.net/projects/pyinstaller/files/${PYINSTALLER_VERSION}/pyinstaller-${PYINSTALLER_VERSION}.zip
-	@touch $@
+		${WGET} http://sourceforge.net/projects/pyinstaller/files/${PYINSTALLER_VERSION}/pyinstaller-${PYINSTALLER_VERSION}.zip && \
+		cd .. && touch $@
+	${CHECK}
 
 deps/python-${PYTHON_VERSION}.msi: deps/.done
+	@echo "Downloading python-${PYTHON_VERSION}.msi: \c"
 	@cd deps && \
-		${WGET} http://www.python.org/ftp/python/${PYTHON_VERSION}/python-${PYTHON_VERSION}.msi
-	@touch $@
+		${WGET} http://www.python.org/ftp/python/${PYTHON_VERSION}/python-${PYTHON_VERSION}.msi && \
+		cd .. && touch $@
+	${CHECK}
 
 deps/${PYWIN32}: deps/.done
+	@echo "Downloading python-${PYTHON_VERSION}.msi: \c"
 	@cd deps && \
-		${WGET} http://downloads.sourceforge.net/project/pywin32/pywin32/Build\%20${PYWIN32_VERSION}/${PYWIN32}
-	@touch $@
+		${WGET} http://downloads.sourceforge.net/project/pywin32/pywin32/Build\%20${PYWIN32_VERSION}/${PYWIN32} && \
+		touch ${PYWIN32}
+	${CHECK}
+
 
 ${PYTHON_EXE}: deps/python-${PYTHON_VERSION}.msi
 	@cd deps && \
@@ -140,9 +147,11 @@ ${WINE_PATH}/Python27/Scripts/pywin32_postinstall.py: ${PYTHON_EXE} deps/${PYWIN
 	@touch $@
 
 deps/distribute_setup.py:
-	cd deps && \
-		${WGET} http://python-distribute.org/distribute_setup.py
-	@touch $@
+	@echo "Downloading distribute_setup.py: \c"
+	@cd deps && \
+		${WGET} http://python-distribute.org/distribute_setup.py && \
+		cd .. && touch $@
+	${CHECK}
 
 ${EASYINSTALL_EXE}: ${PYTHON_EXE} deps/distribute_setup.py
 	cd deps && \
@@ -156,8 +165,9 @@ ${PIP_EXE}: ${PYTHON_EXE} ${EASYINSTALL_EXE}
 ${PYINSTALLER}: tools/.done deps/pyinstaller-2.0.zip
 	@echo "Unzipping PyInstaller ${PYINSTALLER_VERSION}: \c"
 	@cd tools && \
-		unzip ../deps/pyinstaller-2.0.zip
-	@touch $@
+		unzip -qq ../deps/pyinstaller-2.0.zip && \
+		cd .. && touch $@
+	${CHECK}
 
 tools/env/bin/activate: tools/.done
 	virtualenv --no-site-packages --distribute tools/env
