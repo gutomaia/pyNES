@@ -182,7 +182,7 @@ dependencies_wine: ${PYTHON_EXE} ${PIP_EXE}
 
 windows_binary_dependencies: ${WINE_PATH}/Python27/Scripts/pywin32_postinstall.py
 
-dist/linux/pynes: ${PYINSTALLER} tools/requirements.windows.check
+dist/linux/pynes: build ${PYINSTALLER} tools/requirements.windows.check
 	@rm -rf build/pyi.linux
 	@rm -rf build/pyi.linux2
 	@rm -rf dist/linux
