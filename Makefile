@@ -44,7 +44,7 @@ endif
 
 
 ${VIRTUALENV_DIR}/bin/activate:
-	test -d venv || virtualenv venv && touch $@
+	test -d venv || virtualenv ${VIRTUALENV_DIR} && touch $@
 
 venv: ${VIRTUALENV_DIR}/bin/activate
 
