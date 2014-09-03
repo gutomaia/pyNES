@@ -6,6 +6,48 @@ from pynes.compiler import compile
 from pynes import sprite
 import os
 
+from pynes.compiler import lexical, syntax, semantic
+
+class MetaInstructionCase(type):
+
+    def __new__(cls, name, bases, args):
+        def gen_lex():
+            def test(self):
+                tokens = list(lexical(self.asm))
+                self.assertEquals(len(tokens), len(self.lex))
+                for i,l in enumerate(self.lex):
+                    self.assertEquals(l[0], tokens[i]['type'])
+                    self.assertEquals(l[1], tokens[i]['value'])
+            return test
+
+        def gen_syn():
+            def test(self):
+                tokens = [
+                    {'type': l[0], 'value': l[1]}
+                    for l in self.lex
+                ]
+
+                ast = syntax(tokens)
+                self.assertEquals(1, len(self.syn))
+            return test
+
+        def gen_sem():
+            def test(self):
+                tokens = [
+                    {'type': l[0], 'value': l[1]}
+                    for l in self.lex
+                ]
+                ast = [{'type': self.syn[0], 'children': tokens}]
+                compiled = semantic(ast)
+                self.assertEquals(compiled, self.code)
+            return test
+
+        args['test_lexical'] = gen_lex()
+        args['test_syntax'] = gen_syn()
+        args['test__semantic'] = gen_sem()
+
+        return type.__new__(cls, name, bases, args)
+
 
 class FileTestCase(TestCase):
 
