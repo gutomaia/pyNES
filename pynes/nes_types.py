@@ -71,18 +71,28 @@ class NesSprite(NesType):
             return asmcode
 
 
-class NesArray(NesType, list, List):
+class NesArray(NesType, List):
 
     def __init__(self, elts):
         super(NesArray, self).__init__(elts=elts)
-        lst = [l.n if isinstance(l, Num) else l for l in elts]
-        list.__init__(self, lst)
+        self.lst = [l.n if isinstance(l, Num) else l for l in elts]
+        # list.__init__(self, lst)
         self.is_used = True
         self.locked = False
 
+    def __eq__(self, other):
+        if isinstance(other, list):
+            return other == self.lst
+
+    def __len__(self):
+        return len(self.lst)
+
+    def __iter__(self):
+        return iter(self.lst)
+
     def to_asm(self):
         self.locked = True
-        hexes = ["$%02X" % v for v in self]
+        hexes = ["$%02X" % v for v in self.lst]
         asm = ''
         length = (len(hexes) / 16)
         if len(hexes) % 16:
@@ -94,11 +104,11 @@ class NesArray(NesType, list, List):
         return False
 
 
-class NesInt(int, Num, NesType):
+class NesInt(int, NesType):
 
     def __init__(self, number):
-        super(NesInt, self).__init__(n=number)
-        int.__init__(self, number)
+        super(NesInt, self).__init__(number)
+        # int.__init__(self, number)
 
 
 class NesString(str, NesType):
