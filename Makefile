@@ -81,7 +81,7 @@ test: build .requirements_test.txt.check
 	${VIRTUALENV} nosetests --processes=2 -e image_test.py
 
 ci:
-	@nosetests
+	${VIRTUALENV} CI=1 nosetests
 
 pep8: .requirements_test.txt.check
 	${VIRTUALENV} pep8 --statistics -qq pynes | sort -rn || echo ''
