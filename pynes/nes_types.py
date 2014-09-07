@@ -103,7 +103,6 @@ class NesInt(int, NesType):
 
     def __init__(self, number):
         super(NesInt, self).__init__(number)
-        # int.__init__(self, number)
 
 
 class NesString(str, NesType):
