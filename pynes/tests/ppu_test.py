@@ -21,7 +21,6 @@ class PPUTest(unittest.TestCase):
         self.assertEquals(False, self.ppu.nmi_enable)
 
     def test_ppu_toogle_sprite_table(self):
-        return
         self.assertEquals(0b00000000, self.ppu.ctrl)
         self.ppu.sprite_pattern_table = 1
         self.assertEquals(0b00001000, self.ppu.ctrl)
@@ -29,7 +28,6 @@ class PPUTest(unittest.TestCase):
         self.assertEquals(0b00000000, self.ppu.ctrl)
 
     def test_ppu_toogle_background_table(self):
-        return
         self.assertEquals(0b00000000, self.ppu.ctrl)
         self.ppu.background_pattern_table = 1
         self.assertEquals(0b00010000, self.ppu.ctrl)
