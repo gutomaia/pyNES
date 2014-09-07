@@ -38,7 +38,7 @@ class WhatElse():
             self.start = index + len(text)
             self.last = text
         else:
-            print self.testcase.asm
+            print(self.testcase.asm)
             raise(AssertionError('"%s" was not found in code' % text))
         return self
 
@@ -48,7 +48,7 @@ class WhatElse():
             self.start += index + len(text)
             self.last = text
         else:
-            print self.testcase.asm
+            print(self.testcase.asm)
             raise(
                 AssertionError('"%s" was not found after "%s" in code' %
                                (text, self.last)))
@@ -57,7 +57,7 @@ class WhatElse():
     def and_not_from_then(self, text):
         index = self.testcase.asm[self.start:].find(text)
         if index > 0:
-            print self.testcase.asm
+            print(self.testcase.asm)
             raise(
                 AssertionError('"%s" was found after "%s" in code' %
                                (text, self.last)))
@@ -141,7 +141,7 @@ class HexTestCase(TestCase):
                         act += ' '
                 out += '%s- %d \n' % (exp, line + 1)
                 out += '%s- %d \n' % (act, line + 1)
-            print out
+            print(out)
             raise AssertionError('Hex are not equal')
 
 
@@ -165,12 +165,12 @@ def get_printable_sprite(spr):
         lines.append(line)
     return lines
     output = '\n'.join(lines) + ENDC
-    print output
+    print(output)
 
 
 def show_sprite(spr):
     ENDC = '\033[0m'
-    print '\n'.join(get_printable_sprite(spr)) + ENDC + '\n'
+    print('\n'.join(get_printable_sprite(spr)) + ENDC + '\n')
 
 
 def show_sprites(sprs):
@@ -187,7 +187,7 @@ def show_sprites(sprs):
                     out += l + ENDC
                 out += '\n'
             tiles = []
-            print out
+            print (out)
 
 
 class SpriteTestCase(FileTestCase):
