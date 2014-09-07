@@ -3,26 +3,29 @@
 from ast import Num, List
 
 
-class NesType:
+class NesType(object):
 
-    def __init__(self, size=1):
+    def __init__(self, *args, **kw):
         self.instance_name = None
         self.is_used = False  # define if a var is used
         self.is_attrib = False  # define is assigned more than once
-        self.size = size
+        if 'size' in kw:
+            self.size = kw['size']
+        else:
+            self.size = 1
         self.lineno = 0
 
 
 class NesRs(NesType):
 
     def __init__(self, size=1):
-        NesType.__init__(self, size)
+        super(NesRs, self).__init__(size=size)
 
 
 class NesSprite(NesType):
 
     def __init__(self, x, y, tile, attrib, width=2):
-        NesType.__init__(self)
+        super(NesSprite, self).__init__()
         self.is_used = True
         self.x = x
         self.y = y
@@ -71,8 +74,7 @@ class NesSprite(NesType):
 class NesArray(NesType, list, List):
 
     def __init__(self, elts):
-        NesType.__init__(self)
-        List.__init__(self, elts=elts)
+        super(NesArray, self).__init__(elts=elts)
         lst = [l.n if isinstance(l, Num) else l for l in elts]
         list.__init__(self, lst)
         self.is_used = True
@@ -95,16 +97,15 @@ class NesArray(NesType, list, List):
 class NesInt(int, Num, NesType):
 
     def __init__(self, number):
+        super(NesInt, self).__init__(n=number)
         int.__init__(self, number)
-        Num.__init__(self, n=number)
-        NesType.__init__(self)
 
 
 class NesString(str, NesType):
 
     def __init__(self, string):
+        super(NesString, self).__init__()
         str.__init__(self, string)
-        NesType.__init__(self)
         self.locked = False
 
     def to_asm(self):
@@ -127,4 +128,5 @@ class NesString(str, NesType):
 class NesChrFile(NesType):
 
     def __init__(self, filename):
+        super(NesChrFile, self).__init__()
         self.filename = filename
