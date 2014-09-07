@@ -247,8 +247,6 @@ class PyNesVisitor(ast.NodeVisitor):
                 self.stack.wipe()
             else:
                 args = []
-            print "call"
-            print args
 
             # check this condition, seens strange
             if node.func.id not in game.bitpaks:

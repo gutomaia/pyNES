@@ -337,7 +337,6 @@ class Game(object):
             obj = getattr(pynes.bitbag, bitpak_name, None)
             bp = obj(self)
             self.bitpaks[bitpak_name] = bp
-        print args
         returnValue = self.bitpaks[bitpak_name](*args)
         self.add_asm_chunk(self.bitpaks[bitpak_name].asm())
         return returnValue
