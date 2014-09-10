@@ -1,7 +1,19 @@
 import unittest
 
 from pynes.asm import *
-from pynes.utils import asm_context
+from pynes.utils import asm_context, InvalidMemoryAddressing
+
+
+class InstructionAsmTest(unittest.TestCase):
+
+
+    def test_asm_valid_single_instruction(self):
+        SED()
+
+    def test_asm_invalid_single_instruction(self):
+        with self.assertRaises(InvalidMemoryAddressing) as ima:
+            BCC()
+
 
 class AsmTest(unittest.TestCase):
 

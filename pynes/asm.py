@@ -1,5 +1,5 @@
 from pynes.c6502 import opcodes
-from pynes.utils import Context
+from pynes.utils import Context, InvalidMemoryAddressing
 import sys
 
 registers = ['A', 'X', 'Y']
@@ -11,7 +11,6 @@ class Register(object):
 
     def __init__(self, register):
         self.r = register
-
 
 class InstructionProxy():
 
@@ -26,6 +25,9 @@ class InstructionProxy():
             raise Exception('no context')
 
         # self.context -= 4
+
+        if len(args) == 0 and 'sngl' not in  opcodes[self.i]:
+            raise InvalidMemoryAddressing()
 
         if len(args) == 1 or 'addr' in kw:
             addr = args[0] or kw['addr']

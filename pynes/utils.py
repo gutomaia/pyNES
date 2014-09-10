@@ -1,3 +1,6 @@
+class InvalidMemoryAddressing(Exception):
+    pass
+
 class Context(object):
     __shared_context = {}
 
@@ -16,8 +19,13 @@ class Context(object):
         self.asm = None
 
     def __add__(self, other):
-        if isinstance(other, str):
+        if hasattr(self, 'asm') and isinstance(other, str):
             self.asm += other
+        return self
+
+    def __sub__(self, other):
+        if hasattr(self, 'asm') and isinstance(other, int):
+            self.asm = self.asm[:-1 * other]
         return self
 
 
