@@ -8,6 +8,9 @@ from pynes.bitbag import *
 
 import pynes
 
+from pynes.utils import asm_context
+from pynes.asm import *
+
 
 class Bit(object):
 
@@ -52,21 +55,20 @@ class PPU(object):
         self.scrolling = True
 
     def on_reset(self):
-        asm = ('  LDA #%{ctrl:08b}\n'
-               '  STA $2000\n'
-               '  LDA #%{mask:08b}\n'
-               '  STA $2001\n').format(
-            ctrl=self.ctrl,
-            mask=self.mask)
-        return asm
+        with asm_context() as c:
+            LDA('#%{ctrl:08b}'.format(ctrl=self.ctrl))
+            STA('$2000')
+            LDA('#%{mask:08b}'.format(mask=self.mask))
+            STA('$2001')
+            return c.asm
 
     def on_nmi(self):
         if self.nmi_enable and self.scrolling:
-            asm = (
-                '  LDA #00\n'
-                '  STA $2005\n'
-                '  STA $2005\n')
-            return asm
+            with asm_context() as c:
+                LDA('#00')
+                STA('$2005')
+                STA('$2005')
+                return c.asm
         return ''
 
 # change to SpriteSwarmOperation
