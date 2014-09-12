@@ -47,7 +47,6 @@ class OperationStack:
     def resolve(self):
         return self._pile.pop()
 
-
 class PyNesTransformer(ast.NodeTransformer):
 
     def visit_Num(self, node):
@@ -353,3 +352,69 @@ def compose(code, game_program=game):
 
     game = None
     return game_program
+
+from utils import asm_context
+from asm import *
+
+
+def exchange(node):
+    def do():
+        #condition = ast.Name(self.mutation, ast.Load())
+        return node
+    return do
+
+
+class BaseMixin(ast.NodeTransformer):
+
+    def __init__(self, *args, **kw):
+        super(BaseMixin, self).__init__()
+
+
+class AssignMixin(BaseMixin):
+
+    def __init__(self, *args, **kw):
+        super(AssignMixin, self).__init__(*args, **kw)
+
+    def visit_Assign(self, node):
+
+        if isinstance(node.value, ast.Num):
+            value = node.value.n
+
+        if len(node.targets) == 1:
+            target = node.targets[0]
+
+        with asm_context(do=exchange(node)):
+            LDA(value)
+            for target in node.targets:
+                STA(target.id)
+
+        return node
+
+class LogicalMixin(ast.NodeTransformer):
+
+    def __init__(self, *args, **kw):
+        super(LogicalMixin, self).__init__(*args, **kw)
+
+def new_compose(code, gamepak=False, visitor_clazz=False, transformer_clazz=False):
+    if not gamepak:
+        from pynes.game import GamePak
+        gamepak = GamePak()
+
+    python_ast = ast.parse(code)
+
+    if not visitor_clazz:
+        visitor = PyNesVisitor()
+    else:
+        visitor = visitor_clazz(gamepak=gamepak)
+
+    visitor.visit(python_ast)
+
+    if not transformer_clazz:
+        transformer = PyNesTransformer(gamepak)
+    else:
+        transformer = transformer_clazz(gamepak=gamepak)
+
+    transformer.visit(python_ast)
+
+    python_ast = ast.fix_missing_locations(python_ast)
+    return python_ast

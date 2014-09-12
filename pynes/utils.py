@@ -31,9 +31,11 @@ class Context(object):
 
 class asm_context(object):
 
-    def __init__(self, func=None):
+    def __init__(self, func=None, *args, **kw):
         if func:
             self.func = func
+        if 'do' in kw:
+            self.do = kw['do']
         self.context = Context()
 
     def __call__(self):
@@ -42,9 +44,10 @@ class asm_context(object):
             a = f.asm
         return a
 
-    def __enter__(self):
+    def __enter__(self, *args, **kw):
         self.context.start()
         return self.context
 
     def __exit__(self, type, value, traceback):
-        pass
+        if hasattr(self,'do'):
+            self.do()

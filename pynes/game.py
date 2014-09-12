@@ -522,3 +522,12 @@ class Game(object):
             self.bank2()
         )
         return asm_code
+
+
+class GamePak(object):
+
+    def __init__(self):
+        self._rs = []
+
+    def rs(self, key, size):
+        self._rs.append((key,size))
