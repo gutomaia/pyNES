@@ -4,7 +4,7 @@ import sys
 
 registers = ['A', 'X', 'Y']
 
-__all__ = opcodes.keys() + registers
+__all__ = list(opcodes.keys()) + registers
 
 
 class Register(object):

@@ -353,8 +353,8 @@ def compose(code, game_program=game):
     game = None
     return game_program
 
-from utils import asm_context
-from asm import *
+from pynes.utils import asm_context
+from pynes.asm import *
 
 
 def exchange(node):
