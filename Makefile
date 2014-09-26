@@ -17,73 +17,43 @@ MAKENSIS_EXE = ${NSIS_PATH}/makensis.exe
 
 DOWNLOAD_PATH=deps
 
-VIRTUALENV_DIR=venv
-VIRTUALENV=@. ${VIRTUALENV_DIR}/bin/activate;
-
-PYTHON_SOURCES = ${shell find pynes -type f -iname '*.py'}
-PYTHON_COMPILED = $(patsubst %.py,%.pyc, ${PYTHON_SOURCES})
+PYTHON_MODULES=pynes
 
 PYTHON_EXE=${WINE_PATH}/Python27/python.exe
 EASYINSTALL_EXE=${WINE_PATH}/Python27/Scripts/easy_install.exe
 PIP_EXE=${WINE_PATH}/Python27/Scripts/pip.exe
 
-WGET = wget -q
+WGET = wget -q 
 
 OK=\033[32m[OK]\033[39m
 FAIL=\033[31m[FAIL]\033[39m
 CHECK=@if [ $$? -eq 0 ]; then echo "${OK}"; else echo "${FAIL}" ; fi
 
+default: python.mk
+	@$(MAKE) -C . test
 
-ifeq "" "$(shell which python)"
-default:
-	@echo "Please install python"
-	exit 1
-else
-default: test
+ifeq "true" "${shell test -f python.mk && echo true}"
+include python.mk
 endif
 
-
-${VIRTUALENV_DIR}/bin/activate:
-	test -d venv || virtualenv ${VIRTUALENV_DIR} && touch $@
-
-venv: ${VIRTUALENV_DIR}/bin/activate
-
-.requirements.txt.check: ${VIRTUALENV_DIR}/bin/activate requirements.txt
-	${VIRTUALENV} pip install -r requirements.txt && \
+python.mk:
+	@${WGET} https://raw.githubusercontent.com/gutomaia/makery/master/python.mk && \
 		touch $@
 
-.requirements_test.txt.check: ${VIRTUALENV_DIR}/bin/activate requirements_test.txt
-	${VIRTUALENV} pip install -r requirements_test.txt && \
-		touch $@
+clean: python_clean
 
-%.pyc: %.py
-	@echo "Compiling $<: \c"
-	${VIRTUALENV} python -m py_compile $<
-	${CHECK}
+purge: python_purge
+	@rm python.mk
 
-dependencies: .requirements.txt.check
+build: python_build
 
-clean:
-	@find . -regex '^.*.check' -type f -delete
-	@find pynes -regex '^.*py[co]$$' -type f -delete
-	@rm -rf build
-	@rm -rf dist
-	@rm -rf reports
-
-purge: clean
-	@rm -rf deps
-	@rm -rf tools
-	@rm -rf venv
-
-build: dependencies ${PYTHON_COMPILED}
-
-test: build .requirements_test.txt.check
+test: python_build ${REQUIREMENTS_TEST}
 	${VIRTUALENV} nosetests --processes=2 -e image_test.py
 
 ci:
 	${VIRTUALENV} CI=1 nosetests
 
-pep8: .requirements_test.txt.check
+pep8: ${REQUIREMENTS_TEST}
 	${VIRTUALENV} pep8 --statistics -qq pynes | sort -rn || echo ''
 
 todo:
