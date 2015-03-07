@@ -1,18 +1,12 @@
 # -*- coding: utf-8 -*-
-
 import unittest
+from pynes.tests import MetaInstructionCase
 
-from pynes.compiler import lexical, syntax, semantic
 
+class CldImplTest(unittest.TestCase):
+    __metaclass__ = MetaInstructionCase
 
-class CldTest(unittest.TestCase):
-
-    def test_cld_sngl(self):
-        tokens = list(lexical('CLD'))
-        self.assertEquals(1, len(tokens))
-        self.assertEquals('T_INSTRUCTION', tokens[0]['type'])
-        ast = syntax(tokens)
-        self.assertEquals(1, len(ast))
-        self.assertEquals('S_IMPLIED', ast[0]['type'])
-        code = semantic(ast)
-        self.assertEquals(code, [0xd8])
+    asm = 'CLD'
+    lex = [('T_INSTRUCTION', 'CLD')]
+    syn = ['S_IMPLIED']
+    code = [0xd8]

@@ -8,22 +8,13 @@ if C == 0.
 '''
 
 import unittest
-from pynes.compiler import lexical, syntax, semantic
+from pynes.tests import MetaInstructionCase
 
 
-class BcsTest(unittest.TestCase):
+class BcsRelTest(unittest.TestCase):
+    __metaclass__ = MetaInstructionCase
 
-    '''This is an relative instruction, so it works quite different
-    from others. The instruction uses an offset witch can range from
-    -128 to +127. The offset is added to the program counter.'''
-
-    def test_bcs_rel(self):
-        tokens = list(lexical('BCS $10'))
-        self.assertEquals(2, len(tokens))
-        self.assertEquals('T_INSTRUCTION', tokens[0]['type'])
-        self.assertEquals('T_ADDRESS', tokens[1]['type'])
-        ast = syntax(tokens)
-        self.assertEquals(1, len(ast))
-        self.assertEquals('S_RELATIVE', ast[0]['type'])
-        code = semantic(ast)
-        self.assertEquals(code, [0xb0, 0x0e])
+    asm = 'BCS $10'
+    lex = [('T_INSTRUCTION', 'BCS'), ('T_ADDRESS', '$10')]
+    syn = ['S_RELATIVE']
+    code = [0xb0, 0x0e]
