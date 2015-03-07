@@ -67,7 +67,7 @@ report:
 	coverage run --source=pynes setup.py test
 
 tdd:
-	tdaemon --ignore-dirs build,dist,bin,site,pynes.egg-info --custom-args="-e image_test.py --with-growl"
+	${VIRTUALENV} tdaemon --ignore-dirs="build,dist,bin,site,pynes.egg-info,venv" --custom-args="-e image_test.py --with-notify --no-start-message"
 
 deps/.done:
 	@echo "Creating dependencies dir: \c"
