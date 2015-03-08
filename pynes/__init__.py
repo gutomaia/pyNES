@@ -7,8 +7,8 @@ import logging
 import argparse
 
 from pynes.composer import compose
-import pynes.compiler
-
+import nesasm.compiler
+import pynes
 
 def press_start(asm=False):
     filename = sys.argv[0]
@@ -88,7 +88,7 @@ def exec_py(args):
 
 
 def exec_asm(args):
-    pynes.compiler.compile_file(args.input, output=args.output,
+    nesasm.compiler.compile_file(args.input, output=args.output,
                                 path=args.path)
 
 

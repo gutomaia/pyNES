@@ -2,11 +2,11 @@
 
 from unittest import TestCase
 from pynes.composer import compose
-from pynes.compiler import compile
+from nesasm.compiler import compile
 from pynes import sprite
 import os
 
-from pynes.compiler import lexical, syntax, semantic
+from nesasm.compiler import lexical, syntax, semantic
 
 class MetaInstructionCase(type):
 

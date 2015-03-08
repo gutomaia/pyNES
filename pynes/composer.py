@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-import pynes.compiler
+import nesasm.compiler
 import ast
 from re import match
 from inspect import getmembers
@@ -9,7 +9,7 @@ import pynes.bitbag  # TODO fix import to be able to remove this
 
 from pynes.game import Game, PPU, PPUSprite, Joypad
 from pynes.nes_types import NesType, NesInt, NesRs, NesArray, NesString, NesSprite, NesChrFile
-from pynes.compiler import compile as nes_compile
+from nesasm.compiler import compile as nes_compile
 
 from _ast import *
 
