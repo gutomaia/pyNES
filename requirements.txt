@@ -1,2 +1,2 @@
-nesasm==0.0.1
+nesasm==0.0.5
 Pillow==2.5.3
