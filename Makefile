@@ -171,6 +171,12 @@ windows: dist/windows/pynes.exe
 
 dist: linux windows
 
+register:
+	${VIRTUALENV} python setup.py register -r pypi
+
+distribute: dist
+	${VIRTUALENV} python setup.py sdist bdist_wheel upload -r pypi
+
 deps/nsis-3.0a1-setup.exe:
 	@echo "Downloading NSIS \c"
 	@cd deps && \
