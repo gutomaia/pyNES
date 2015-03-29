@@ -69,6 +69,9 @@ report:
 tdd:
 	${VIRTUALENV} tdaemon --ignore-dirs="build,dist,bin,site,pynes.egg-info,venv" --custom-args="-e image_test.py --with-notify --no-start-message"
 
+tox:
+	${VIRTUALENV} tox
+
 deps/.done:
 	@echo "Creating dependencies dir: \c"
 	@mkdir -p deps

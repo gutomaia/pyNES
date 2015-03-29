@@ -5,6 +5,7 @@
 *~
 .DS_Store
 .checkpoint/
+.tox/
 build/
 deps/
 dist/
