@@ -51,8 +51,6 @@ class AddMixin(object):
             return AsmBlock(left, other)
         elif isinstance(other, Register):
             return Instruction(self.name, 'acc', 'A')
-        print repr(self)
-        print repr(other)
         raise Exception('Invalid')
 
 
