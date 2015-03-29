@@ -20,34 +20,41 @@ class AsmBlockOperationTest(unittest.TestCase):
         if (address_mode):
             self.assertEquals(obj.address_mode, address_mode)
 
-    def test_lda_plus_one_returns_immediate_instruction(self):
-        result = LDA + 1
-        self.assert_type(result, 'Instruction')
-        self.assertEquals(result.address_mode, 'imm')
+    def test_immediate_proxy_plus_one_returns_imeddiate_instruction(self):
+        expression = LDA + 1
+        self.assert_type(expression, 'Instruction')
+        self.assertEquals(expression.address_mode, 'imm')
 
-    def test_lda_plus_one_returns_immediate_instruction(self):
-        result = LDA + 1 + CLC
-        self.assert_type(result, 'AsmBlock')
-        self.assert_type(result.get(0), 'Instruction', 'LDA')
-        self.assert_type(result.get(1), 'Instruction', 'CLC')
+    def test_immediate_proxy_plus_one_plus_single_proxy_return_asmblock_with_two_instructions(self):
+        expression = LDA + 1 + CLC
+        self.assert_type(expression, 'AsmBlock')
+        self.assertEquals(len(expression), 2)
+        self.assert_type(expression.get(0), 'Instruction', 'LDA')
+        self.assert_type(expression.get(1), 'Instruction', 'CLC')
+        actual = str(expression)
+        expected = '\n'.join([
+                'LDA #1',
+                'CLC'
+            ]) + '\n'
+        self.assertEquals(actual, expected)
 
-    def test_lda_plus_one_returns_asmblock(self):
-        result = LDA + 1 + CLC + ADC
-        self.assert_type(result, 'AsmBlock')
-        self.assertEquals(len(result), 3)
-        self.assert_type(result.get(0), 'Instruction', 'LDA')
-        self.assert_type(result.get(1), 'Instruction', 'CLC')
-        self.assert_type(result.get(2), 'InstructionProxy', 'ADC')
+    def test_immediate_proxy_plus_one_plus_single_proxy_plus_immediate_proxy_return_asmblock_with_instruction_proxy_at_last(self):
+        expression = LDA + 1 + CLC + ADC
+        self.assert_type(expression, 'AsmBlock')
+        self.assertEquals(len(expression), 3)
+        self.assert_type(expression.get(0), 'Instruction', 'LDA')
+        self.assert_type(expression.get(1), 'Instruction', 'CLC')
+        self.assert_type(expression.get(2), 'InstructionProxy', 'ADC')
 
 
     def test_complete_sum(self):
-        result = LDA + 1 + CLC + ADC + 1
-        self.assert_type(result, 'AsmBlock')
-        self.assertEquals(len(result), 3)
-        self.assert_type(result.get(0), 'Instruction', 'LDA', 'imm')
-        self.assert_type(result.get(1), 'Instruction', 'CLC', 'sngl')
-        self.assert_type(result.get(2), 'Instruction', 'ADC', 'imm')
-        actual = str(result)
+        expression = LDA + 1 + CLC + ADC + 1
+        self.assert_type(expression, 'AsmBlock')
+        self.assertEquals(len(expression), 3)
+        self.assert_type(expression.get(0), 'Instruction', 'LDA', 'imm')
+        self.assert_type(expression.get(1), 'Instruction', 'CLC', 'sngl')
+        self.assert_type(expression.get(2), 'Instruction', 'ADC', 'imm')
+        actual = str(expression)
         expected = '\n'.join([
                 'LDA #1',
                 'CLC',
