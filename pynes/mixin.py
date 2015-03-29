@@ -53,6 +53,9 @@ class MathOperationMixin(object):
     def visit_Add(self, node):
         return [CLC , ADC]
 
+    def visit_Sub(self, node):
+        return [SEC, SBC]
+
     def visit_Num(self, node):
         return [node]
 
