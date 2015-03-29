@@ -42,6 +42,9 @@ class AddMixin(object):
         else:
             left = self
 
+        if isinstance(other, InstructionProxy) and other.is_single():
+            other = Instruction(other.name, 'sngl')
+
         if isinstance(other, Instruction):
             return AsmBlock(left, other)
         elif isinstance(other, InstructionProxy):
