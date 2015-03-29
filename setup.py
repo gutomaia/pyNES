@@ -28,7 +28,6 @@ setup(
     author_email="guto@guto.net",
     license="GPL3",
     packages=find_packages(exclude=["*.tests", "*.tests.*", "examples"]),
-    scripts=['bin/pynes'],
     classifiers=[
         'Development Status :: 3 - Alpha',
         'Environment :: Console',
