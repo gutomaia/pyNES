@@ -23,14 +23,17 @@ class AddMixin(object):
     def is_immediate(self):
         return 'imm' in opcodes[self.name]
 
-    def is_zp_address(self, arg):
+    def is_immediate_address_mode_argument(self, arg):
+        return (isinstance(arg, int)) and arg < 256
+
+    def is_zp_address_mode_argument(self, arg):
         return (isinstance(arg, basestring) and match(r'^\$\d{1,2}$', arg))
 
-    def is_abs_address(self, arg):
+    def is_abs_address_mode_argument(self, arg):
         return (isinstance(arg, basestring) and match(r'^\$\d{4}$', arg))
 
     def __add__(self, other):
-        if isinstance(other, int) or self.is_zp_address(other) or self.is_abs_address(other):
+        if isinstance(other, int) or self.is_zp_address_mode(other) or self.is_abs_address_mode(other):
             return self(other)
 
         if isinstance(self, InstructionProxy) and self.is_single():
@@ -87,9 +90,9 @@ class InstructionProxy(AddMixin):
             return Instruction(self.name, 'sngl')
         elif self.is_immediate() and isinstance(arg, int):
             return Instruction(self.name, 'imm', arg)
-        elif self.is_zp_address(arg):
+        elif self.is_zp_address_mode_argument(arg):
             return Instruction(self.name, 'zp', arg)
-        elif self.is_abs_address(arg):
+        elif self.is_abs_address_mode_argument(arg):
             return Instruction(self.name, 'abs', arg)
         raise Exception('Invalid Instruction')
 
