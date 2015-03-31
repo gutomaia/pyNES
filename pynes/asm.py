@@ -32,8 +32,13 @@ class AddMixin(object):
     def is_abs_address_mode_argument(self, arg):
         return (isinstance(arg, basestring) and match(r'^\$\d{4}$', arg))
 
+    def is_valid_address_mode_argument(self, arg):
+        return (self.is_immediate_address_mode_argument(arg) or
+                self.is_zp_address_mode_argument(arg) or
+                self.is_abs_address_mode_argument(arg))
+
     def __add__(self, other):
-        if isinstance(other, int) or self.is_zp_address_mode(other) or self.is_abs_address_mode(other):
+        if self.is_valid_address_mode_argument(other):
             return self(other)
 
         if isinstance(self, InstructionProxy) and self.is_single():
