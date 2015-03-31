@@ -31,11 +31,11 @@ class AddMixin(object):
 
     def __add__(self, other):
         if isinstance(other, int):
-            return Instruction(self.name, 'imm', other)
+            return self(other)
         elif self.is_zp_address(other):
-            return Instruction(self.name, 'zp', other);
+            return self(other)
         elif self.is_abs_address(other):
-            return Instruction(self.name, 'abs', other);
+            return self(other)
 
         if isinstance(self, InstructionProxy) and self.is_single():
             left = Instruction(self.name, 'sngl')
@@ -91,6 +91,11 @@ class InstructionProxy(AddMixin):
             return Instruction(self.name, 'sngl')
         elif self.is_immediate() and isinstance(arg, int):
             return Instruction(self.name, 'imm', arg)
+        elif self.is_zp_address(arg):
+            return Instruction(self.name, 'zp', arg)
+        elif self.is_abs_address(arg):
+            return Instruction(self.name, 'abs', arg)
+        raise Exception('Invalid Instruction')
 
     def __repr__(self):
         return '<InstructionProxy %s>' % self.name
