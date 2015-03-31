@@ -30,11 +30,7 @@ class AddMixin(object):
         return (isinstance(arg, basestring) and match(r'^\$\d{4}$', arg))
 
     def __add__(self, other):
-        if isinstance(other, int):
-            return self(other)
-        elif self.is_zp_address(other):
-            return self(other)
-        elif self.is_abs_address(other):
+        if isinstance(other, int) or self.is_zp_address(other) or self.is_abs_address(other):
             return self(other)
 
         if isinstance(self, InstructionProxy) and self.is_single():
