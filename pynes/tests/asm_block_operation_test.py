@@ -67,31 +67,37 @@ class AsmBlockOperationTest(unittest.TestCase):
         result = ADC + 1
         self.assert_type(result, 'Instruction')
         self.assertEquals(result.address_mode, 'imm')
+        self.assertEquals(result.param, 1)
 
     def test_cpm_plus_zp_string_returns_zeropage_instruction(self):
         result = CMP + '$44'
         self.assert_type(result, 'Instruction')
         self.assertEquals(result.address_mode, 'zp')
+        self.assertEquals(result.param, '$44')
 
     def test_cpm_plus_absolute_addr_returns_zeropage_instruction(self):
         result = CMP + '$4400'
         self.assert_type(result, 'Instruction')
         self.assertEquals(result.address_mode, 'abs')
+        self.assertEquals(result.param, '$4400')
 
     def test_call_a_sngl_proxy_returns_a_instruction(self):
         result = CLC()
         self.assert_type(result, 'Instruction')
         self.assertEquals(result.address_mode, 'sngl')
+        self.assertEquals(result.param, None)
 
     def test_call_immediate_proxy_with_int_returns_instruction(self):
         result = ADC(1)
         self.assert_type(result, 'Instruction')
         self.assertEquals(result.address_mode, 'imm')        
+        self.assertEquals(result.param, 1)
 
     def test_adc_plus_two_returns_immediate_instruction_2(self):
         result = ADC + 2
         self.assert_type(result, 'Instruction')
         self.assertEquals(result.address_mode, 'imm')
+        self.assertEquals(result.param, 2)
 
     def test_instruction_plus_instruction_returns_asmblock(self):
         instruction_1 = ADC + 1
