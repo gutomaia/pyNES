@@ -4,15 +4,17 @@ class AsmBlock(object):
 
 
     def __init__ (self, *args):
-        # if len(args) > 1:
-        #     instructions = list(args);
-        #     for a in list(args):
-        #         if type(a).__name__ == 'InstructionProxy':
-        #             print a
+        self.instructions = []
+        for i in list(args):
+            print type(i)
+            if type(i).__name__ == 'InstructionProxy' and i.is_single():
+                self.instructions.append(i())
+            elif isinstance(i, int):
+                self.instructions[-1] += i
+            else:
+                self.instructions.append(i)
 
-        #     a = instructions[0]
 
-        self.instructions = list(args)
 
     def is_Instruction(self, obj):
         return type(obj).__name__ == 'Instruction'

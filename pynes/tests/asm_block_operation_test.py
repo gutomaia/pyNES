@@ -100,6 +100,12 @@ class AsmBlockOperationTest(unittest.TestCase):
         self.assert_type(result, 'AsmBlock')
         self.assert_type(result.get(0), 'Instruction')
         self.assert_type(result.get(1), 'Instruction')
+        actual = str(result)
+        expected = '\n'.join([
+                'ADC #1',
+                'ADC #2'
+            ]) + '\n'
+        self.assertEquals(actual, expected)
 
     def test_clc_plus_adc_returns_asmblock_with_instruction_and_instruction_proxy(self):
         result = CLC + ADC
@@ -122,18 +128,30 @@ class AsmBlockOperationTest(unittest.TestCase):
         self.assertEquals(actual, expected)
 
     def test_asmblock_with_instruction_and_instruction_proxy_plus_one_returns_asmblock_with_two_instructions(self):
-        return
         result = AsmBlock(CLC, ADC) + 1;
         self.assert_type(result, 'AsmBlock')
         self.assertEquals(len(result), 2)
         self.assert_type(result.get(0), 'Instruction')
-        # self.assert_type(result.get(1), 'Instruction')
-        # actual = str(result)
-        # expected = '\n'.join([
-        #         'CLC',
-        #         'ADC #1'
-        #     ]) + '\n'
-        # self.assertEquals(actual, expected)
+        self.assert_type(result.get(1), 'Instruction')
+        actual = str(result)
+        expected = '\n'.join([
+                'CLC',
+                'ADC #1'
+            ]) + '\n'
+        self.assertEquals(actual, expected)
+
+    def test_asmblock_with_instruction_and_instruction_and_one_returns_asmblock_with_two_instructions(self):
+        result = AsmBlock(CLC, ADC, 1);
+        self.assert_type(result, 'AsmBlock')
+        self.assertEquals(len(result), 2)
+        self.assert_type(result.get(0), 'Instruction')
+        self.assert_type(result.get(1), 'Instruction')
+        actual = str(result)
+        expected = '\n'.join([
+                'CLC',
+                'ADC #1'
+            ]) + '\n'
+        self.assertEquals(actual, expected)
 
 
     def test_expression_asl_plus_a(self):
