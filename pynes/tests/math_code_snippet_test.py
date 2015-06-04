@@ -12,7 +12,7 @@ class DynamicFixture(type):
 
     def __new__(mcs, name, bases, args):
 
-        def gen_test(filename):
+        def gen_pynes_test(filename):
             def test(self):
                 code = open(filename).read()
                 python_land = ast.parse(code)
@@ -30,10 +30,10 @@ class DynamicFixture(type):
             return test
 
         files = glob('fixtures/code_snippet/math/*.py')
+        files += glob('fixtures/code_snippet/logic/*.py')
 
         for f in files:
-            test_name = "test_%s" % f
-            args[test_name] = gen_test(f)
+            args['test_pynes_%s' % f] = gen_pynes_test(f)
 
         return type.__new__(mcs, name, bases, args)
 

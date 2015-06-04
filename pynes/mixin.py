@@ -38,6 +38,10 @@ def asm_nodes(func):
         return binOp
     return wrapper
 
+class LogicOperationMixin(object):
+
+    def visit_Mod(self, node):
+        return [AND]
 
 class MathOperationMixin(object):
 
