@@ -56,21 +56,27 @@ class MathOperationMixin(object):
     def visit_Sub(self, node):
         return [SEC, SBC]
 
+    def visit_Mult(self, node):
+        return [ASL]
+
     def visit_Num(self, node):
         return [node]
 
     @asm_nodes
     def visit_BinOp(self, node):
         self.generic_visit(node)
+        instructions = []
         if isinstance(node.left, ast.BinOp):
-            instructions = []
             next = node.left
             while isinstance(next, ast.BinOp):
                 instructions.append(next.right)
                 next = next.left
             instructions.reverse()
-            instructions+= node.op
-            instructions+= node.right
-            return [LDA] + instructions
         else:
-            return [LDA] + node.left + node.op + node.right
+            instructions+= node.left
+        instructions+= node.op
+
+        if ASL not in node.op:
+            instructions+= node.right
+
+        return [LDA] + instructions
