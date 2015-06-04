@@ -62,5 +62,15 @@ class MathOperationMixin(object):
     @asm_nodes
     def visit_BinOp(self, node):
         self.generic_visit(node)
-        todo = [LDA] + node.left + node.op + node.right
-        return todo
+        if isinstance(node.left, ast.BinOp):
+            instructions = []
+            next = node.left
+            while isinstance(next, ast.BinOp):
+                instructions.append(next.right)
+                next = next.left
+            instructions.reverse()
+            instructions+= node.op
+            instructions+= node.right
+            return [LDA] + instructions
+        else:
+            return [LDA] + node.left + node.op + node.right
