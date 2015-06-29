@@ -90,7 +90,7 @@ class AsmBlockOperationTest(unittest.TestCase):
     def test_call_immediate_proxy_with_int_returns_instruction(self):
         result = ADC(1)
         self.assert_type(result, 'Instruction')
-        self.assertEquals(result.address_mode, 'imm')        
+        self.assertEquals(result.address_mode, 'imm')
         self.assertEquals(result.param, 1)
 
     def test_adc_plus_two_returns_immediate_instruction_2(self):
@@ -162,7 +162,50 @@ class AsmBlockOperationTest(unittest.TestCase):
 
     def test_expression_asl_plus_a(self):
         self.assert_expr(ASL + A, 'ASL A')
-        # self.assert_expr(ASL(A), 'ASL A')
+
+    def test_expression_stx_with_addr_2000(self):
+        self.assert_expr(STX + '$4017', 'STX $4017')
+
+    def test_asm_block_with_instruction_and_instruction_abs(self):
+        result = (
+            LDX + 40 +
+            STX + '$4017')
+        self.assert_type(result, 'AsmBlock')
+        self.assertEquals(len(result), 2)
+        actual = str(result)
+        expected = '\n'.join([
+                'LDX #40',
+                'STX $4017',
+            ]) + '\n'
+        self.assertEquals(actual, expected)
+
+
+    def test_regular_reset(self):
+        result = (SEI +
+            CLD +
+            LDX + 40 +
+            STX + '$4017' +
+            LDX + 0xFF +
+            TXS +
+            INX +
+            STX + '$2000' +
+            STX + '$2001')
+
+        self.assert_type(result, 'AsmBlock')
+        self.assertEquals(len(result), 9)
+        actual = str(result)
+        expected = '\n'.join([
+                'SEI',
+                'CLD',
+                'LDX #40',
+                'STX $4017',
+                'LDX #255',
+                'TXS',
+                'INX',
+                'STX $2000',
+                'STX $2001',
+            ]) + '\n'
+        self.assertEquals(actual, expected)
 
     def test_eee(self):
         self.assert_expr(ADC + 0x0a, 'ADC #10')

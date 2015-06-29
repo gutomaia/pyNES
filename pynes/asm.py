@@ -73,6 +73,8 @@ class Instruction(AddMixin):
             return '%s #%i' % (self.name, self.param)
         elif 'acc' == self.address_mode:
             return '%s A' % self.name
+        elif 'abs' == self.address_mode:
+            return '%s %s' % (self.name, self.param)
         else:
             raise Exception('Invalid Instruction')
 
