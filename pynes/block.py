@@ -24,10 +24,11 @@ class AsmBlock(object):
 
 
     def __add__(self, other):
-
-        if self.is_InstructionProxy(self.instructions[-1]) and isinstance(other, int):
+        if self.is_InstructionProxy(self.instructions[-1]) and self.instructions[-1].is_valid_address_mode_argument(other):
             other = self.instructions[-1](other)
             self.instructions[-1] = other
+        elif self.is_InstructionProxy(other) and other.is_single():
+            self.instructions.append(other())
         elif self.is_InstructionProxy(other):
             self.instructions.append(other)
         elif self.is_Instruction(other):
@@ -47,5 +48,5 @@ class AsmBlock(object):
         return self.get(-1)
 
     def __str__(self):
-        code = [str(a)+'\n' for a in self.instructions ]
+        code = [str(a)+'\n' for a in self.instructions]
         return ''.join(code)

@@ -19,14 +19,6 @@ def get_node(obj):
     return obj
 
 
-class ModuleWrapperMixin(object):
-
-    def visit_Module(self, node):
-        node.body.insert(0, get_import('pynes.asm', '*'))
-        ast.fix_missing_locations(node)
-        return self.generic_visit(node)
-
-
 def asm_nodes(func):
     def wrapper(*args, **kwargs):
         instructions = func(*args, **kwargs)[::-1]
@@ -38,16 +30,74 @@ def asm_nodes(func):
         return binOp
     return wrapper
 
+
+class AssignMixin(object):
+
+    def visit_Assign(self, node):
+        self.generic_visit(node)
+        print node
+
+
+class StructMixin(object):
+
+    def __init__(self, *args, **kwargs):
+        self.module_lookup = {}
+        self.names = {}
+
+    def visit_ImportFrom(self, node):
+        self.generic_visit(node)
+        for m in node.names:
+            if m.asname:
+                self.module_lookup[m.asname] = '%s.%s' % (node.module, node.name)
+            else:
+                self.module_lookup[m.name] = '%s.%s' % (node.module, m.name)
+        return node
+
+    def visit_Module(self, node):
+        node.body.insert(0, get_import('pynes.asm', '*'))
+        ast.fix_missing_locations(node)
+        self.generic_visit(node)
+        print self.names
+        print self.module_lookup
+        return node
+
+    def visit_FunctionDef(self, node):
+        self.generic_visit(node)
+        self.names[node.name] = 'a'
+        # print dir(node)
+        print node.decorator_list
+        return node
+
+    def is_valid_name(self, name):
+        return name != 'pynes.lib.asm_def'
+
+    def visit_Name(self, node):
+        self.generic_visit(node)
+        if self.is_valid_name(self.module_lookup.get(node.id, False)):
+            self.names[node.id] = 'a'
+        return node
+
 class LogicOperationMixin(object):
+
+    def visit_Call(self, node):
+        if node.func.id == 'press_start':
+            return None
+        # print node.func.id
+        self.generic_visit(node)
+        return node
 
     def visit_Mod(self, node):
         return [AND]
+
 
 class MathOperationMixin(object):
 
     def visit_Expr(self, node):
         self.generic_visit(node)
-        return node
+        if hasattr(node, 'value'):
+            return node
+        return None
+
         return ast.Expr(value=ast.Assign(
                     targets=[ast.Name(id='expr', ctx=ast.Store())],
                     value=node
