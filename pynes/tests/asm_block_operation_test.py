@@ -199,7 +199,6 @@ class AsmBlockOperationTest(unittest.TestCase):
 
         self.assertEquals(actual, expected)
 
-
     def test_regular_reset(self):
         result = (SEI +
             CLD +
