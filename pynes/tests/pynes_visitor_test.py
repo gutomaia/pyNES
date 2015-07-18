@@ -16,6 +16,15 @@ class PyNesVisitorTest(unittest.TestCase):
         visit.visit(python_code)
         return visit.get_symbol_table()
 
+    def test_visitor_with_custom_symbol_table(self):
+        class CustomSymbolTable(dict):
+            pass
+
+        symbol_table = CustomSymbolTable()
+        visitor = PyNesVisitor(symbol_table=symbol_table)
+        self.assertIsNotNone(visitor.symbol_table)
+        self.assertEquals(visitor.symbol_table, symbol_table)
+
     def test_visit_code_with_from_import(self):
         code = "from pynes.core import press_start"
 

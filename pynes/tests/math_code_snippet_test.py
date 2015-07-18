@@ -29,11 +29,28 @@ class DynamicFixture(type):
                 self.assertEquals(actual.strip(), expected.strip())
             return test
 
+        def gen_asm_test(filename):
+            def test(self):
+                base = os.path.splitext(os.path.basename(filename))[0]
+                path = os.path.dirname(filename)
+                pynes_filename = '%s/%s.pynes' % (path, base)
+                asm_filename = '%s/%s.asm' % (path, base)
+                self.assertTrue(os.path.exists(asm_filename), 'file does not exists %s' % asm_filename)
+                python_instructions = open(pynes_filename).read()
+                expected = open(asm_filename).read()
+                test_context = {}
+                exec python_instructions in test_context
+                # self.assertEquals(python_instructions, test_context)
+
+                # exec python_instructions
+            return test
+
         files = glob('fixtures/code_snippet/math/*.py')
         files += glob('fixtures/code_snippet/logic/*.py')
 
         for f in files:
             args['test_pynes_%s' % f] = gen_pynes_test(f)
+            #TODO: args['test_asm_%s' % f] = gen_asm_test(f)
 
         return type.__new__(mcs, name, bases, args)
 

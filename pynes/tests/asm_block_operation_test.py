@@ -4,7 +4,7 @@ import unittest
 import ast
 
 from pynes.asm import *
-from pynes.block import AsmBlock
+from pynes.block import AsmBlock, MemoryAddress
 
 
 class AsmBlockOperationTest(unittest.TestCase):
@@ -159,6 +159,17 @@ class AsmBlockOperationTest(unittest.TestCase):
             ]) + '\n'
         self.assertEquals(actual, expected)
 
+    def test_asmblock_plus_asmblock(self):
+        result = AsmBlock(SEI) + AsmBlock(TXS)
+        # self.assertEquals(len(result), 2)
+        # self.assert_type(result.get(0), 'AsmBlock')
+        # self.assert_type(result.get(1), 'AsmBlock')
+        actual = str(result)
+        expected = '\n'.join([
+                'SEI',
+                'TXS'
+            ]) + '\n'
+        self.assertEquals(actual, expected)
 
     def test_expression_asl_plus_a(self):
         self.assert_expr(ASL + A, 'ASL A')
@@ -177,6 +188,15 @@ class AsmBlockOperationTest(unittest.TestCase):
                 'LDX #40',
                 'STX $4017',
             ]) + '\n'
+        self.assertEquals(actual, expected)
+
+    def test_instruction_with_memory_address_label(self):
+        result = BPL + MemoryAddress('vblank')
+
+        self.assert_type(result, 'Instruction')
+        actual = str(result)
+        expected = 'BPL vblank'
+
         self.assertEquals(actual, expected)
 
 

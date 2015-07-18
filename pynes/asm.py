@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 from nesasm.c6502 import opcodes
-from pynes.block import AsmBlock
+from pynes.block import AsmBlock, MemoryAddress
 from re import match
 
 registers = ['A', 'X', 'Y']
@@ -30,7 +30,10 @@ class AddMixin(object):
         return (isinstance(arg, basestring) and match(r'^\$\d{1,2}$', arg))
 
     def is_abs_address_mode_argument(self, arg):
-        return (isinstance(arg, basestring) and match(r'^\$\d{4}$', arg))
+        return (
+            (isinstance(arg, basestring) and match(r'^\$\d{4}$', arg)) or
+            isinstance(arg, MemoryAddress)
+        )
 
     def is_valid_address_mode_argument(self, arg):
         return (self.is_immediate_address_mode_argument(arg) or
@@ -55,17 +58,26 @@ class AddMixin(object):
             return AsmBlock(left, other)
         elif isinstance(other, Register):
             return Instruction(self.name, 'acc', 'A')
+        elif isinstance(other, AsmBlock):
+            return AsmBlock(left, other)
         raise Exception('Invalid')
 
-
+def label(func):
+    def wrapper(self):
+        if self.label:
+            return '%s:\n%s' % (self.label, func(self))
+        return func(self)
+    return wrapper
 
 class Instruction(AddMixin):
 
-    def __init__(self, name, address_mode, param=None):
+    def __init__(self, name, address_mode, param=None, label = None):
         self.name = name
         self.address_mode = address_mode
         self.param = param
+        self.label = label
 
+    @label
     def __str__(self):
         if 'sngl' == self.address_mode:
             return self.name
@@ -77,6 +89,14 @@ class Instruction(AddMixin):
             return '%s %s' % (self.name, self.param)
         else:
             raise Exception('Invalid Instruction')
+
+    def size(self):
+        if self.address_mode in ['sngl', 'acc']:
+            return 1
+        elif self.address_mode in ['imm', 'zp', 'zpx', 'indy', 'zpy', 'indx', 'rel']:
+            return 2
+        elif self.address_mode in ['abs', 'absx', 'absy']:
+            return 3
 
     def __repr__(self):
         return '<Instruction %s>' % str(self)
