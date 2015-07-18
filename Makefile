@@ -44,6 +44,7 @@ clean: python_clean
 
 purge: python_purge
 	@rm python.mk
+	@rm -rf .tox
 
 build: python_build
 
