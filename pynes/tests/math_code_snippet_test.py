@@ -5,8 +5,8 @@ import meta
 from pynes.composer import PyNesTransformer
 from pynes.asm import *
 import os
-
 from glob import glob
+
 
 class DynamicFixture(type):
 
@@ -47,10 +47,11 @@ class DynamicFixture(type):
 
         files = glob('fixtures/code_snippet/math/*.py')
         files += glob('fixtures/code_snippet/logic/*.py')
+        # TODO: files += glob('fixtures/code_snippet/assign/*.py')
 
         for f in files:
             args['test_pynes_%s' % f] = gen_pynes_test(f)
-            #TODO: args['test_asm_%s' % f] = gen_asm_test(f)
+            # TODO: args['test_asm_%s' % f] = gen_asm_test(f)
 
         return type.__new__(mcs, name, bases, args)
 
@@ -58,6 +59,5 @@ class DynamicFixture(type):
 class MathOperationTest(unittest.TestCase):
     __metaclass__ = DynamicFixture
 
-
     def test_ok(self):
-        pass    
+        pass

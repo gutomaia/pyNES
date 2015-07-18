@@ -1,17 +1,18 @@
 # -*- coding: utf-8 -*-
-
 import ast
 from pynes.asm import *
 
+
 def get_import(module_name, function_name):
     return ast.ImportFrom(
-            module=module_name,
-            names=[ast.alias(name=function_name, asname=None)],
-            level=0
-        )
+        module=module_name,
+        names=[ast.alias(name=function_name, asname=None)],
+        level=0)
+
 
 def load_proxy(proxy):
     return ast.Name(id=proxy.name, ctx=ast.Load())
+
 
 def get_node(obj):
     if type(obj).__name__ == 'InstructionProxy':
@@ -77,6 +78,7 @@ class StructMixin(object):
             self.names[node.id] = 'a'
         return node
 
+
 class LogicOperationMixin(object):
 
     def visit_Call(self, node):
@@ -99,13 +101,11 @@ class MathOperationMixin(object):
         return None
 
         return ast.Expr(value=ast.Assign(
-                    targets=[ast.Name(id='expr', ctx=ast.Store())],
-                    value=node
-                )
-            )
+            targets=[ast.Name(id='expr', ctx=ast.Store())],
+            value=node))
 
     def visit_Add(self, node):
-        return [CLC , ADC]
+        return [CLC, ADC]
 
     def visit_Sub(self, node):
         return [SEC, SBC]
@@ -127,10 +127,10 @@ class MathOperationMixin(object):
                 next = next.left
             instructions.reverse()
         else:
-            instructions+= node.left
-        instructions+= node.op
+            instructions += node.left
+        instructions += node.op
 
         if ASL not in node.op:
-            instructions+= node.right
+            instructions += node.right
 
         return [LDA] + instructions

@@ -1,12 +1,9 @@
 # -*- coding: utf-8 -*-
-
 class AsmBlock(object):
 
-
-    def __init__ (self, *args):
+    def __init__(self, *args):
         self.instructions = []
         for i in list(args):
-            print type(i)
             if type(i).__name__ == 'InstructionProxy' and i.is_single():
                 self.instructions.append(i())
             elif isinstance(i, int):
@@ -14,14 +11,11 @@ class AsmBlock(object):
             else:
                 self.instructions.append(i)
 
-
-
     def is_Instruction(self, obj):
         return type(obj).__name__ == 'Instruction'
 
     def is_InstructionProxy(self, obj):
         return type(obj).__name__ == 'InstructionProxy'
-
 
     def __add__(self, other):
         if isinstance(other, AsmBlock):

@@ -1,13 +1,12 @@
 # -*- coding: utf-8 -*-
-
 import unittest
 import ast
 import meta
 
 from pynes.asm import *
 from pynes.block import AsmBlock
-
 from pynes.composer import PyNesTransformer
+
 
 class LibTest(unittest.TestCase):
 
@@ -22,12 +21,12 @@ class LibTest(unittest.TestCase):
         context = {}
         exec code in context
 
+    @unittest.skip("TODO")
     def test_assert_that_press_start_does_is_not_translated(self):
-        return # TODO
         code = '\n'.join([
             "from pynes.core import press_start",
             "press_start()",
-        ])
+            ])
 
         actual = self.transform(code).strip()
         self.assert_valid_code(actual)
@@ -39,14 +38,13 @@ class LibTest(unittest.TestCase):
 
         self.assertEquals(actual, expected)
 
-
+    @unittest.skip("TODO")
     def test_assert_that_any_def_with_ignore_is_not_translated(self):
-        return # TODO:
         code = '\n'.join([
-                "from pynes.lib import ignoredef",
-                "@ignoredef",
-                "def ignore_me():",
-                "  pass"
+            "from pynes.lib import ignoredef",
+            "@ignoredef",
+            "def ignore_me():",
+            "  pass"
             ])
 
         actual = self.transform(code).strip()
@@ -55,6 +53,6 @@ class LibTest(unittest.TestCase):
         expected = '\n'.join([
             "from pynes.asm import *",
             "from pynes.lib import ignoredef",
-        ]).strip()
+            ]).strip()
 
         # TODO: self.assertEquals(actual, expected)

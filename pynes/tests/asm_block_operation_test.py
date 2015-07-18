@@ -9,7 +9,6 @@ from pynes.block import AsmBlock, MemoryAddress
 
 class AsmBlockOperationTest(unittest.TestCase):
 
-
     def assert_expr(self, expr, code):
         self.assertEquals(str(expr), code)
 
@@ -33,8 +32,8 @@ class AsmBlockOperationTest(unittest.TestCase):
         self.assert_type(expression.get(1), 'Instruction', 'CLC')
         actual = str(expression)
         expected = '\n'.join([
-                'LDA #1',
-                'CLC'
+            'LDA #1',
+            'CLC'
             ]) + '\n'
         self.assertEquals(actual, expected)
 
@@ -46,7 +45,6 @@ class AsmBlockOperationTest(unittest.TestCase):
         self.assert_type(expression.get(1), 'Instruction', 'CLC')
         self.assert_type(expression.get(2), 'InstructionProxy', 'ADC')
 
-
     def test_complete_sum(self):
         expression = LDA + 1 + CLC + ADC + 1
         self.assert_type(expression, 'AsmBlock')
@@ -56,12 +54,11 @@ class AsmBlockOperationTest(unittest.TestCase):
         self.assert_type(expression.get(2), 'Instruction', 'ADC', 'imm')
         actual = str(expression)
         expected = '\n'.join([
-                'LDA #1',
-                'CLC',
-                'ADC #1'
+            'LDA #1',
+            'CLC',
+            'ADC #1'
             ]) + '\n'
         self.assertEquals(actual, expected)
-
 
     def test_adc_plus_one_returns_immediate_instruction(self):
         result = ADC + 1
@@ -108,8 +105,8 @@ class AsmBlockOperationTest(unittest.TestCase):
         self.assert_type(result.get(1), 'Instruction')
         actual = str(result)
         expected = '\n'.join([
-                'ADC #1',
-                'ADC #2'
+            'ADC #1',
+            'ADC #2'
             ]) + '\n'
         self.assertEquals(actual, expected)
 
@@ -128,34 +125,34 @@ class AsmBlockOperationTest(unittest.TestCase):
         self.assert_type(result.get(1), 'Instruction')
         actual = str(result)
         expected = '\n'.join([
-                'CLC',
-                'ADC #1'
+            'CLC',
+            'ADC #1'
             ]) + '\n'
         self.assertEquals(actual, expected)
 
     def test_asmblock_with_instruction_and_instruction_proxy_plus_one_returns_asmblock_with_two_instructions(self):
-        result = AsmBlock(CLC, ADC) + 1;
+        result = AsmBlock(CLC, ADC) + 1
         self.assert_type(result, 'AsmBlock')
         self.assertEquals(len(result), 2)
         self.assert_type(result.get(0), 'Instruction')
         self.assert_type(result.get(1), 'Instruction')
         actual = str(result)
         expected = '\n'.join([
-                'CLC',
-                'ADC #1'
+            'CLC',
+            'ADC #1'
             ]) + '\n'
         self.assertEquals(actual, expected)
 
     def test_asmblock_with_instruction_and_instruction_and_one_returns_asmblock_with_two_instructions(self):
-        result = AsmBlock(CLC, ADC, 1);
+        result = AsmBlock(CLC, ADC, 1)
         self.assert_type(result, 'AsmBlock')
         self.assertEquals(len(result), 2)
         self.assert_type(result.get(0), 'Instruction')
         self.assert_type(result.get(1), 'Instruction')
         actual = str(result)
         expected = '\n'.join([
-                'CLC',
-                'ADC #1'
+            'CLC',
+            'ADC #1'
             ]) + '\n'
         self.assertEquals(actual, expected)
 
@@ -166,8 +163,8 @@ class AsmBlockOperationTest(unittest.TestCase):
         # self.assert_type(result.get(1), 'AsmBlock')
         actual = str(result)
         expected = '\n'.join([
-                'SEI',
-                'TXS'
+            'SEI',
+            'TXS'
             ]) + '\n'
         self.assertEquals(actual, expected)
 
@@ -185,8 +182,8 @@ class AsmBlockOperationTest(unittest.TestCase):
         self.assertEquals(len(result), 2)
         actual = str(result)
         expected = '\n'.join([
-                'LDX #40',
-                'STX $4017',
+            'LDX #40',
+            'STX $4017',
             ]) + '\n'
         self.assertEquals(actual, expected)
 
@@ -200,7 +197,8 @@ class AsmBlockOperationTest(unittest.TestCase):
         self.assertEquals(actual, expected)
 
     def test_regular_reset(self):
-        result = (SEI +
+        result = (
+            SEI +
             CLD +
             LDX + 40 +
             STX + '$4017' +
@@ -214,15 +212,15 @@ class AsmBlockOperationTest(unittest.TestCase):
         self.assertEquals(len(result), 9)
         actual = str(result)
         expected = '\n'.join([
-                'SEI',
-                'CLD',
-                'LDX #40',
-                'STX $4017',
-                'LDX #255',
-                'TXS',
-                'INX',
-                'STX $2000',
-                'STX $2001',
+            'SEI',
+            'CLD',
+            'LDX #40',
+            'STX $4017',
+            'LDX #255',
+            'TXS',
+            'INX',
+            'STX $2000',
+            'STX $2001',
             ]) + '\n'
         self.assertEquals(actual, expected)
 
@@ -242,4 +240,3 @@ class AsmBlockOperationTest(unittest.TestCase):
         actual = str(result)
         expected = 'ADC $10, X'
         self.assertEquals(actual, expected)
-

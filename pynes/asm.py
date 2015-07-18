@@ -62,6 +62,7 @@ class AddMixin(object):
             return AsmBlock(left, other)
         raise Exception('Invalid')
 
+
 def label(func):
     def wrapper(self):
         if self.label:
@@ -69,9 +70,10 @@ def label(func):
         return func(self)
     return wrapper
 
+
 class Instruction(AddMixin):
 
-    def __init__(self, name, address_mode, param=None, label = None):
+    def __init__(self, name, address_mode, param=None, label=None):
         self.name = name
         self.address_mode = address_mode
         self.param = param

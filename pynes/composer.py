@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
-
 import ast
 from pynes.mixin import StructMixin, MathOperationMixin, LogicOperationMixin
+
 
 class PyNesVisitor(ast.NodeVisitor):
 
@@ -43,7 +43,7 @@ class PyNesVisitor(ast.NodeVisitor):
         for t in node.targets:
             if isinstance(node.value, ast.Num):
                 self.new_symbol(t.id, type='int', assigns=1, scope=self.scope)
-            elif isinstance(node.value, ast.Str): # TODO: checkover Python3
+            elif isinstance(node.value, ast.Str):  # TODO: checkover Python3
                 self.new_symbol(t.id, type='string', assigns=1, scope=self.scope)
 
     def visit_AugAssign(self, node):
@@ -52,6 +52,7 @@ class PyNesVisitor(ast.NodeVisitor):
 
     def get_symbol_table(self):
         return self.symbol_table
+
 
 class PyNesTransformer(ast.NodeTransformer, StructMixin, MathOperationMixin, LogicOperationMixin):
     pass
