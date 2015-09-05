@@ -36,6 +36,16 @@ class Game(object):
             value = getattr(self, attr)
             return self.directive(a, value)
 
+    def rsset(self):
+        output = []
+        for k,v in self.symbol_table.iteritems():
+            if v['type'] == 'int':
+                output.append('%s .rs 1' % k)
+        if output:
+            output.insert(0, '.rsset $0000')
+
+        return output
+
     def ines_header(self):
         return [
             self.inesprg,
@@ -48,6 +58,7 @@ class Game(object):
         lines = []
         lines.append(self.header)
         lines.extend(self.ines_header())
+        lines.extend(self.rsset())
 
         for i,b in self.banks.iteritems():
             lines.append(self.directive('bank', i))
