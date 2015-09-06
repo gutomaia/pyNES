@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 import ast
-from pynes.mixin import AssignMixin, StructMixin, MathOperationMixin, LogicOperationMixin
+from pynes.mixin import (AssignMixin, StructMixin, MathOperationMixin,
+                         LogicOperationMixin)
 
 
 class PyNesVisitor(ast.NodeVisitor):
@@ -33,11 +34,12 @@ class PyNesVisitor(ast.NodeVisitor):
     def visit_FunctionDef(self, node):
         arguments = [a.id for a in node.args.args]
         argument_table = {}
-        for i,a in enumerate(arguments):
+        for i, a in enumerate(arguments):
             argument_table[a] = {}
             argument_table[a]['types'] = set()
             argument_table[a]['pos'] = i
-        self.new_symbol(node.name, type='function', arguments=arguments, calls = 0, argument=argument_table)
+        self.new_symbol(node.name, type='function', arguments=arguments,
+                        calls=0, argument=argument_table)
         self._scope.append(node.name)
         self.generic_visit(node)
         self._scope.pop()

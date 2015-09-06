@@ -42,7 +42,6 @@ class PyNesVisitorTest(unittest.TestCase):
         self.assertEquals(symbol['type'], 'module')
         self.assertEquals(symbol['module'], 'pynes_stdlib.core.wait_vblank')
 
-
     def test_visit_code_with_function(self):
         code = '\n'.join([
             "def reset():",

@@ -6,9 +6,10 @@ class Bank(object):
         line = '.org $%04X' % self.org
         return [line]
 
+
 class Game(object):
 
-    def __init__(self, symbol_table = None):
+    def __init__(self, symbol_table=None):
         mapper = 1
         self.header = '; Build with pyNES'
 
@@ -38,7 +39,7 @@ class Game(object):
 
     def rsset(self):
         output = []
-        for k,v in self.symbol_table.iteritems():
+        for k, v in self.symbol_table.iteritems():
             if v['type'] == 'int':
                 output.append('%s .rs 1' % k)
         if output:
@@ -60,7 +61,7 @@ class Game(object):
         lines.extend(self.ines_header())
         lines.extend(self.rsset())
 
-        for i,b in self.banks.iteritems():
+        for i, b in self.banks.iteritems():
             lines.append(self.directive('bank', i))
             lines.extend(b.asm())
         return '\n'.join(lines)
