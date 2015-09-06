@@ -68,15 +68,11 @@ class StructMixin(object):
         node.body.insert(0, get_import('pynes.asm', '*'))
         ast.fix_missing_locations(node)
         self.generic_visit(node)
-        print self.names
-        print self.module_lookup
         return node
 
     def visit_FunctionDef(self, node):
         self.generic_visit(node)
         self.names[node.name] = 'a'
-        # print dir(node)
-        print node.decorator_list
         return node
 
     def is_valid_name(self, name):
@@ -94,7 +90,6 @@ class LogicOperationMixin(object):
     def visit_Call(self, node):
         if node.func.id == 'press_start':
             return None
-        # print node.func.id
         self.generic_visit(node)
         return node
 
