@@ -5,8 +5,8 @@ from pynes.mixin import AssignMixin, StructMixin, MathOperationMixin, LogicOpera
 
 class PyNesVisitor(ast.NodeVisitor):
 
-    def __init__(self, *args, **kwargs):
-        self.symbol_table = {}
+    def __init__(self, symbol_table=None, *args, **kwargs):
+        self.symbol_table = symbol_table if symbol_table else {}
         self._scope = []
 
     @property
@@ -31,13 +31,36 @@ class PyNesVisitor(ast.NodeVisitor):
         return node
 
     def visit_FunctionDef(self, node):
-        self.new_symbol(node.name, type='function')
+        arguments = [a.id for a in node.args.args]
+        argument_table = {}
+        for i,a in enumerate(arguments):
+            argument_table[a] = {}
+            argument_table[a]['types'] = set()
+            argument_table[a]['pos'] = i
+        self.new_symbol(node.name, type='function', arguments=arguments, calls = 0, argument=argument_table)
         self._scope.append(node.name)
         self.generic_visit(node)
         self._scope.pop()
 
     def visit_Call(self, node):
-        print node.func.id
+        self.symbol_table[node.func.id]['calls'] += 1
+        for a in node.args:
+            if isinstance(a, ast.Num):
+                t = 'int'
+            elif isinstance(a, ast.Name):
+                t = self.symbol_table[a.id]['type']
+            else:
+                t = None
+            if t:
+                self.symbol_table[node.func.id]['argument']['x']['types'].add(t)
+        for keyword in node.keywords:
+            if isinstance(keyword.value, ast.Num):
+                t = 'int'
+            else:
+                t = None
+            if t:
+                self.symbol_table[node.func.id]['argument'][keyword.arg]['types'].add(t)
+        self.generic_visit(node)
 
     def visit_Assign(self, node):
         for t in node.targets:
