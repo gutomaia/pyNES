@@ -1,6 +1,6 @@
 from types import FunctionType
 from pynes.block import AsmBlock, MemoryAddress
-from pynes.asm import Instruction, InstructionProxy, JSR
+from pynes.asm import Instruction, InstructionProxy, JSR, RTS
 
 
 def ignoredef(func):
@@ -15,7 +15,7 @@ class asm_def(object):
             self.has_arguments = False
         else:
             self.has_arguments = True
-
+        self.recursive = False
         self.calls = 0
 
     @property
@@ -27,23 +27,25 @@ class asm_def(object):
         self._func = value
         self.symbol = MemoryAddress(self.func.__name__)
 
+    def asm(self, *args, **kwargs):
+        result = self.func(*args, **kwargs)
+        if isinstance(result, Instruction) or isinstance(result, InstructionProxy):
+            result = AsmBlock(result)
+        result.get(0).label = self.symbol
+        if self.calls > 1:
+            result += RTS
+        return result
+
     def __call__(self, *args, **kwargs):
+        if self.recursive:
+            return self.symbol
+
+        self.recursive = True
         if self.has_arguments:
             self.func = args[0]
             args = args[1:]
 
-        result = self.func(*args, **kwargs)
-        print result
-        if isinstance(result, Instruction) or isinstance(result, InstructionProxy):
-            result = AsmBlock(result)
-        result.get(0).label = self.symbol
         if self.calls <= 1:
-            if isinstance(result, AsmBlock):
-                pass
-            return result
+            return self.asm(*args, **kwargs)
 
-        if result.size > 128:
-            pass
-            # TODO: return JSL + '$1234'
-        # return JSR + '$1234'
         return JSR + self.symbol
