@@ -49,7 +49,7 @@ purge: python_purge
 build: python_build
 
 test: python_build ${REQUIREMENTS_TEST}
-	${VIRTUALENV} nosetests --processes=2 -e image_test.py
+	${VIRTUALENV} nosetests --processes=4
 
 ci:
 	${VIRTUALENV} CI=1 nosetests
@@ -68,7 +68,7 @@ report:
 	coverage run --source=pynes setup.py test
 
 tdd:
-	${VIRTUALENV} tdaemon --ignore-dirs="build,dist,bin,site,pynes.egg-info,venv" --custom-args="-e image_test.py --with-notify --no-start-message"
+	${VIRTUALENV} tdaemon --ignore-dirs="build,dist,bin,site,pynes.egg-info,venv" --custom-args="--with-notify --no-start-message"
 
 tox:
 	${VIRTUALENV} tox
