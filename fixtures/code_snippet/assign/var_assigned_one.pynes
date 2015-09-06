@@ -1,0 +1,2 @@
+from pynes.asm import *
+(((LDA + 1) + STA) + a)

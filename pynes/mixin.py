@@ -22,7 +22,10 @@ def get_node(obj):
 
 def asm_nodes(func):
     def wrapper(*args, **kwargs):
-        instructions = func(*args, **kwargs)[::-1]
+        result = func(*args, **kwargs)
+        if isinstance(result, ast.AST):
+            return result
+        instructions = result[::-1]
         left = get_node(instructions.pop())
         right = get_node(instructions.pop())
         binOp = ast.BinOp(left=left, op=ast.Add(), right=right)
@@ -34,9 +37,16 @@ def asm_nodes(func):
 
 class AssignMixin(object):
 
+    @asm_nodes
     def visit_Assign(self, node):
         self.generic_visit(node)
-        print node
+        assert len(node.value) == len(node.targets)
+        if len(node.value) == 1:
+            value = node.value[0]
+            target = node.targets[0]
+            return [LDA, value, STA, target]
+
+        return node
 
 
 class StructMixin(object):

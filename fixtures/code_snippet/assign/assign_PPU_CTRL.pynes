@@ -1,0 +1,3 @@
+from pynes.asm import *
+from pynes.address import PPU_CTRL
+(((LDA + 20) + STA) + PPU_CTRL)

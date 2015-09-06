@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 import ast
-from pynes.mixin import StructMixin, MathOperationMixin, LogicOperationMixin
+from pynes.mixin import AssignMixin, StructMixin, MathOperationMixin, LogicOperationMixin
 
 
 class PyNesVisitor(ast.NodeVisitor):
@@ -54,5 +54,5 @@ class PyNesVisitor(ast.NodeVisitor):
         return self.symbol_table
 
 
-class PyNesTransformer(ast.NodeTransformer, StructMixin, MathOperationMixin, LogicOperationMixin):
+class PyNesTransformer(ast.NodeTransformer, AssignMixin, StructMixin, MathOperationMixin, LogicOperationMixin):
     pass
