@@ -162,20 +162,6 @@ class PyNesVisitorTest(unittest.TestCase):
         self.assertEquals(symbol['type'], 'int')
         self.assertEquals(symbol['scope'], 'nmi')
 
-    def test_visit_code_with_var_in_function_scope(self):
-        code = '\n'.join([
-            'def nmi():',
-            '  a = 1'
-            ])
-
-        symbol_table = self.visit(code)
-
-        self.assertIn('nmi', symbol_table)
-        self.assertIn('a', symbol_table)
-        symbol = symbol_table['a']
-        self.assertEquals(symbol['type'], 'int')
-        self.assertEquals(symbol['scope'], 'nmi')
-
     def test_visit_code_with_var_out_of_function_scope(self):
         code = '\n'.join([
             'def nmi():',
