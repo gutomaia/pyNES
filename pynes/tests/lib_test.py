@@ -4,7 +4,6 @@ import ast
 import meta
 
 from pynes.asm import *
-from pynes.block import AsmBlock
 from pynes.composer import PyNesTransformer
 
 

@@ -2,7 +2,6 @@
 import unittest
 import ast
 from pynes.asm import *
-from pynes.block import AsmBlock
 from pynes.composer import PyNesVisitor
 
 

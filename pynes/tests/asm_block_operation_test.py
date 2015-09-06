@@ -1,7 +1,5 @@
 # -*- coding: utf-8 -*-
-
 import unittest
-import ast
 
 from pynes.asm import *
 from pynes.block import AsmBlock, MemoryAddress
