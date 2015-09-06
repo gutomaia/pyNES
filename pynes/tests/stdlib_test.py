@@ -64,6 +64,15 @@ class StdLibTest(unittest.TestCase):
         expected = 'JSR single'
         self.assertEquals(actual, expected)
 
+        actual_asm = str(single.asm())
+        expected_asm = '\n'.join([
+            'single:',
+            'SEI',
+            'RTS'
+            ]) + '\n'
+
+        self.assertEquals(actual_asm, expected_asm)
+
     def test_asm_function_with_single_instruction(self):
         @asm_def
         def single():
@@ -76,6 +85,15 @@ class StdLibTest(unittest.TestCase):
         actual = str(expression)
         expected = 'JSR single'
         self.assertEquals(actual, expected)
+
+        actual_asm = str(single.asm())
+        expected_asm = '\n'.join([
+            'single:',
+            'BIT $2002',
+            'RTS'
+            ]) + '\n'
+
+        self.assertEquals(actual_asm, expected_asm)
 
     def test_vblank_with_more_than_one_call(self):
         @asm_def
@@ -91,6 +109,15 @@ class StdLibTest(unittest.TestCase):
         actual = str(expression)
         expected = 'JSR vblank'
         self.assertEquals(actual, expected)
+
+        actual_asm = str(vblank.asm())
+        expected_asm = '\n'.join([
+            'vblank:',
+            'BIT $2002',
+            'RTS'
+            ]) + '\n'
+
+        self.assertEquals(actual_asm, expected_asm)
 
     def test_vblank_with_recursive(self):
         @asm_def
