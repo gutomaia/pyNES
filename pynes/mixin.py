@@ -143,9 +143,14 @@ class MathOperationMixin(object):
             instructions.reverse()
         else:
             instructions += node.left
-        instructions += node.op
 
         if ASL not in node.op:
-            instructions += node.right
+            instructions += node.op + node.right
+        else:
+            assert len(node.right) == 1
+            right = node.right[0]
+            if isinstance(right, ast.Num) and right.n % 2 == 0:
+                node.op *= right.n / 2
+                instructions += node.op
 
         return [LDA] + instructions
