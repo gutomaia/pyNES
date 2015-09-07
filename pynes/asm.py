@@ -18,7 +18,7 @@ class Register(object):
 class AddMixin(object):
 
     def is_single(self):
-        return 'sngl' in opcodes[self.name]
+        return 'sngl' in opcodes[self.name] or 'acc' in opcodes[self.name]
 
     def is_immediate(self):
         return 'imm' in opcodes[self.name]

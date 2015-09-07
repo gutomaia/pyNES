@@ -185,6 +185,25 @@ class AsmBlockOperationTest(unittest.TestCase):
             ]) + '\n'
         self.assertEquals(actual, expected)
 
+    def test_asl_instruction_proxy_is_single(self):
+        # acc instruction does not require paramaters
+        self.assertTrue(ASL.is_single())
+
+    def test_lda_instruction_proxy_is_not_single(self):
+        self.assertFalse(LDA.is_single())
+
+    def test_multiply_two_by_four(self):
+        result = LDA + 2 + ASL + ASL
+
+        self.assert_type(result, 'AsmBlock')
+        actual = str(result)
+        expected = '\n'.join([
+            'LDA #2',
+            'ASL',
+            'ASL'
+            ]) + '\n'
+        self.assertEquals(actual, expected)
+
     def test_instruction_with_memory_address_label(self):
         result = BPL + MemoryAddress('vblank')
 
