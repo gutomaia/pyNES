@@ -31,6 +31,11 @@ class Game(object):
     def directive(self, d, arg):
         return '.%s %s' % (d, arg)
 
+    def function(self, func):
+        body = func()
+        aa = func()
+        # print aa
+
     def __getattr__(self, a):
         attr = '_%s' % a
         if hasattr(self, attr):

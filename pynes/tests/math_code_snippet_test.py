@@ -49,6 +49,7 @@ class DynamicFixture(type):
         files += glob('fixtures/code_snippet/logic/*.py')
         # TODO:
         files += glob('fixtures/code_snippet/assign/*.py')
+        files += glob('fixtures/code_snippet/structure/*.py')
 
         for f in files:
             args['test_pynes_%s' % f] = gen_pynes_test(f)

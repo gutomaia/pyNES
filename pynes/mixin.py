@@ -14,6 +14,12 @@ def load_proxy(proxy):
     return ast.Name(id=proxy.name, ctx=ast.Load())
 
 
+def call_proxy(var, func):
+    return ast.Assign(
+        targets=[ast.Name(id=var, ctx=ast.Store()),],
+        value=ast.Call(func=ast.Name(id=func, ctx=ast.Load()), args=[], keywords=[], starargs=None, kwargs=None))
+
+
 def get_node(obj):
     if type(obj).__name__ == 'InstructionProxy':
         obj = load_proxy(obj)
@@ -40,6 +46,11 @@ class AssignMixin(object):
     @asm_nodes
     def visit_Assign(self, node):
         self.generic_visit(node)
+
+        if isinstance(node.value, ast.Call):
+            # pynes.Game
+            return node
+
         assert len(node.value) == len(node.targets)
         if len(node.value) == 1:
             value = node.value[0]
@@ -76,13 +87,17 @@ class StructMixin(object):
 
     def visit_Module(self, node):
         node.body.insert(0, get_import('pynes.asm', '*'))
+        node.body.insert(1, get_import('pynes.game', 'Game'))
+        node.body.insert(2, call_proxy('game', 'Game'))
         ast.fix_missing_locations(node)
         self.generic_visit(node)
         return node
 
     def visit_FunctionDef(self, node):
         self.generic_visit(node)
-        self.names[node.name] = 'a'
+        node.decorator_list.insert(0,
+            ast.Attribute(value=ast.Name(id='game', ctx=ast.Load()), attr='function', ctx=ast.Load())
+        )
         return node
 
     def is_valid_name(self, name):

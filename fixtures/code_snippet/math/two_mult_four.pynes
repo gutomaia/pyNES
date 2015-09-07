@@ -1,2 +1,4 @@
 from pynes.asm import *
+from pynes.game import Game
+game = Game()
 (((LDA + 2) + ASL) + ASL)

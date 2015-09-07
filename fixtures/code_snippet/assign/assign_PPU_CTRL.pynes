@@ -1,3 +1,5 @@
 from pynes.asm import *
+from pynes.game import Game
+game = Game()
 from pynes.address import PPU_CTRL
 (((LDA + 20) + STA) + PPU_CTRL)

@@ -1,0 +1,8 @@
+from pynes.asm import *
+from pynes.game import Game
+game = Game()
+from pynes.address import OAM_ADDR
+from pynes.address import OAM_DMA
+@game.function
+def reset():
+    (((LDA + 0) + STA) + OAM_ADDR)    (((LDA + 2) + STA) + OAM_DMA)
