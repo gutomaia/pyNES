@@ -48,6 +48,16 @@ class AssignMixin(object):
 
         return node
 
+    @asm_nodes
+    def visit_AugAssign(self, node):
+        self.generic_visit(node)
+        assert len(node.value) == 1
+        value = node.value[0]
+        target = node.target
+        if isinstance(value, ast.Num) and value.n == 1:
+            return [LDA, target, INC, STA, target]
+        else:
+            return [LDA, target, CLC, ADC, value, STA, target]
 
 class StructMixin(object):
 
