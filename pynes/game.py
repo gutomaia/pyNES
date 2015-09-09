@@ -10,9 +10,52 @@ class Bank(object):
 class Game(object):
 
     def __init__(self, symbol_table=None):
-        mapper = 1
+        self.symbol_table = symbol_table if symbol_table else {}
         self.header = '; Build with pyNES'
 
+        self._code_chunks = []
+        self._functions = []
+
+    def add_chunk(self, chunk):
+        self._code_chunks.append(chunk)
+        return chunk
+
+    def function(self, func):
+        self._functions.append(func)
+
+    def asm(self, header=False):
+
+        lines = []
+
+        header and lines.append(self.header)
+
+        for c in self._code_chunks:
+            lines.append(str(c))
+
+        return '\n'.join(lines)
+
+
+class ASMPacking(object):
+
+    def __init__(self, header=True, game=Game()):
+        pass
+
+    def asm(self):
+        lines = []
+
+        lines.append(self.game.header)
+        header and lines.append(self.header)
+
+        for c in self._code_chunks:
+            lines.append(str(c))
+
+        return '\n'.join(lines)
+
+
+class NESPacking(object):
+
+    def __init__(self, header=True, game=Game()):
+        self.game = game
         self._inesprg = 1
         self._ineschr = 1
         self._inesmap = 0
@@ -23,28 +66,18 @@ class Game(object):
         self.banks[1] = Bank(0xE000)
         self.banks[2] = Bank(0x0000)
 
-        if not symbol_table:
-            self.symbol_table = {}
-        else:
-            self.symbol_table = symbol_table
-
     def directive(self, d, arg):
         return '.%s %s' % (d, arg)
 
-    def function(self, func):
-        body = func()
-        aa = func()
-        # print aa
-
-    def __getattr__(self, a):
-        attr = '_%s' % a
+    def __getattr__(self, val):
+        attr = '_%s' % val
         if hasattr(self, attr):
             value = getattr(self, attr)
-            return self.directive(a, value)
+            return self.directive(val, value)
 
     def rsset(self):
         output = []
-        for k, v in self.symbol_table.iteritems():
+        for k, v in self.game.symbol_table.iteritems():
             if v['type'] == 'int':
                 output.append('%s .rs 1' % k)
         if output:
@@ -62,11 +95,13 @@ class Game(object):
 
     def asm(self):
         lines = []
-        lines.append(self.header)
+
+        lines.append(self.game.header)
         lines.extend(self.ines_header())
         lines.extend(self.rsset())
 
         for i, b in self.banks.iteritems():
             lines.append(self.directive('bank', i))
             lines.extend(b.asm())
+
         return '\n'.join(lines)

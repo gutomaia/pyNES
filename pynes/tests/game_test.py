@@ -1,33 +1,33 @@
 # -*- coding: utf-8 -*-
 import unittest
-from pynes.game import Game
+from pynes.game import Game, NESPacking
 from collections import OrderedDict
 
-class GameTest(unittest.TestCase):
+class NESPackingTest(unittest.TestCase):
 
     def test_bank_0(self):
-        game = Game()
-        actual = game.banks[0].asm()
+        packing = NESPacking()
+        actual = packing.banks[0].asm()
         expected = ['.org $C000']
         self.assertEquals(actual, expected)
 
     def test_bank_1(self):
-        game = Game()
-        actual = game.banks[1].asm()
+        packing = NESPacking()
+        actual = packing.banks[1].asm()
         expected = ['.org $E000']
         self.assertEquals(actual, expected)
 
     def test_bank_2(self):
-        game = Game()
-        actual = game.banks[2].asm()
+        packing = NESPacking()
+        actual = packing.banks[2].asm()
         expected = ['.org $0000']
         self.assertEquals(actual, expected)
 
 
     def test_game(self):
-        game = Game()
+        packing = NESPacking()
 
-        actual = game.asm()
+        actual = packing.asm()
 
         expected = """; Build with pyNES
 .inesprg 1
@@ -50,14 +50,14 @@ class GameTest(unittest.TestCase):
                 'assigns': 2
             }
         }
-        game = Game(symbol_table)
-        actual = game.rsset()
+        packing = NESPacking(game=Game(symbol_table=symbol_table))
+        actual = packing.rsset()
 
         expected = ['.rsset $0000', 'a .rs 1']
         self.assertEquals(actual, expected)
 
         for e in expected:
-            self.assertIn(e, game.asm())
+            self.assertIn(e, packing.asm())
 
 
     def test_game_with_int_scroll_variable(self):
@@ -71,8 +71,8 @@ class GameTest(unittest.TestCase):
         symbol_table['sourceHigh'] = integer
         symbol_table['columnNumber'] = integer
 
-        game = Game(symbol_table)
-        actual = game.rsset()
+        packing = NESPacking(game=Game(symbol_table=symbol_table))
+        actual = packing.rsset()
 
         expected = ['.rsset $0000',
             'scroll .rs 1',
@@ -86,4 +86,4 @@ class GameTest(unittest.TestCase):
         self.assertEquals(actual, expected)
 
         for e in expected:
-            self.assertIn(e, game.asm())
+            self.assertIn(e, packing.asm())

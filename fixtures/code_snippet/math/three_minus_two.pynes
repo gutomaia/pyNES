@@ -1,4 +1,4 @@
 from pynes.asm import *
 from pynes.game import Game
 game = Game()
-((((LDA + 3) + SEC) + SBC) + 2)
+game.add_chunk(((((LDA + 3) + SEC) + SBC) + 2))

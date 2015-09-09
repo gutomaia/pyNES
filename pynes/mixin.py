@@ -91,6 +91,21 @@ class StructMixin(object):
         node.body.insert(2, call_proxy('game', 'Game'))
         ast.fix_missing_locations(node)
         self.generic_visit(node)
+
+        for i, n in enumerate(node.body):
+            if isinstance(n, ast.Expr):
+                node.body[i] = ast.Call(
+                    func=ast.Attribute(value=ast.Name(id='game', ctx=ast.Load()), attr='add_chunk', ctx=ast.Load()),
+                    args=[n.value], keywords=[], starargs=None, kwargs=None)
+            elif isinstance(n, ast.BinOp):
+                node.body[i] = ast.Call(
+                    func=ast.Attribute(value=ast.Name(id='game', ctx=ast.Load()), attr='add_chunk', ctx=ast.Load()),
+                    args=[n], keywords=[], starargs=None, kwargs=None)
+
+        ast.fix_missing_locations(node)
+
+        # import astpp
+        # print astpp.dump(node)
         return node
 
     def visit_FunctionDef(self, node):

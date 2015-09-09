@@ -1,0 +1,3 @@
+LDA #3
+CLC
+ADC #3

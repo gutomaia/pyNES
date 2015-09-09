@@ -37,23 +37,24 @@ class DynamicFixture(type):
                 asm_filename = '%s/%s.asm' % (path, base)
                 self.assertTrue(os.path.exists(asm_filename), 'file does not exists %s' % asm_filename)
                 python_instructions = open(pynes_filename).read()
-                expected = open(asm_filename).read()
-                test_context = {}
-                exec python_instructions in test_context
-                # self.assertEquals(python_instructions, test_context)
+                hacked = python_instructions
+                expected = open(asm_filename).read().strip()
+                context = {}
+                exec hacked in context
+                actual = context['game'].asm().strip()
+                self.assertEquals(actual, expected)
 
                 # exec python_instructions
             return test
-
-        files = glob('fixtures/code_snippet/math/*.py')
+        files = []
+        files += glob('fixtures/code_snippet/math/*.py')
         files += glob('fixtures/code_snippet/logic/*.py')
-        # TODO:
         files += glob('fixtures/code_snippet/assign/*.py')
-        files += glob('fixtures/code_snippet/structure/*.py')
+        # TODO: fix asm! files += glob('fixtures/code_snippet/structure/*.py')
 
         for f in files:
             args['test_pynes_%s' % f] = gen_pynes_test(f)
-            # TODO: args['test_asm_%s' % f] = gen_asm_test(f)
+            args['test_asm_%s' % f] = gen_asm_test(f)
 
         return type.__new__(mcs, name, bases, args)
 

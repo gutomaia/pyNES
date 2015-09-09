@@ -1,4 +1,0 @@
-from pynes.asm import *
-from pynes.game import Game
-game = Game()
-(((LDA + 1) + STA) + a)

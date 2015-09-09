@@ -1,0 +1,3 @@
+LDA #2
+ASL
+ASL

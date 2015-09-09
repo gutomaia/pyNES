@@ -80,4 +80,7 @@ class PyNesVisitor(ast.NodeVisitor):
 
 
 class PyNesTransformer(ast.NodeTransformer, AssignMixin, StructMixin, MathOperationMixin, LogicOperationMixin):
-    pass
+
+    def __init__(self, symbol_table=None, *args, **kwargs):
+        super(PyNesTransformer, self).__init__(*args, **kwargs)
+        self.symbol_table = symbol_table if symbol_table else {}
