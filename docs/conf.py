@@ -14,6 +14,7 @@
 
 import sys
 import os
+import time
 import shlex
 import sphinx_rtd_theme
 
@@ -56,7 +57,7 @@ master_doc = 'index'
 
 # General information about the project.
 project = u'pyNES'
-copyright = u'2015, Guto Maia'
+copyright = u'2012-%s, Guto Maia' % time.strftime('%Y')
 author = u'Guto Maia'
 
 # The version info for the project you're documenting, acts as replacement for
