@@ -199,6 +199,9 @@ nsis: ${MAKENSIS_EXE}
 
 installer: nsis
 
+docs:
+	@$(MAKE) -C docs html
+
 ghpages: deploy download_deps
 	rm -rf /tmp/ghpages
 	mkdir -p /tmp/ghpages
@@ -215,4 +218,4 @@ ghpages: deploy download_deps
 		git push --force remote +master:gh-pages
 	rm -rf /tmp/ghpages
 
-.PHONY: clean linux windows dist nsis installer run report ghpages
+.PHONY: clean linux windows dist nsis installer run report docs ghpages
