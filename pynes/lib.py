@@ -1,3 +1,5 @@
+"""Function wrappers for external libraries"""
+
 from types import FunctionType
 from pynes.block import AsmBlock, MemoryAddress
 from pynes.asm import Instruction, InstructionProxy, JSR, RTS
@@ -8,6 +10,23 @@ def ignoredef(func):
 
 
 class asm_def(object):
+    r"""A function decorator for an ASM Block function
+
+    Example of waitvblank function::
+
+        @asm_function
+        def waitvblank():
+            BIT('$2002')
+            BPL(waitvblank)
+            RTS()
+
+    That must be translated to::
+
+        waitvblank:
+        BIT $2002
+        BPL waitvblank
+        RTS
+    """
 
     def __init__(self, *args, **kwargs):
         if len(args) == 1 and isinstance(args[0], FunctionType):

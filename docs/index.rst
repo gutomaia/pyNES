@@ -11,7 +11,8 @@ Contents:
 .. toctree::
    :maxdepth: 2
 
-
+   asm
+   lib
 
 Indices and tables
 ==================

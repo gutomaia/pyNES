@@ -1,9 +1,21 @@
 import sys
 import os
 import time
+sys.path.insert(0, os.path.abspath(".."))
 import shlex
 import sphinx_rtd_theme
 
+# Project Properties
+
+project = u'pyNES'
+copyright = u'2012-%s, Guto Maia' % time.strftime('%Y')
+author = u'Guto Maia'
+version = '0.2'
+release = '0.2.1'
+
+# Document Properties
+
+master_doc = 'index'
 
 extensions = [
     'sphinx.ext.autodoc',
@@ -14,18 +26,17 @@ extensions = [
     'sphinx.ext.viewcode',
 ]
 
-templates_path = ['_templates']
-
+# templates_path = ['_templates']
 source_suffix = '.rst'
 
-master_doc = 'index'
+primary_domain = 'py'
+default_role = 'py:obj'
+autodoc_member_order = "bysource"
+autoclass_content = "both"
 
-project = u'pyNES'
-copyright = u'2012-%s, Guto Maia' % time.strftime('%Y')
-author = u'Guto Maia'
+autodoc_docstring_signature = True
 
-version = '0.2'
-release = '0.2.1'
+
 
 language = None
 
@@ -38,7 +49,7 @@ todo_include_todos = True
 
 html_theme = 'sphinx_rtd_theme'
 html_theme_path = [sphinx_rtd_theme.get_html_theme_path()]
-html_static_path = ['_static']
+# html_static_path = ['_static']
 htmlhelp_basename = 'pyNESdoc'
 
 # -- Options for LaTeX output ---------------------------------------------
