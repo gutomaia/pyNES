@@ -202,19 +202,17 @@ installer: nsis
 docs:
 	@$(MAKE) -C docs html
 
-ghpages: deploy download_deps
+ghpages: docs
 	rm -rf /tmp/ghpages
 	mkdir -p /tmp/ghpages
-	cp -Rv static/* /tmp/ghpages
-	cp -Rv external/* /tmp/ghpages
-	cp -Rv lib/*.js /tmp/ghpages
+	cp -Rv site/* /tmp/ghpages
 
 	cd /tmp/ghpages && \
 		git init && \
 		git add . && \
 		git commit -q -m "Automatic gh-pages"
 	cd /tmp/ghpages && \
-		git remote add remote git@github.com:gutomaia/nodeNES.git && \
+		git remote add remote git@github.com:gutomaia/pyNES.git && \
 		git push --force remote +master:gh-pages
 	rm -rf /tmp/ghpages
 

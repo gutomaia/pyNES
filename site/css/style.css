@@ -1,0 +1,31 @@
+body {
+    background: #000 url('../img/stars.png') repeat;
+}
+
+.logo {
+    width: 346px;
+    height: 120px;
+    background: url('../img/logov.png') no-repeat;
+    margin: 30px auto;
+    text-indent: -9999px;
+}
+
+.box {
+    background: #000 url('../img/box.png') no-repeat;
+    width: 600px;
+    height: 590px;
+    margin: 0 auto;
+    padding: 50px;
+}
+
+.button {
+    width: 154px;
+    height: 48px;
+    margin: 5px;
+}
+
+.introtext {
+    width: 488px;
+    height: 94px;
+    margin: 15px 0 25px 0;
+}
