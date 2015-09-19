@@ -1,5 +1,8 @@
+@import url(https://fonts.googleapis.com/css?family=Press+Start+2P);
+
 body {
     background: #000 url('../img/stars.png') repeat;
+    font-family: 'Press Start 2P', cursive;
 }
 
 .logo {
