@@ -10,17 +10,27 @@ def ignoredef(func):
 
 
 class asm_def(object):
-    r"""A function decorator for an ASM Block function
+    """A function decorator for an ASM Block function
 
-    Example of waitvblank function::
+    Let's take a simple waitvblank function.
 
-        @asm_function
+    .. testcode::
+
+        from pynes.lib import asm_def
+        from pynes.asm import BIT, BPL
+
+        @asm_def
         def waitvblank():
-            BIT('$2002')
-            BPL(waitvblank)
-            RTS()
+            return (
+                BIT + '$2002' +
+                BPL + waitvblank()
+            )
 
-    That must be translated to::
+        print waitvblank()
+
+    That must be translated to:
+
+    .. testoutput::
 
         waitvblank:
         BIT $2002

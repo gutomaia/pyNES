@@ -51,6 +51,9 @@ build: python_build
 test: python_build ${REQUIREMENTS_TEST}
 	${VIRTUALENV} nosetests --processes=4
 
+doctest: python_build ${REQUIREMENTS_TEST}
+	${VIRTUALENV} $(MAKE) -C docs doctest
+
 ci:
 	${VIRTUALENV} CI=1 nosetests
 
