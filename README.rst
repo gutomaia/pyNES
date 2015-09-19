@@ -27,17 +27,17 @@ processor as the c6502 it's MADNESS. It's pyNES!
 The Untold Story
 ----------------
 
-`pyNES <http://gutomaia.net/pyNES>` started as a regular 6502 assembler. However, writing games in ASM wasn't fun enough. There with some AST hacks, I took a step further into figuring out a way to writing then in Python. First approach looks more like a macro languange.
+`pyNES <http://gutomaia.net/pyNES>`_ started as a regular 6502 assembler. However, writing games in ASM wasn't fun enough. There with some AST hacks, I took a step further into figuring out a way to writing then in Python. First approach looks more like a macro languange.
 
 
 Release notes
 -------------
 
 The original pyNES project was splitted in 4 projects.
- * `lexical <http://github.com/gutomaia/lexical>` - just a simple and generic lexical analyser.
- * `nesasm_py <http://github.com/gutomaia/nesasm_py>` - an 6502 assembler based on NESASM
- * `pyNES <http://github.com/gutomaia/pyNES>` - a python to 6502 compiler restricted to basic operations rewriten from scratch
- * `pyNES Standard Libraray <http://github.com/gutomaia/pyNES_StdLib>` - Useful game functions implemented using pyNES witch your game can import or you can use it as a reference guide to implement your own missing features.
+ * `lexical <http://github.com/gutomaia/lexical>`_ - just a simple and generic lexical analyser.
+ * `nesasm_py <http://github.com/gutomaia/nesasm_py>`_ - an 6502 assembler based on NESASM
+ * `pyNES <http://github.com/gutomaia/pyNES>`_ - a python to 6502 compiler restricted to basic operations rewriten from scratch
+ * `pyNES Standard Libraray <http://github.com/gutomaia/pyNES_StdLib>`_ - Useful game functions implemented using pyNES witch your game can import or you can use it as a reference guide to implement your own missing features.
 
 I believe that would easier to maintain, and some projects tend to get stable faster. Meaning more focus on the parts that matter. Less gaps for newcomers that want to contribute or just use it.
 
