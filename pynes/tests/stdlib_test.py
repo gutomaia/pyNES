@@ -57,7 +57,6 @@ class StdLibTest(unittest.TestCase):
             return SEI
 
         single.calls = 2
-        single.symbol = MemoryAddress('single')
 
         expression = single()
         actual = str(expression)
@@ -79,7 +78,6 @@ class StdLibTest(unittest.TestCase):
             return BIT + '$2002'
 
         single.calls = 2
-        single.symbol = MemoryAddress('single')
 
         expression = single()
         actual = str(expression)
@@ -103,7 +101,6 @@ class StdLibTest(unittest.TestCase):
             )
 
         vblank.calls = 2
-        vblank.symbol = MemoryAddress('vblank')
 
         expression = vblank()
         actual = str(expression)
@@ -127,7 +124,6 @@ class StdLibTest(unittest.TestCase):
                 BPL + vblank()
             )
 
-        vblank.symbol = MemoryAddress('vblank')
         expression = vblank()
         actual = str(expression)
 
@@ -147,7 +143,6 @@ class StdLibTest(unittest.TestCase):
             )
 
         vblank.calls = 2
-        vblank.symbol = MemoryAddress('vblank')
 
         expression = vblank()
         actual = str(expression)
