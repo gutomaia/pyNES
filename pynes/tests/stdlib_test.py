@@ -9,17 +9,15 @@ class StdLibTest(unittest.TestCase):
 
     def test_simple_function(self):
         @asm_def
-        def wait_vblank():
-            # BPL + 'wait_vblank2' +
+        def simple():
             return (
-                BIT + '$2002' +
-                RTS
+                BIT + '$2002'
                 )
 
-        expression = wait_vblank()
+        expression = simple.as_function()
         actual = str(expression)
         expected = '\n'.join([
-            'wait_vblank:',
+            'simple:',
             'BIT $2002',
             'RTS'
             ]) + '\n'
@@ -134,6 +132,14 @@ class StdLibTest(unittest.TestCase):
             ]) + '\n'
         self.assertEquals(actual, expected)
 
+        expected_as_function = '\n'.join([
+            'vblank:',
+            'BIT $2002',
+            'BPL vblank',
+            'RTS'
+            ]) + '\n'
+        self.assertEquals(str(vblank.as_function()), expected_as_function)
+
     def test_vblank_with_recursive_called_more_than_once(self):
         @asm_def
         def vblank():
@@ -151,7 +157,7 @@ class StdLibTest(unittest.TestCase):
 
         self.assertEquals(actual, expected)
 
-        actual_asm = str(vblank.asm())
+        actual_asm = str(vblank.as_function())
         expected_asm = '\n'.join([
             'vblank:',
             'BIT $2002',

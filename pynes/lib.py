@@ -26,7 +26,7 @@ class asm_def(object):
                 BPL + waitvblank()
             )
 
-        print waitvblank()
+        print waitvblank.as_function()
 
     That must be translated to:
 
@@ -55,6 +55,16 @@ class asm_def(object):
     def func(self, value):
         self._func = value
         self.symbol = MemoryAddress(self.func.__name__)
+
+    def as_function(self, *args, **kwargs):
+        return self.as_asm(*args, **kwargs) + RTS
+
+    def as_asm(self, *args, **kwargs):
+        result = self.func(*args, **kwargs)
+        if isinstance(result, Instruction) or isinstance(result, InstructionProxy):
+            result = AsmBlock(result)
+        result.get(0).label = self.symbol
+        return result
 
     def asm(self, *args, **kwargs):
         result = self.func(*args, **kwargs)
