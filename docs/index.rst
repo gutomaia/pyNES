@@ -11,8 +11,8 @@ Contents:
 .. toctree::
    :maxdepth: 2
 
-   asm
-   lib
+   pynes_asm
+   pynes_lib
 
 Indices and tables
 ==================
