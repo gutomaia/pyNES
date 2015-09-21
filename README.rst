@@ -13,21 +13,21 @@ game lives were wasted in the first level, in fruitless attempts of unveiling th
 That was what my curious and inventive mind believed for years, and still do so. As a kid, I used to play those
 games and always asked myself how they were done. I really wanted to experience some of the game design problems
 the pioneers once faced. Back then, they had to wage their own tools, hack the specs for game effects and layout
-the memory mapper circuits. I figure out, that to reach mount doom as equal, foremost, I had to forge my own
-hammer. I've decided trail their footmarks therefore I build PyNES: A Python ASM compiler for Nintendo 8 bits.
+the memory mapper circuits. I figured out that to reach mount doom as equal, foremost, I had to forge my own
+hammer. Therefore, I decided to trail their footmarks by building PyNES: A Python ASM compiler for Nintendo 8 bits.
 
-However as I strum steps progresses, the anvil didn't sound the same. Knowledge weight has changed. Internet
-made it all available and communities are helpful. Also, computer power had grown and programming languages
-evolved. I must go a further in each step of their challenges. PyNES is turning into a high-level compiler
+However, as I strum steps progresses, the anvil didn't sound the same. Knowledge weight has changed. Internet
+made it all available and communities are helpful. Also, computer power has grown and programming languages
+have evolved. I must go further in each step of their challenges. PyNES is turning into a high-level compiler
 which will allow Nintendo games to be written mostly in Python. This lecture will explain the several hacks and
 drawbacks of such approach. And I must say, trying to compile a such evolved language to a such limited
-processor as the c6502 it's MADNESS. It's pyNES!
+processor as the c6502 isn't MADNESS. It's pyNES!
 
 
 The Untold Story
 ----------------
 
-`pyNES <http://gutomaia.net/pyNES>` started as a regular 6502 assembler. However, writing games in ASM wasn't fun enough. Therefore, using some AST hacks I tried to figure out a way of translating Python code into ASM.
+`pyNES <http://gutomaia.net/pyNES>` started as a regular 6502 assembler. However, writing games in ASM wasn't fun enough. Thus, using some AST hacks I tried to figure out a way of translating Python code into ASM.
 
 
 Release notes
@@ -36,7 +36,7 @@ Release notes
  - pyNES versions 0.1.x is released as a Proof of concept.
 
 
-Instalation
+Installation
 -----------
 
 Just use pip. It will give you a "pynes" command.
@@ -88,9 +88,9 @@ Now you can open hello.nes
 
 
 In the above example, ``palette``, ``chr_asset`` and ``sprite`` are constants.
-Each one has their own properties, since they are equaly evaluated.
- * ``palette`` is an int array. Int Arrays are staticaly, and can't be changed. 
- * ``chr_asset`` Are reading structures
+Each one has their own properties, since they are equally evaluated.
+ * ``palette`` is an int array. Int Arrays are static, and can't be changed. 
+ * ``chr_asset`` Are reading structures.
  * ``sprite`` is the sprite definition.
 
 Functions are provided by bitbag package. Bitbag deals with templating[1] and some surrounding aspects needed by the asm code.
@@ -104,7 +104,7 @@ That's not all folks
 
 ** pyNES 0.1.x **
 
-Despite all my eforts, the pyNES version 0.1.x had several limitations as it should as a proof of concept.
+Despite all my efforts, the pyNES version 0.1.x had several limitations as it should as a proof of concept.
 
 Tricky limitations:
  * Sprite collision
@@ -121,15 +121,15 @@ Being ``Hard to extend``
 
 Therefore, pyNES version 0.2.x must overcome those limitations. And so far it is going great.
 
-Project has been splited into 4 projects:
- * ``lexical`` - just the lexical analyser
+Project has been split into 4 projects:
+ * ``lexical`` - just the lexical analyzer
  * ``nesasm_py`` - a 6502 ASM compiler based on NESASM
- * ``pyNES`` - This project, that must restringe is responsability just to
+ * ``pyNES`` - This project, wich must restrict it's responsibility just to
  * ``pyNES_StdLib`` - Standard Library.
 
 Mantras:
  - No more templating.
- - Less gaps between what you are wrinting and what the compiler is doing.
+ - Less gaps between what you are writing and what the compiler is doing.
  - Easier to extend
 
 Hi Level Functions are not templated anymore. However, th
