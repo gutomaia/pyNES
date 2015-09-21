@@ -14,3 +14,8 @@ script:
   - coverage run --source=pynes setup.py test
 after_success:
   - coveralls
+sudo: false
+notifications:
+  webhooks:
+    urls:
+      - https://webhooks.gitter.im/e/9c05e2d96a9f5f1b0dd6
