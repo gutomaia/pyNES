@@ -133,7 +133,7 @@ Project has been splited into 4 projects:
 
 Mantras:
  - No more templating.
- - Less gaps between what you are wrinting and what the compiler is doing.
+ - Less gaps between what you are writing and what the compiler is doing.
  - Easier to extend
 
 Hi Level Functions are not templated anymore. However, th
