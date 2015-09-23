@@ -4,8 +4,10 @@ pyNES
 .. image:: https://badges.gitter.im/Join%20Chat.svg
    :alt: Join the chat at https://gitter.im/gutomaia/pyNES
    :target: https://gitter.im/gutomaia/pyNES?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge
-
-
+.. image:: http://gitshields.com/v2/pypi/PyNES/version/blue.png
+      :alt: PyNES Version
+    
+  
 
 The Legend
 ----------
