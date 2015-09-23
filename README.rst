@@ -5,7 +5,6 @@ pyNES
    :alt: Join the chat at https://gitter.im/gutomaia/pyNES
    :target: https://gitter.im/gutomaia/pyNES?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge
 
-[![Build Status](http://img.shields.io/travis/gutomaia/nodeNES.svg)](http://travis-ci.org/gutomaia/pyNES)
 
 
 The Legend
