@@ -13,9 +13,9 @@ pyNES
 .. image:: http://img.shields.io/coveralls/gutomaia/pyNES/master.svg
     :target: https://coveralls.io/r/gutomaia/pyNES?branch=master
     :alt: Coverage Status   
-.. image:: http://gitshields.com/v2/pypi/PyNES/version/blue.png
+.. image:: https://img.shields.io/pypi/v/pyNES.svg
      :alt: PyNES Version
-.. image:: https://img.shields.io/pypi/dm/pyNES.svg?style=plastic   
+.. image:: https://img.shields.io/pypi/dm/pyNES.svg   
      :target: https://pypi.python.org/pypi/pyNES
      :alt: Downloads
 
