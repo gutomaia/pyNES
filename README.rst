@@ -12,12 +12,15 @@ pyNES
     :alt: travis-ci   
 .. image:: http://img.shields.io/coveralls/gutomaia/pyNES/master.svg
     :target: https://coveralls.io/r/gutomaia/pyNES?branch=master
-    :alt: Coverage Status   
+    :alt: Coverage Status 
+.. image:: https://img.shields.io/pypi/pyversions/pyNES.svg
+    :alt: Python Versions
 .. image:: https://img.shields.io/pypi/v/pyNES.svg
      :alt: PyNES Version
 .. image:: https://img.shields.io/pypi/dm/pyNES.svg   
      :target: https://pypi.python.org/pypi/pyNES
      :alt: Downloads
+
 
 
 
