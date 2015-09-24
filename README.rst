@@ -5,21 +5,19 @@ pyNES
    :alt: Join the chat at https://gitter.im/gutomaia/pyNES
    :target: https://gitter.im/gutomaia/pyNES?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge
 .. image:: https://badge.waffle.io/gutomaia/pynes.png?label=ready&title=Ready
-    :target: https://waffle.io/gutomaia/pynes
-    :alt: waffle.io   
+   :target: https://waffle.io/gutomaia/pynes
+   :alt: waffle.io   
 .. image:: http://img.shields.io/travis/gutomaia/pyNES.svg
-    :target: http://travis-ci.org/gutomaia/pyNES
-    :alt: travis-ci   
+   :target: http://travis-ci.org/gutomaia/pyNES
+   :alt: travis-ci   
 .. image:: http://img.shields.io/coveralls/gutomaia/pyNES/master.svg
-    :target: https://coveralls.io/r/gutomaia/pyNES?branch=master
-    :alt: Coverage Status 
-.. image:: https://img.shields.io/pypi/pyversions/pyNES.svg
-    :alt: Python Versions
+   :target: https://coveralls.io/r/gutomaia/pyNES?branch=master
+   :alt: Coverage Status 
 .. image:: https://img.shields.io/pypi/v/pyNES.svg
-     :alt: PyNES Version
+   :alt: PyNES Version
 .. image:: https://img.shields.io/pypi/dm/pyNES.svg   
-     :target: https://pypi.python.org/pypi/pyNES
-     :alt: Downloads
+   :target: https://pypi.python.org/pypi/pyNES
+   :alt: Downloads
 
 
 
