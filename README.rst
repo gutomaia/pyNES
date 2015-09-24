@@ -6,8 +6,16 @@ pyNES
    :target: https://gitter.im/gutomaia/pyNES?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge
 .. image:: http://gitshields.com/v2/pypi/PyNES/version/blue.png
       :alt: PyNES Version
-    
-  
+.. image:: http://img.shields.io/coveralls/gutomaia/pyNES/master.svg
+    :target: https://coveralls.io/r/gutomaia/pyNES?branch=master
+    :alt: Coverage Status
+.. image:: http://img.shields.io/travis/gutomaia/pyNES.svg
+    :target: http://travis-ci.org/gutomaia/pyNES
+    :alt: travis-ci
+.. image:: https://badge.waffle.io/gutomaia/pynes.png?label=ready&title=Ready
+    :target: https://waffle.io/gutomaia/pynes
+    :alt: waffle.io
+
 
 The Legend
 ----------
