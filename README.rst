@@ -20,9 +20,6 @@ pyNES
    :alt: Downloads
 
 
-
-
-
 The Legend
 ----------
 
@@ -48,7 +45,7 @@ processor as the c6502 it's MADNESS. It's pyNES!
 The Untold Story
 ----------------
 
-`pyNES <http://gutomaia.net/pyNES>` started as a regular 6502 assembler. However, writing games in ASM wasn't fun enough. There with some AST hacks, I took a step further into figuring out a way to writing then in Python.
+`pyNES <http://gutomaia.net/pyNES>` started as a regular 6502 assembler. However, writing games in ASM wasn't fun enough. Thus, using some AST hacks I tried to figure out a way of translating Python code into ASM.
 
 
 Release notes
@@ -57,7 +54,7 @@ Release notes
  - pyNES versions 0.1.x is released as a Proof of concept.
 
 
-Instalation
+Installation
 -----------
 
 Just use pip. It will give you a "pynes" command.
@@ -109,12 +106,12 @@ Now you can open hello.nes
 
 
 In the above example, ``palette``, ``chr_asset`` and ``sprite`` are constants.
-Each with their own properties, since they are equaly evaluated.
- * ``palette`` is a int array. Int Arrays are staticaly, and can't be changed. Are reading structures
- * ``chr_asset``
- * ``sprite``sprite, is the sprite definition.
+Each one has their own properties, since they are equally evaluated.
+ * ``palette`` is an int array. Int Arrays are static, and can't be changed. 
+ * ``chr_asset`` Are reading structures.
+ * ``sprite`` is the sprite definition.
 
-Functions are provied by bitbag package. Bitbag deals with templating[1] and some surronding aspects needs by the asm code.
+Functions are provided by bitbag package. Bitbag deals with templating[1] and some surrounding aspects needed by the asm code.
 
 
 [1] Read "That's not all" at the end
@@ -125,9 +122,9 @@ That's not all folks
 
 ** pyNES 0.1.x **
 
-Despite all my eforts, the pyNES version 0.1.x, had several limitations as it should as a proof of concept.
+Despite all my efforts, the pyNES version 0.1.x had several limitations as it should as a proof of concept.
 
-Trick limitations:
+Tricky limitations:
  * Sprite collision
  * Scrolling Screen
  * Sprite animation
@@ -140,17 +137,17 @@ Being ``Hard to extend``
 
 ** pyNES 0.2.x **
 
-Therefore, pyNES version 0.2.x must overcome those limitations. And so far is going great.
+Therefore, pyNES version 0.2.x must overcome those limitations. And so far it is going great.
 
-Project has been splited into 4 projects:
- * ``lexical`` - just the lexical analyser
+Project has been split into 4 projects:
+ * ``lexical`` - just the lexical analyzer
  * ``nesasm_py`` - a 6502 ASM compiler based on NESASM
- * ``pyNES`` - This project, that must restringe is responsability just to
+ * ``pyNES`` - This project, wich must restrict it's responsibility just to
  * ``pyNES_StdLib`` - Standard Library.
 
 Mantras:
  - No more templating.
- - Less gaps between what you are wrinting and what the compiler is doing.
+ - Less gaps between what you are writing and what the compiler is doing.
  - Easier to extend
 
 Hi Level Functions are not templated anymore. However, th
