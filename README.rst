@@ -4,9 +4,11 @@ pyNES
 .. image:: https://badges.gitter.im/Join%20Chat.svg
    :alt: Join the chat at https://gitter.im/gutomaia/pyNES
    :target: https://gitter.im/gutomaia/pyNES?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge
+   
 .. image:: https://badge.waffle.io/gutomaia/pynes.png?label=ready&title=Ready
    :target: https://waffle.io/gutomaia/pynes
    :alt: waffle.io   
+   
 .. image:: http://img.shields.io/travis/gutomaia/pyNES.svg
    :target: http://travis-ci.org/gutomaia/pyNES
    :alt: travis-ci   
