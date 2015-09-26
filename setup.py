@@ -2,6 +2,13 @@
 from setuptools import setup, find_packages
 from distutils.core import Command
 from unittest import TextTestRunner, TestLoader
+from os import path
+
+here = path.abspath(path.dirname(__file__))
+
+
+with open(path.join(here, 'README.rst'), encoding='utf-8') as f:
+    long_description = f.read()
 
 
 class TestCommand(Command):
@@ -24,6 +31,7 @@ setup(
     name='pyNES',
     version='0.0.2',
     description='Python Programming for Nintendo 8bits',
+    long_description=long_description,
     author="Gustavo Maia Neto (Guto Maia)",
     author_email="guto@guto.net",
     license="GPL3",
