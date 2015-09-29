@@ -8,6 +8,7 @@ import sphinx_rtd_theme
 # Project Properties
 
 project = u'pyNES'
+description = u'write NES games in Python'
 copyright = u'2012-%s, Guto Maia' % time.strftime('%Y')
 author = u'Guto Maia'
 version = '0.2'
@@ -86,7 +87,7 @@ man_pages = [
 
 texinfo_documents = [
   (master_doc, 'pyNES', u'pyNES Documentation',
-   author, 'pyNES', 'One line description of project.',
+   author, 'pyNES', description,
    'Miscellaneous'),
 ]
 
