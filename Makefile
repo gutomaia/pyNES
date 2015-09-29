@@ -203,7 +203,7 @@ nsis: ${MAKENSIS_EXE}
 installer: nsis
 
 docs:
-	@$(MAKE) -C docs html
+	@${VIRTUALENV} $(MAKE) -C docs html
 
 ghpages: docs
 	rm -rf /tmp/ghpages
