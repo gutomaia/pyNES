@@ -1,8 +1,8 @@
 coverage==3.7.1
-coveralls==0.4.2
-mock==1.0.1
+coveralls==0.5
+mock==1.3.0
 nose-notify==0.4.2
 nose==1.3.3
-pep8==1.5.7
+pep8==1.6.2
 tdaemon==0.1.1
 
