@@ -48,7 +48,7 @@ Clone this repo into your computer, then:
 .. code-block:: shell
 
     cd pyNES
-    python setup.py install
+    sudo python setup.py install
 
 
 Examples
@@ -58,9 +58,9 @@ Inside ``pynes/examples`` you'll find a set of examples. Compile them with:
 
 .. code-block:: shell
 
-  pynes py example_file_name.py -o whatever.nes
+  pynes py helloworld.py -o helloworld.nes
 
-Now you can open whatever.nes
+Now you can open helloworld.nes
 
 [1] Read "That's not all" at the end
 
