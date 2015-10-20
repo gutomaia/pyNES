@@ -60,7 +60,7 @@ Inside ``pynes/examples`` you'll find a set of examples. Compile them with:
 
   pynes py example_file_name.py -o whatever.nes
 
-Now you can open hello.nes
+Now you can open whatever.nes
 
 [1] Read "That's not all" at the end
 
