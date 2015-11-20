@@ -3,15 +3,20 @@
    You can adapt this file completely to your liking, but it should at least
    contain the root `toctree` directive.
 
-Welcome to pyNES's documentation!
+.. title:: pyNES
+
+pyNES - write NES games in Python
 =================================
+
 
 Contents:
 
 .. toctree::
    :maxdepth: 2
 
+   legend
    pynes_asm
+   pynes_composer
    pynes_lib
 
 Indices and tables
