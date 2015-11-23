@@ -43,62 +43,24 @@ Release notes
 Installation
 -----------
 
-Just use pip. It will give you a "pynes" command.
-
-.. code-block:: bash
-
-    pip install pyNES
-
-
-Hello, world
-------------
-
-A simple "Hello, world" example. Given the example "hello.py"
-
-.. code-block:: python
-
-
-    import pynes
-    from pynes.bitbag import *
-
-    palette = [
-        0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,
-        0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,
-        0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15
-    ]
-
-    chr_asset = import_chr('player.chr')
-
-    sprite = define_sprite(128, 128, 0, 3)
-
-    def reset():
-        global palette, sprite
-        wait_vblank()
-        clearmem()
-        wait_vblank()
-        load_palette(palette)
-        load_sprite(sprite, 0)
-
-Compile it with:
+Clone this repo into your computer, then:
 
 .. code-block:: shell
 
-  pynes py hello.py -o hello.nes
-
-Now you can open hello.nes
-
-
-**How does it work?**
+    cd pyNES
+    sudo python setup.py install
 
 
-In the above example, ``palette``, ``chr_asset`` and ``sprite`` are constants.
-Each one has their own properties, since they are equally evaluated.
- * ``palette`` is an int array. Int Arrays are static, and can't be changed. 
- * ``chr_asset`` Are reading structures.
- * ``sprite`` is the sprite definition.
+Examples
+------------
 
-Functions are provided by bitbag package. Bitbag deals with templating[1] and some surrounding aspects needed by the asm code.
+Inside ``pynes/examples`` you'll find a set of examples. Compile them with:
 
+.. code-block:: shell
+
+  pynes py helloworld.py -o helloworld.nes
+
+Now you can open helloworld.nes
 
 [1] Read "That's not all" at the end
 
