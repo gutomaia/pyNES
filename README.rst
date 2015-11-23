@@ -17,8 +17,8 @@ game lives were wasted in the first level, in fruitless attempts of unveiling th
 That was what my curious and inventive mind believed for years, and still do so. As a kid, I used to play those
 games and always asked myself how they were done. I really wanted to experience some of the game design problems
 the pioneers once faced. Back then, they had to wage their own tools, hack the specs for game effects and layout
-the memory mapper circuits. I figure out, that to reach mount doom as equal, foremost, I had to forge my own
-hammer. I've decided trail their footmarks therefore I build PyNES: A Python ASM compiler for Nintendo 8 bits.
+the memory mapper circuits. I figured out, to reach mount doom as equal, first, I had to forge my own
+hammer. I've decided trail their footmarks therefore I built PyNES: A Python ASM compiler for Nintendo 8 bits.
 
 However as I strum steps progresses, the anvil didn't sound the same. Knowledge weight has changed. Internet
 made it all available and communities are helpful. Also, computer power had grown and programming languages
