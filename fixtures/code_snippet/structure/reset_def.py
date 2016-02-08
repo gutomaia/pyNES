@@ -1,5 +1,4 @@
-from pynes.address import OAM_ADDR, OAM_DMA
+from pynes.address import OAM_ADDR
 
 def reset():
-    OAM_ADDR = 00
-    OAM_DMA = 2
+    OAM_ADDR = 0

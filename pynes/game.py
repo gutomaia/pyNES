@@ -22,9 +22,9 @@ class Game(object):
 
     def function(self, func):
         self._functions.append(func)
+        return func
 
     def asm(self, header=False):
-
         lines = []
 
         header and lines.append(self.header)
@@ -32,7 +32,11 @@ class Game(object):
         for c in self._code_chunks:
             lines.append(str(c))
 
-        return '\n'.join(lines)
+        for f in self._functions:
+            lines.append(f.func_name + ':')
+            lines.append(str(f()))
+
+        return '\n'.join(lines) + '\n'
 
 
 class ASMPacking(object):

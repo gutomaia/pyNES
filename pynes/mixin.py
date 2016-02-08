@@ -110,6 +110,9 @@ class StructMixin(object):
 
     def visit_FunctionDef(self, node):
         self.generic_visit(node)
+        expr = node.body[0]
+        node.body = [ast.Return(expr)]
+
         node.decorator_list.insert(0,
             ast.Attribute(value=ast.Name(id='game', ctx=ast.Load()), attr='function', ctx=ast.Load())
         )

@@ -44,12 +44,13 @@ class DynamicFixture(type):
                 actual = context['game'].asm().strip()
                 self.assertEquals(actual, expected)
 
-                # exec python_instructions
             return test
+
         files = []
         files += glob('fixtures/code_snippet/math/*.py')
         files += glob('fixtures/code_snippet/logic/*.py')
         files += glob('fixtures/code_snippet/assign/*.py')
+        files += glob('fixtures/code_snippet/structure/*.py')
         # TODO: fix asm! files += glob('fixtures/code_snippet/structure/*.py')
 
         for f in files:
