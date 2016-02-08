@@ -25,6 +25,14 @@ def get_node(obj):
         obj = load_proxy(obj)
     return obj
 
+def summer(instructions):
+    instructions = instructions[::-1]
+    left = get_node(instructions.pop())
+    right = get_node(instructions.pop())
+    binOp = ast.BinOp(left=left, op=ast.Add(), right=right)
+    while len(instructions) > 0:
+        binOp = ast.BinOp(left=binOp, op=ast.Add(), right=get_node(instructions.pop()))
+    return binOp
 
 def asm_nodes(func):
     def wrapper(*args, **kwargs):
@@ -110,7 +118,12 @@ class StructMixin(object):
 
     def visit_FunctionDef(self, node):
         self.generic_visit(node)
-        expr = node.body[0]
+
+        if len(node.body) == 1:
+            expr = node.body[0]
+        else:
+            expr = summer(node.body)
+
         node.body = [ast.Return(expr)]
 
         node.decorator_list.insert(0,
