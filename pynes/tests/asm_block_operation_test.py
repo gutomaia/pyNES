@@ -257,3 +257,31 @@ class AsmBlockOperationTest(unittest.TestCase):
         actual = str(result)
         expected = 'ADC $10, X'
         self.assertEquals(actual, expected)
+
+    def test_sta_absolute_x(self):
+        result = STA + ['$0200', X]
+        actual = str(result)
+        expected = 'STA $0200, x'
+        self.assertEquals(actual, expected)
+
+    def test_sta_absolute_y(self):
+        result = STA + ['$0200', Y]
+        actual = str(result)
+        expected = 'STA $0200, y'
+        self.assertEquals(actual, expected)
+
+    def test_sta_absolute_x_group(self):
+        result = (
+            LDA + 0 +
+            STA + ['$0000', X] +
+            STA + ['$0100', X] +
+            STA + ['$0200', X]
+        )
+        actual = str(result)
+        expected = '\n'.join([
+            'LDA #0',
+            'STA $0000, x',
+            'STA $0100, x',
+            'STA $0200, x'
+            ]) + '\n'
+        self.assertEquals(actual, expected)

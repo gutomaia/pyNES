@@ -13,6 +13,13 @@ def get_import(module_name, function_name):
 def load_proxy(proxy):
     return ast.Name(id=proxy.name, ctx=ast.Load())
 
+def load_proxy2(proxy):
+    if type(proxy).__name__ == 'InstructionProxy':
+        return ast.Name(id=proxy.name, ctx=ast.Load())
+    elif type(proxy).__name__ == 'Expr':
+        return proxy.value
+    return proxy
+
 
 def call_proxy(var, func):
     return ast.Assign(
@@ -27,11 +34,11 @@ def get_node(obj):
 
 def summer(instructions):
     instructions = instructions[::-1]
-    left = get_node(instructions.pop())
-    right = get_node(instructions.pop())
+    left = load_proxy2(instructions.pop())
+    right = load_proxy2(instructions.pop())
     binOp = ast.BinOp(left=left, op=ast.Add(), right=right)
     while len(instructions) > 0:
-        binOp = ast.BinOp(left=binOp, op=ast.Add(), right=get_node(instructions.pop()))
+        binOp = ast.BinOp(left=binOp, op=ast.Add(), right=load_proxy2(instructions.pop()))
     return binOp
 
 def asm_nodes(func):

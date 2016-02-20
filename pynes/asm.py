@@ -35,10 +35,20 @@ class AddMixin(object):
             isinstance(arg, MemoryAddress)
         )
 
+    def is_abs_xy_address_mode_argument(self, arg):
+        return (
+            (isinstance(arg, list) and len(arg) == 2 and
+                isinstance(arg[0], basestring) and
+                isinstance(arg[1], Register)
+            )
+        )
+
     def is_valid_address_mode_argument(self, arg):
         return (self.is_immediate_address_mode_argument(arg) or
                 self.is_zp_address_mode_argument(arg) or
-                self.is_abs_address_mode_argument(arg))
+                self.is_abs_address_mode_argument(arg) or
+                self.is_abs_xy_address_mode_argument(arg)
+                )
 
     def __add__(self, other):
         if self.is_valid_address_mode_argument(other):
@@ -89,6 +99,10 @@ class Instruction(AddMixin):
             return '%s A' % self.name
         elif 'abs' == self.address_mode:
             return '%s %s' % (self.name, self.param)
+        elif 'absx' == self.address_mode:
+            return '%s %s, x' % (self.name, self.param[0])
+        elif 'absy' == self.address_mode:
+            return '%s %s, y' % (self.name, self.param[0])
         else:
             raise Exception('Invalid Instruction')
 
@@ -123,6 +137,8 @@ class InstructionProxy(AddMixin):
             return Instruction(self.name, 'zp', arg)
         elif self.is_abs_address_mode_argument(arg):
             return Instruction(self.name, 'abs', arg)
+        elif self.is_abs_xy_address_mode_argument(arg):
+            return Instruction(self.name, 'abs%s' % arg[1].r.lower(), arg)
         raise Exception('Invalid Instruction')
 
     def __repr__(self):
