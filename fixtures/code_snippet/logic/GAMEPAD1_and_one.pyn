@@ -1,0 +1,2 @@
+from pynes.address import GAMEPAD_1
+GAMEPAD_1 and 1

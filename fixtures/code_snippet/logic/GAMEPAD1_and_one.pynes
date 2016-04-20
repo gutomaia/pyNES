@@ -1,0 +1,4 @@
+from pynes.asm import *
+from pynes.game import Game
+game = Game()
+game.add_chunk((((LDA + GAMEPAD_1) + AND) + 1))
