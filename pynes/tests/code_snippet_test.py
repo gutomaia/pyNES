@@ -10,8 +10,7 @@ from glob import glob
 
 class DynamicFixture(type):
 
-    def __new__(mcs, name, bases, args):
-
+    def __new__(cls, name, parents, attrs):
         def gen_pynes_test(filename):
             def test(self):
                 code = open(filename).read()
@@ -47,21 +46,29 @@ class DynamicFixture(type):
             return test
 
         files = []
-        files += glob('fixtures/code_snippet/math/*.py')
-        files += glob('fixtures/code_snippet/logic/*.py')
-        files += glob('fixtures/code_snippet/assign/*.py')
-        files += glob('fixtures/code_snippet/structure/*.py')
-        # TODO: fix asm! files += glob('fixtures/code_snippet/structure/*.py')
+
+        if '__files__' in attrs:
+            files += glob(attrs['__files__'])
 
         for f in files:
-            args['test_pynes_%s' % f] = gen_pynes_test(f)
-            args['test_asm_%s' % f] = gen_asm_test(f)
+            attrs['test_pynes_%s' % f] = gen_pynes_test(f)
+            attrs['test_asm_%s' % f] = gen_asm_test(f)
 
-        return type.__new__(mcs, name, bases, args)
+        return type.__new__(cls, name, parents, attrs)
 
 
 class MathOperationTest(unittest.TestCase):
     __metaclass__ = DynamicFixture
+    __files__ = 'fixtures/code_snippet/math/*.py'
 
-    def test_ok(self):
-        pass
+class LogicOperationTest(unittest.TestCase):
+    __metaclass__ = DynamicFixture
+    __files__ = 'fixtures/code_snippet/logic/*.py'
+
+class AssignOperationTest(unittest.TestCase):
+    __metaclass__ = DynamicFixture
+    __files__ = 'fixtures/code_snippet/assign/*.py'
+
+class StructureOperationTest(unittest.TestCase):
+    __metaclass__ = DynamicFixture
+    __files__ = 'fixtures/code_snippet/structure/*.py'
