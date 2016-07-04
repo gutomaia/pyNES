@@ -1,8 +1,16 @@
 # -*- coding: utf-8 -*-
+import io
+import re
 from setuptools import setup, find_packages
 from distutils.core import Command
 from unittest import TextTestRunner, TestLoader
 
+with io.open('./pynes/__init__.py', encoding='utf8') as version_file:
+    version_match = re.search(r"^__version__ = ['\"]([^'\"]*)['\"]", version_file.read(), re.M)
+    if version_match:
+        VERSION = version_match.group(1)
+    else:
+        raise RuntimeError("Unable to find version string.")
 
 class TestCommand(Command):
 
@@ -22,7 +30,7 @@ class TestCommand(Command):
 
 setup(
     name='pyNES',
-    version='0.2.0',
+    version=VERSION,
     description='Python Programming for Nintendo 8bits',
     author="Gustavo Maia Neto (Guto Maia)",
     author_email="guto@guto.net",
