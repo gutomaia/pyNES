@@ -1,2 +1,2 @@
 meta==0.4.1
-nesasm==0.0.5
+nesasm==0.0.7
