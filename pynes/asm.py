@@ -27,18 +27,18 @@ class AddMixin(object):
         return (isinstance(arg, int)) and arg < 256
 
     def is_zp_address_mode_argument(self, arg):
-        return (isinstance(arg, basestring) and match(r'^\$\d{1,2}$', arg))
+        return (isinstance(arg, str) and match(r'^\$\d{1,2}$', arg))
 
     def is_abs_address_mode_argument(self, arg):
         return (
-            (isinstance(arg, basestring) and match(r'^\$\d{4}$', arg)) or
+            (isinstance(arg, str) and match(r'^\$\d{4}$', arg)) or
             isinstance(arg, MemoryAddress)
         )
 
     def is_abs_xy_address_mode_argument(self, arg):
         return (
             (isinstance(arg, list) and len(arg) == 2 and
-                isinstance(arg[0], basestring) and
+                isinstance(arg[0], str) and
                 isinstance(arg[1], Register)
             )
         )

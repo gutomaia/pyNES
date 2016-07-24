@@ -1,3 +1,5 @@
+import sys
+
 class Bank(object):
     def __init__(self, org):
         self.org = org
@@ -81,9 +83,14 @@ class NESPacking(object):
 
     def rsset(self):
         output = []
-        for k, v in self.game.symbol_table.iteritems():
-            if v['type'] == 'int':
-                output.append('%s .rs 1' % k)
+        if sys.version_info >= (3,0):
+            for k, v in self.game.symbol_table.items():
+                if v['type'] == 'int':
+                    output.append('%s .rs 1' % k)
+        else:
+            for k, v in self.game.symbol_table.iteritems():
+                if v['type'] == 'int':
+                    output.append('%s .rs 1' % k)
         if output:
             output.insert(0, '.rsset $0000')
 
@@ -104,8 +111,12 @@ class NESPacking(object):
         lines.extend(self.ines_header())
         lines.extend(self.rsset())
 
-        for i, b in self.banks.iteritems():
-            lines.append(self.directive('bank', i))
-            lines.extend(b.asm())
-
+        if sys.version_info >= (3,0):
+            for i, b in self.banks.items():
+                lines.append(self.directive('bank', i))
+                lines.extend(b.asm())
+        else:
+            for i, b in self.banks.iteritems():
+                lines.append(self.directive('bank', i))
+                lines.extend(b.asm())
         return '\n'.join(lines)

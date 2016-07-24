@@ -39,7 +39,7 @@ class DynamicFixture(type):
                 hacked = python_instructions
                 expected = open(asm_filename).read().strip()
                 context = {}
-                exec hacked in context
+                exec(hacked) in context
                 actual = context['game'].asm().strip()
                 self.assertEquals(actual, expected)
 

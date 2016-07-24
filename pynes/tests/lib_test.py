@@ -18,7 +18,7 @@ class LibTest(unittest.TestCase):
 
     def assert_valid_code(self, code):
         context = {}
-        exec code in context
+        exec(code) in context
 
     @unittest.skip("TODO")
     def test_assert_that_press_start_does_is_not_translated(self):

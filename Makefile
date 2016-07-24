@@ -73,7 +73,7 @@ report:
 tdd:
 	${VIRTUALENV} tdaemon --ignore-dirs="build,dist,bin,site,pynes.egg-info,venv" --custom-args="--with-notify --no-start-message"
 
-tox:
+tox: ${REQUIREMENTS_TEST}
 	${VIRTUALENV} tox
 
 deps/.done:

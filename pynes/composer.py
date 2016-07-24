@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 import ast
+import sys
 from pynes.mixin import (AssignMixin, StructMixin, MathOperationMixin,
                          LogicOperationMixin)
 
@@ -32,7 +33,10 @@ class PyNesVisitor(ast.NodeVisitor):
         return node
 
     def visit_FunctionDef(self, node):
-        arguments = [a.id for a in node.args.args]
+        if sys.version_info >= (3,0):
+            arguments = [a.arg for a in node.args.args]
+        else:
+            arguments = [a.id for a in node.args.args]
         argument_table = {}
         for i, a in enumerate(arguments):
             argument_table[a] = {}
