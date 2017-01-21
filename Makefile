@@ -55,7 +55,7 @@ doctest: python_build ${REQUIREMENTS_TEST}
 	${VIRTUALENV} $(MAKE) -C docs doctest
 
 ci:
-	${VIRTUALENV} CI=1 nosetests
+	${VIRTUALENV} CI=1 nosetests -v
 
 pep8: ${REQUIREMENTS_TEST}
 	${VIRTUALENV} pep8 --statistics -qq pynes | sort -rn || echo ''
