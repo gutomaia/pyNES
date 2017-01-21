@@ -26,8 +26,8 @@ class AsmBlockOperationTest(unittest.TestCase):
         expression = LDA + 1 + CLC
         self.assert_type(expression, 'AsmBlock')
         self.assertEquals(len(expression), 2)
-        self.assert_type(expression.get(0), 'Instruction', 'LDA')
-        self.assert_type(expression.get(1), 'Instruction', 'CLC')
+        self.assert_type(expression[0], 'Instruction', 'LDA')
+        self.assert_type(expression[1], 'Instruction', 'CLC')
         actual = str(expression)
         expected = '\n'.join([
             'LDA #1',
@@ -39,17 +39,17 @@ class AsmBlockOperationTest(unittest.TestCase):
         expression = LDA + 1 + CLC + ADC
         self.assert_type(expression, 'AsmBlock')
         self.assertEquals(len(expression), 3)
-        self.assert_type(expression.get(0), 'Instruction', 'LDA')
-        self.assert_type(expression.get(1), 'Instruction', 'CLC')
-        self.assert_type(expression.get(2), 'InstructionProxy', 'ADC')
+        self.assert_type(expression[0], 'Instruction', 'LDA')
+        self.assert_type(expression[1], 'Instruction', 'CLC')
+        self.assert_type(expression[2], 'InstructionProxy', 'ADC')
 
     def test_complete_sum(self):
         expression = LDA + 1 + CLC + ADC + 1
         self.assert_type(expression, 'AsmBlock')
         self.assertEquals(len(expression), 3)
-        self.assert_type(expression.get(0), 'Instruction', 'LDA', 'imm')
-        self.assert_type(expression.get(1), 'Instruction', 'CLC', 'sngl')
-        self.assert_type(expression.get(2), 'Instruction', 'ADC', 'imm')
+        self.assert_type(expression[0], 'Instruction', 'LDA', 'imm')
+        self.assert_type(expression[1], 'Instruction', 'CLC', 'sngl')
+        self.assert_type(expression[2], 'Instruction', 'ADC', 'imm')
         actual = str(expression)
         expected = '\n'.join([
             'LDA #1',

@@ -37,6 +37,9 @@ class AsmBlock(object):
     def size(self):
         return 0
 
+    def __getitem__(self, index):
+        return self.get(index)
+
     def get(self, index):
         return self.instructions[index]
 
