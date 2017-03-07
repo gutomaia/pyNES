@@ -58,7 +58,7 @@ Inside ``pynes/examples`` you'll find a set of examples. Compile them with:
 
 .. code-block:: shell
 
-  pynes py helloworld.py -o helloworld.nes
+  pynes py pynes/examples/helloworld.py -o helloworld.nes
 
 Now you can open helloworld.nes
 
