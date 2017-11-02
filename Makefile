@@ -41,6 +41,7 @@ python.mk:
 		touch $@
 
 clean: python_clean
+	@rm -rf .coverage coverage.xml
 
 purge: python_purge
 	@rm python.mk

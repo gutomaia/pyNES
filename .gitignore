@@ -1,4 +1,5 @@
 *.check
+*.coverage
 *.egg-info/
 *.exe
 *.fns
@@ -8,6 +9,7 @@
 .checkpoint/
 .tox/
 build/
+coverage.xml
 deps/
 dist/
 github.mk
