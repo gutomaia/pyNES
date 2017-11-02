@@ -12,7 +12,6 @@ install:
 script:
   - make python.mk
   - make ci
-  - coverage run --source=pynes setup.py test
 after_success:
   - coveralls
 notifications:
