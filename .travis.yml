@@ -10,7 +10,8 @@ install:
   - pip install -q -r requirements.txt
   - pip install -q -r requirements_test.txt
 script:
-  - nosetests
+  - make python.mk
+  - make ci
   - coverage run --source=pynes setup.py test
 after_success:
   - coveralls
