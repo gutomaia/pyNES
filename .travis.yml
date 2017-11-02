@@ -9,8 +9,8 @@ install:
   - pip install -q -r requirements.txt
   - pip install -q -r requirements_test.txt
 script:
-  - nosetests
-  - coverage run --source=pynes setup.py test
+  - make python.mk
+  - make ci
 after_success:
   - coveralls
 sudo: false
