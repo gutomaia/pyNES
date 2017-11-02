@@ -23,7 +23,7 @@ PYTHON_EXE=${WINE_PATH}/Python27/python.exe
 EASYINSTALL_EXE=${WINE_PATH}/Python27/Scripts/easy_install.exe
 PIP_EXE=${WINE_PATH}/Python27/Scripts/pip.exe
 
-WGET = wget -q 
+WGET = wget -q
 
 OK=\033[32m[OK]\033[39m
 FAIL=\033[31m[FAIL]\033[39m
