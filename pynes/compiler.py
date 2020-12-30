@@ -348,7 +348,7 @@ def semantic(ast, iNES=False, cart=None):
         cart = Cartridge()
     labels = get_labels(ast)
     address = 0
-    # translate statments to opcode
+    # translate statements to opcode
     for leaf in ast:
         if leaf['type'] == 'S_RS':
             labels[leaf['children'][0]['value']] = cart.rs
