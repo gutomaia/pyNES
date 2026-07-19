@@ -298,7 +298,7 @@ class VarTable(ast.NodeVisitor):
 
 
 class PythonTo6502:
-    def __init__(self, libraries=None):
+    def __init__(self, libraries=None, builtins=None):
         self.output = []
         self.label_count = 0
         self.loop_end_labels = []
@@ -307,6 +307,7 @@ class PythonTo6502:
         self.uint16_vars = set()
         self.externs = {}
         self.const_funcs = {}
+        self.builtins = builtins or {}
         self.functions = {}
         self.generator_funcs = set()
         self.uint16_funcs = set()
@@ -422,6 +423,10 @@ class PythonTo6502:
             self.output.append(f'JSR {name}')
         elif name in self.externs:
             self.externs[name](self, node.args)
+        elif name in self.builtins:
+            # Python builtins (print, etc.) resolve last and are never
+            # shadowed by imports; they may still be hidden by a user def
+            self.builtins[name](self, node.args)
         else:
             raise NameError(f'name {name!r} is not defined')
 

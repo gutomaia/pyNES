@@ -2,6 +2,7 @@ import ast
 import copy
 
 from nesasm.compiler import Cartridge, lexical, semantic, syntax
+from neslib.library import lib
 
 from pynes.translator import (
     TEMP_VARS,
@@ -12,6 +13,7 @@ from pynes.translator import (
     annotate_uint16_returns,
     has_yield,
 )
+from pynes.builtins import pynes_lib
 from pynes.chr import TILE_SIZE, encode_stage, encode_tile
 from pynes.types import CHR_TYPES, RAM_TYPES, ROM_TYPES
 
@@ -125,7 +127,11 @@ class Cart:
         org=0xC000,
         chr_data=None,
     ):
-        self.libraries = libraries or []
+        if libraries is None:
+            libraries = [lib, pynes_lib]
+        else:
+            libraries = list(libraries) + [pynes_lib]
+        self.libraries = libraries
         self.prg_banks = prg_banks
         self.chr_banks = chr_banks
         self.mapper = mapper
@@ -267,7 +273,11 @@ class Cart:
         return ram_vars, ram_init, rom_data, chr_tiles, stages
 
     def _make_translator(self, functions):
-        translator = PythonTo6502(libraries=self.libraries)
+        # builtins are always available, but resolve after user defs
+        # and explicitly imported externs
+        translator = PythonTo6502(
+            libraries=self.libraries, builtins=pynes_lib.externs
+        )
         for function in functions:
             translator.functions[function.name] = [
                 arg.arg for arg in function.args.args
