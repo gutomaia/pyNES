@@ -11,7 +11,7 @@ meta = "^1.0.2"
 
 [tool.poetry.group.dev.dependencies]
 bandit = "^1.9"
-black = "^25.1"
+black = "^26.3"
 flake8 = "^7.3"
 pytest = "^8.4"
 pytest-cov = "^6.2"
