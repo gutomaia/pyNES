@@ -77,7 +77,7 @@ class AbstractFactorialBase:
             raise
         except AttributeError:
             print(
-                f"Error: The attribute '{attr}' "
+                f"Error: The attribute '{attr_name}' "
                 f"does not exist in '{module_path}'."
             )
             raise
@@ -101,7 +101,7 @@ class AbstractFactorialOneLine(AbstractFactorialBase, FactorialOneLineSpec):
         try:
             label = self.get_demo_attribute('label')
             return int(label[0])
-        except UnboundLocalError:
+        except AttributeError:
             return 5
 
     def when_factorial_demo_runs(self):
@@ -136,7 +136,7 @@ class AbstractFactorialFCEUXOneLine(
         try:
             label = self.get_demo_attribute('label')
             return int(label[0])
-        except UnboundLocalError:
+        except AttributeError:
             return 5
 
     def when_factorial_demo_runs(self):
@@ -183,6 +183,43 @@ class AbstractFactorialMultiline(
             line = 10 + index
             self.assertEqual(
                 text(self.runner, 12, line, 3),
+                b'%03d' % result,
+                f'line {line} (factorial({index}))',
+            )
+
+
+class AbstractFactorialFCEUXMultiline(
+    AbstractFactorialBase, FactorialMultilineSpec
+):
+    demo_filename = None
+
+    @classmethod
+    def setUpClass(cls):
+        cls.runner = load_fceux_runner(cls.demo_filename)
+        cls.runner.start_fceux()
+
+    @classmethod
+    def tearDownClass(cls):
+        cls.runner.close_fceux()
+
+    def get_factorial_factor(self):
+        return 5
+
+    def when_factorial_demo_runs(self):
+        self.runner._run()
+
+    def expected_result(self):
+        func = self.get_factorial_function()
+        check = func(0)
+        if check.__class__.__name__ == 'generator':
+            return list(func(self.get_factorial_factor()))
+        return [func(value) for value in range(self.get_factorial_factor())]
+
+    def assert_each_line_has_its_factorial(self):
+        for index, result in enumerate(self.expected_result()):
+            line = 10 + index
+            self.assertEqual(
+                bytes(self.runner.ppu.vram[0x2000 + line * 32 + 12 : 0x2000 + line * 32 + 15]),
                 b'%03d' % result,
                 f'line {line} (factorial({index}))',
             )
