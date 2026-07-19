@@ -18,7 +18,6 @@ DEMOS_DIR = os.path.dirname(os.path.abspath(__file__))
 # demos for features that do not exist yet: skipped until the
 # compiler catches up
 WIP = {
-    'math/factorial_11.py': "needs print() support",
 }
 
 
