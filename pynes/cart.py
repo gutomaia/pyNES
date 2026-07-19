@@ -434,8 +434,11 @@ class Cart:
         translator-level helper."""
         return annotate_uint16_returns(functions)
 
-    def _collect_vars(self, entries, functions=(), extra_labels=()):
+    def _collect_vars(
+        self, entries, functions=(), extra_labels=(), uint16_funcs=None
+    ):
         vartable = CartVarTable()
+        vartable.uint16_funcs = uint16_funcs or set()
         for node in list(entries.values()) + list(functions):
             for stmt in node.body:
                 vartable.visit(stmt)
@@ -456,7 +459,7 @@ class Cart:
         for var in vartable.vars.values():
             var.address = address
             address += var.size
-        return vartable.vars
+        return vartable.vars, vartable.uint16_names
 
     def _place_tiles(self, chr_tiles):
         """Assign CHR indexes (from 1: tile 0 stays blank) and encode
@@ -500,7 +503,9 @@ class Cart:
             entries, functions, array_names
         )
         uint16_funcs = self._annotate_uint16_returns(functions)
-        variables = self._collect_vars(entries, functions, removed_functions)
+        variables, uint16_names = self._collect_vars(
+            entries, functions, removed_functions, uint16_funcs
+        )
         defined = set(ram_vars) | set(rom_data) | set(TEMP_VARS)
         for name, var in variables.items():
             if (
@@ -513,7 +518,7 @@ class Cart:
         translator.bind_imports(tree)
         translator.uint16_vars = {
             name for name, size in ram_vars.items() if size == 2
-        }
+        } | uint16_names
         translator.generator_funcs = {
             function.name for function in functions if has_yield(function)
         }

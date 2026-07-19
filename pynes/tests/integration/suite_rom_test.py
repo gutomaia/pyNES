@@ -173,12 +173,6 @@ class FactorialOnCartTest(
 ):
     """The factorial twin spec with its asserts on the cartridge."""
 
-    on_cart_skip = {
-        'test_factorial_of_eight_with_uint16': (
-            'on-cart asserts need 16-bit comparisons'
-        ),
-    }
-
 
 class FibonacciOnCartTest(
     SuiteRomTestCase, FibonacciSpec, metaclass=MetaSuiteRomTest
@@ -223,11 +217,4 @@ class SortSelectionOnCartTest(
 class Uint16OnCartTest(
     SuiteRomTestCase, Uint16Spec, metaclass=MetaSuiteRomTest
 ):
-    """The uint16 twin spec: skipped until the on-cart asserts can
-    compare 16-bit values (if var != 1000 with a uint16 var)."""
-
-    on_cart_skip = {
-        name: 'on-cart asserts need 16-bit comparisons'
-        for name in dir(Uint16Spec)
-        if name.startswith('test_')
-    }
+    """The uint16 twin spec running with its asserts on the cartridge."""

@@ -81,3 +81,43 @@ class Uint16Spec:
             var_n -= 1
 
         self.assertEqual(var_big, 40320)
+
+    def test_uint16_equal_constant_true(self):
+        var_big = uint16()
+        var_big = 1000
+        var_result = 0
+
+        if var_big == 1000:
+            var_result = 1
+
+        self.assertEqual(var_result, 1)
+
+    def test_uint16_equal_constant_false(self):
+        var_big = uint16()
+        var_big = 1000
+        var_result = 0
+
+        if var_big == 999:
+            var_result = 1
+
+        self.assertEqual(var_result, 0)
+
+    def test_uint16_not_equal_constant_true(self):
+        var_big = uint16()
+        var_big = 1000
+        var_result = 0
+
+        if var_big != 999:
+            var_result = 1
+
+        self.assertEqual(var_result, 1)
+
+    def test_uint16_not_equal_constant_false(self):
+        var_big = uint16()
+        var_big = 1000
+        var_result = 0
+
+        if var_big != 1000:
+            var_result = 1
+
+        self.assertEqual(var_result, 0)

@@ -186,6 +186,7 @@ class VarTable(ast.NodeVisitor):
     def __init__(self):
         self.vars = {}
         self.uint16_funcs = set()
+        self.uint16_names = set()
 
     def get_var(self, name):
         if name not in self.vars:
@@ -208,6 +209,7 @@ class VarTable(ast.NodeVisitor):
             or _is_uint16_call(node.value, self.uint16_funcs)
         ) and isinstance(node.targets[0], ast.Name):
             name = node.targets[0].id
+            self.uint16_names.add(name)
             self.get_var(name).assigns += 1
             self.get_var(f'{name}__hi').assigns += 1
             self.visit(node.value)
@@ -266,6 +268,7 @@ class VarTable(ast.NodeVisitor):
             )
         name = node.target.id
         if _is_uint16_annotation(node.annotation):
+            self.uint16_names.add(name)
             # two adjacent one-byte slots
             self.get_var(name).assigns += 1
             self.get_var(f'{name}__hi').assigns += 1
@@ -276,6 +279,7 @@ class VarTable(ast.NodeVisitor):
 
     def locate(self, python_code):
         self.vars = {}
+        self.uint16_names = set()
         tree = ScopeMangler().visit(ast.parse(python_code))
         functions = [
             node
@@ -694,12 +698,27 @@ class PythonTo6502:
     def visit_Constant(self, node):
         return node.value
 
+    def _is_uint16_operand(self, node):
+        """True when a comparison operand is a declared uint16 variable."""
+        return isinstance(node, ast.Name) and node.id in self.uint16_vars
+
     def visit_Compare(self, node):
         left = node.left
         ops = node.ops
         comparators = node.comparators
         if len(ops) == 1 and len(comparators) == 1:
             comparator = comparators[0]
+            op = ops[0]
+
+            # uint16 equality/inequality: combine both bytes into Z
+            left_is_16 = self._is_uint16_operand(left)
+            right_is_16 = self._is_uint16_operand(comparator)
+            if (
+                isinstance(op, (ast.Eq, ast.NotEq))
+                and (left_is_16 or right_is_16)
+            ):
+                self._compare_uint16_eq(left, comparator)
+                return
 
             # An expression index on the right side clobbers A, so it
             # must be loaded into Y before the left operand
@@ -749,6 +768,42 @@ class PythonTo6502:
                 raise NotImplementedError('Unsupported comparison value type')
         else:
             raise NotImplementedError('Unsupported comparison')
+
+    def _compare_uint16_eq(self, left, right):
+        """Emit a comparison that leaves Z=1 iff the two 16-bit operands
+        are equal. Supports uint16 variable vs constant and uint16 vs
+        uint16 variable; the caller then BEQ/BNEs on the result."""
+        if isinstance(left, ast.Name) and left.id in self.uint16_vars:
+            var_name = left.id
+            if isinstance(right, ast.Constant):
+                hi, lo = (right.value >> 8) & 0xFF, right.value & 0xFF
+                self.output.append(f'LDA {var_name}__hi')
+                self.output.append(f'EOR #{hi}')
+                self.output.append(f'ORA {var_name}')
+                self.output.append(f'EOR #{lo}')
+            elif isinstance(right, ast.Name) and right.id in self.uint16_vars:
+                self.output.append(f'LDA {var_name}__hi')
+                self.output.append(f'EOR {right.id}__hi')
+                self.output.append(f'ORA {var_name}')
+                self.output.append(f'EOR {right.id}')
+            else:
+                raise NotImplementedError(
+                    'uint16 == supports constants and other uint16 vars'
+                )
+        elif (
+            isinstance(right, ast.Name)
+            and right.id in self.uint16_vars
+            and isinstance(left, ast.Constant)
+        ):
+            hi, lo = (left.value >> 8) & 0xFF, left.value & 0xFF
+            self.output.append(f'LDA {right.id}__hi')
+            self.output.append(f'EOR #{hi}')
+            self.output.append(f'ORA {right.id}')
+            self.output.append(f'EOR #{lo}')
+        else:
+            raise NotImplementedError(
+                'uint16 equality needs at least one uint16 operand'
+            )
 
     def visit_Module(self, node):
         # Set parent references for the AST
